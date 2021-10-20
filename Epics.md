@@ -63,4 +63,7 @@ As the administrator, I want to manage the user and their permissions.
 ## Hill Eight
 ### Story 
 As a data scientist, I want to share my workspace to my colleagues.
+- Insights
+- Dashboards
+- Sharing
 - TBD

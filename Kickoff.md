@@ -1,5 +1,5 @@
 # Preparations
-- The E2E process already works fine, at least for `talbe` operator
+- The E2E process already works fine, at least for `table` operator
 - Investigate einblick
 - List the features and plans needed
 

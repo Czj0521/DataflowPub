@@ -1,0 +1,27 @@
+{
+    "xAixs":{
+        "data":[]
+    },
+    "series":[
+        {
+            "type":"bar",
+            "data":[],
+            "name":""
+        }
+    ]
+}
+
+//例
+
+{
+    "xAixs":{
+        "data":["Forest", "Steppe", "Desert", "Wetland"]
+    },
+    "series":[
+        {
+            "name": "Forest",
+            "type": "bar",
+            "data": [320, 332, 301, 334, 390]
+        }
+    ]
+}

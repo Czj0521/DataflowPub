@@ -8,12 +8,12 @@ spring:
       datasource:
         mysql:
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://192.168.0.54:3306/databoard_gluttony?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://47.104.202.153:3306/dataflow?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
           username: root
-          password: Bdilab@1308
+          password: bdilab@1308
         clickhouse:
           driver-class-name: ru.yandex.clickhouse.ClickHouseDriver
-          url: jdbc:clickhouse://192.168.0.59:8123/databoard_gluttony
+          url: jdbc:clickhouse://47.104.202.153:8123/dataflow
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       initial-size: 10
@@ -43,9 +43,9 @@ spring:
       enabled: true
       force: true
   redis:
-    host: 192.168.0.53
+    host: 47.104.202.153
     port: 6379
-    password: 123456
+    password: bdilab@1308
     timeout: 1000
     lettuce:
       pool:
@@ -55,10 +55,10 @@ spring:
         min-idle: 5
 clickhouse:
   http:
-    url: http://192.168.0.59:8123/?query=
+    url: http://47.104.202.153:8123/?query=
 flink:
   http:
-    address: http://192.168.0.53:8081
+    address: http://47.104.202.153:8081
     maxTotal: 2
     defaultMaxPerRoute: 2
     connectTimeout: 5000

@@ -44,5 +44,5 @@ public class CommonConstants {
     public static final String SORT_NAME = "sort";
 
 
-    public static final String DATABASE = "databoard_gluttony";
+    public static final String DATABASE = "dataflow";
 }

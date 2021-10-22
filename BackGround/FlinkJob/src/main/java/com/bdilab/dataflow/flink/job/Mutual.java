@@ -32,7 +32,7 @@ public class Mutual {
 
     public static void main(String[] args) throws Exception {
         String driverName = "ru.yandex.clickhouse.ClickHouseDriver";
-        String url = "jdbc:clickhouse://192.168.0.59:8123/databoard_gluttony";
+        String url = "jdbc:clickhouse://47.104.202.153:8123/dataflow";
         StringBuilder query1 = new StringBuilder();
         StringBuilder query2 = new StringBuilder();
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -84,8 +84,8 @@ public class Mutual {
         @Override
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
-            jedis = new Jedis("192.168.0.53", 6379);
-            jedis.auth("123456");
+            jedis = new Jedis("47.104.202.153", 6379);
+            jedis.auth("bdilab@1308");
 //            ParameterTool.fromPropertiesFile("/home/DataFlow/FlinkJob/conf/args.properties");
             ParameterTool parameterTool = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 //            String jobId = parameterTool.has("jobId") ? parameterTool.get("jobId") : "jobid1";

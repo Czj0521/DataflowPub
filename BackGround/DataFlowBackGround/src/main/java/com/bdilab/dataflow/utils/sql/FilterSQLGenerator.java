@@ -34,7 +34,7 @@ public class FilterSQLGenerator extends SQLGeneratorBase {
 
     @Override
     public String generate() {
-        String prefix = "CREATE VIEW databoard_gluttony." + UUID + " AS ";
+        String prefix = "CREATE VIEW dataflow." + UUID + " AS ";
         return prefix + project() + super.datasource() + filter() + super.limit();
     }
 }

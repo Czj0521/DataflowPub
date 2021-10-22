@@ -208,3 +208,64 @@ https://github.com/xdsselab/DataFlow
 ```
 frontend为前端项目代码
 
+
+### 一、基础环境
+
+#### 1.1 硬件环境
+
+#### 1.2 软件环境
+
+| 名称       | 组件与版本 |
+| ---------- | ---------- |
+| React      | v17.0.2    | 
+| antv x6    | v1.24.4    | 
+| ant design | v4.14.1    | 
+| Echarts    | v5.0.2     | 
+
+### 二、前端测试说明
+
+```
+#项目地址
+https://github.com/xdsselab/DataFlow
+```
+frontend为前端项目代码
+
+#### 2.1项目运行说明
+##### 2.1.1 拉取git项目代码
+```
+#git地址：
+https://github.com/xdsselab/DataFlow.git
+```
+##### 2.1.2 安装项目依赖
+在控制台中的frontend文件夹下使用命令 npm install 即可安装前端项目依赖
+
+##### 2.1.3 运行前端项目
+在控制台中的frontend文件夹下使用命令 npm start 即可运行前端项目，如果页面关闭可在浏览器中输入地址http://localhost:3000重新访问
+
+##### 2.1.3 使用前端项目
+
+**注：因前端功能目前很少，还有一些样式上的bug需要修改，所以目前仅能作为测试使用
+
+###### 测试① Table组件拖拽
+如下图在页面左侧的侧边栏提供用户可拖拽的操作符，最上面的.csv为现有数据集，将数据集拖入画布（目前因为有一个样式上的小bug需要用户当鼠标变成蓝色的图标后点击生成拖拽组件，本次冲刺阶段即可解决此bug）
+![image](https://user-images.githubusercontent.com/69236203/138457874-2bb4c903-b1f7-423d-98e0-f6ec5381d8a6.png)
+在画布上生成的组件如下图
+![image](https://user-images.githubusercontent.com/69236203/138458374-93f1d6eb-7617-4f79-a933-f36b30a87cb4.png)
+
+###### 测试② Table组件过滤及筛选
+以table组件为例，侧边栏有filter和Attributes属性
+通过点击属性可展示侧边栏，包含过滤操作和列筛选操作
+点击filter，过滤属性后效果如下图
+![image](https://user-images.githubusercontent.com/69236203/138458923-71eba3bc-c43a-4a69-ab49-720b1d5b3cdf.png)
+下图展示的是id4字段以a或h结尾的所有内容
+![image](https://user-images.githubusercontent.com/69236203/138459024-e6892118-ebe4-4d0b-80d2-4458e5f32446.png)
+
+点击Attributes,圈选所需要展示的列，列表既会刷新，如下图
+展示的是仅有id2和id4属性的列表
+![image](https://user-images.githubusercontent.com/69236203/138459313-36d97dea-5b8c-4376-9d72-cb8abb28ddf6.png)
+
+###### 测试③ chart组件拖拽
+**注：目前chart因为工作量较大且实现复杂，只做了分布图的展示功能
+
+拖拽结果如下图
+![image](https://user-images.githubusercontent.com/69236203/138459647-9b28cbb8-5338-4f1a-906e-013543ac2410.png)

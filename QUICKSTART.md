@@ -57,7 +57,7 @@ https://github.com/xdsselab/DataFlow.git
 
 ##### 3）运行核心程序
 
-运行启动类 DataFlow/BackGround/DataFlowBackGround/src/main/java/com/bdilab/dataflow/DataFlowApplication.java
+运行启动类 DataFlow/BackGround/DataFlowBackGround/src/main/java/com/bdilab/dataflow/DataFlowApplication.java （config模块下）
 
 ##### 4）测试使用
 

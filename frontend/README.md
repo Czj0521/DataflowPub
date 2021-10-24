@@ -1,70 +1,58 @@
-# Getting Started with Create React App
+## Antd Design & icejs scaffold
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 使用
 
-## Available Scripts
+```bash
+# 安装依赖
+$ npm install
 
-In the project directory, you can run:
+# 启动服务
+$ npm start  # visit http://localhost:3333
+```
 
-### `yarn start`
+[More docs](https://ice.work/docs/guide/about).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 目录
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```md
+├── build/                         # 构建产物
+├── mock/                          # 本地模拟数据
+│   ├── index.[j,t]s
+├── public/
+│   ├── index.html                 # 应用入口 HTML
+│   └── favicon.png                # Favicon
+├── src/                           # 源码路径
+│   ├── components/                # 自定义业务组件
+│   │   └── Guide/
+│   │       ├── index.[j,t]sx
+│   │       ├── index.module.scss
+│   ├── layouts/                   # 布局组件
+│   │   └── BasicLayout/
+│   │       ├── index.[j,t]sx
+│   │       └── index.module.scss
+│   ├── pages/                     # 页面
+│   │   └── Home/                  # home 页面，约定路由转成小写
+│   │       ├── components/        # 页面级自定义业务组件
+│   │       ├── models.[j,t]sx     # 页面级数据状态
+│   │       ├── index.[j,t]sx      # 页面入口
+│   │       └── index.module.scss  # 页面样式文件
+│   ├── configs/                   # [可选] 配置文件
+│   │   └── menu.[j,t]s            # [可选] 菜单配置
+│   ├── models/                    # [可选] 应用级数据状态
+│   │   └── user.[j,t]s
+│   ├── utils/                     # [可选] 工具库
+│   ├── global.scss                # 全局样式
+│   ├── routes.[j,t]s              # 路由配置
+│   └── app.[j,t]s[x]              # 应用入口脚本
+├── build.json                     # 工程配置
+├── README.md
+├── package.json
+├── .editorconfig
+├── .eslintignore
+├── .eslintrc.[j,t]s
+├── .gitignore
+├── .stylelintignore
+├── .stylelintrc.[j,t]s
+├── .gitignore
+└── [j,t]sconfig.json
+```

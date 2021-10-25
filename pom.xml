@@ -3,7 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.6.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
     <modules>
         <module>operators/filter</module>
         <module>operators/transpose</module>
@@ -12,25 +18,14 @@
         <module>config</module>
         <module>utils</module>
     </modules>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.6.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
+
     <groupId>com.bdilab</groupId>
     <artifactId>dataflow</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>dataflow</name>
-
-    <properties>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <java.version>1.8</java.version>
-    </properties>
+    <packaging>pom</packaging>
 
     <dependencies>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -40,51 +35,41 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
         <!--Lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
         <!--Swagger-->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.9.2</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>2.9.2</version>
         </dependency>
-
         <!--JSON-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.37</version>
         </dependency>
 
         <!--MybatisPlus-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-extension</artifactId>
-            <version>3.4.1</version>
         </dependency>
         <!--多数据源-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-            <version>3.2.0</version>
         </dependency>
-
         <!--Mysql JDBC-->
         <dependency>
             <groupId>mysql</groupId>
@@ -95,61 +80,176 @@
         <dependency>
             <groupId>ru.yandex.clickhouse</groupId>
             <artifactId>clickhouse-jdbc</artifactId>
-            <version>0.3.1</version>
         </dependency>
         <!--druid-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
-            <version>1.2.5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.12</version>
         </dependency>
-
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.4</version>
         </dependency>
-
         <!--restTemplate 的支持-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>5.2.8.RELEASE</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.asynchttpclient/async-http-client -->
-        <!--redis-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-            <version>2.4.5</version>
         </dependency>
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>3.3.0</version>
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
+    <properties>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <java.version>1.8</java.version>
+        <jedis.verision>3.3.0</jedis.verision>
+        <spring-boot-starter-data-redis.version>2.4.5</spring-boot-starter-data-redis.version>
+        <spring-web.version>5.2.8.RELEASE</spring-web.version>
+        <commons-io.version>2.4</commons-io.version>
+        <httpclient.version>4.5.12</httpclient.version>
+        <clickhouse-jdbc.version>0.3.1</clickhouse-jdbc.version>
+        <fastjson.version>1.2.37</fastjson.version>
+        <springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
+        <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
+        <mybatis-plus-boot-starter.version>3.3.2</mybatis-plus-boot-starter.version>
+        <mybatis-plus-extension.verson>3.4.1</mybatis-plus-extension.verson>
+        <druid-spring-boot-starter.version>1.2.5</druid-spring-boot-starter.version>
+        <dynamic-datasource-spring-boot-starter.version>3.2.0</dynamic-datasource-spring-boot-starter.version>
+        <dataflow.version>1.0-SNAPSHOT</dataflow.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.bdilab</groupId>
+                <artifactId>utils</artifactId>
+                <version>${dataflow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bdilab</groupId>
+                <artifactId>config</artifactId>
+                <version>${dataflow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bdilab</groupId>
+                <artifactId>common</artifactId>
+                <version>${dataflow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bdilab</groupId>
+                <artifactId>operator-table</artifactId>
+                <version>${dataflow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bdilab</groupId>
+                <artifactId>operator-filter</artifactId>
+                <version>${dataflow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bdilab</groupId>
+                <artifactId>operator-transpose</artifactId>
+                <version>${dataflow.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.2.6.RELEASE</version>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>
+                <artifactId>spring-boot-starter-data-redis</artifactId>
+                <version>${spring-boot-starter-data-redis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <!--多数据源-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${dynamic-datasource-spring-boot-starter.version}</version>
+            </dependency>
+            <!--druid-->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid-spring-boot-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring-web.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.yandex.clickhouse</groupId>
+                <artifactId>clickhouse-jdbc</artifactId>
+                <version>${clickhouse-jdbc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${springfox-swagger-ui.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${springfox-swagger2.version}</version>
+            </dependency>
+            <!--MybatisPlus-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus-boot-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-extension</artifactId>
+                <version>${mybatis-plus-extension.verson}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>2.2.6.RELEASE</version>
+                    <configuration>
+                        <excludes>
+                            <exclude>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>

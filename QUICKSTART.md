@@ -190,6 +190,130 @@ flink-1.12.5/bin/stop-cluster.sh//关闭flink集群
 
 ##### 7.去浏览器访问 47.104.202.153:8081查看flink集群当前状态
 
+#### MySQL安装说明
+
+MySQL使用Docker安装
+
+##### 1.下载镜像docker pull
+
+dockerhub中搜索MySQL，找到对应版本号，下载
+
+```bash
+docker pull mysql:5.7
+```
+
+查看镜像
+
+```
+docker images
+```
+
+##### 2.创建实例并启动
+
+```bash
+sudo docker run \
+-p 3306:3306 \
+--name mysql \
+-v /usr/mysql/conf:/etc/mysql \
+-v /usr/mysql/log:/var/log/mysql \
+-v /usr/mysql/data:/var/lib/mysql \
+-e MYSQL_ROOT_PASSWORD=bdilab@1308 \
+-d mysql:5.7
+	
+# -p：表示端口映射，冒号左面的是宿主机的端口，而右侧则表示的是MySQL容器内的端口
+# --name：给MySQL容器取的名字
+# -d：表示后台运行
+# -e MYSQL_ROOT_PASSWORD：设置root用户密码
+# -v：表示挂载路径，冒号左面的表示宿主机的挂载目录，冒号右边则表示容器内部的路径。
+```
+
+##### 3.创建配置文件
+
+```bash
+vim /usr/mysql/conf/my.cnf
+```
+
+```
+[client]
+default-character-set=utf8
+
+[mysql]
+default-character-set=utf8
+
+[mysqld]
+character-set-server=utf8
+skip-name-resolve
+```
+
+##### 4.进入mysql容器内查看
+
+```bash
+docker exec -it mysql /bin/bash
+```
+
+##### 5.重启mysql
+
+```bash
+docker restart mysql
+```
+
+##### 6.设置自动重启
+
+```bash
+docker update mysql --restart=always
+```
+
+
+
+#### Redis安装说明
+
+Redis也使用Docker安装
+
+##### 1.下载镜像
+
+```bash
+docker pull redis
+```
+
+##### 2.创建实例并启动
+
+```bash
+sudo docker run \
+-p 6379:6379 \
+--name redis \
+-v /usr/redis/conf/redis.conf:/etc/redis/redis.conf \
+-v /usr/redis/data:/data \
+-d redis redis-server /etc/redis/redis.conf \
+--requirepass bdilab@1308
+
+# 注意，直接运行此命令会将redis.conf作为一个目录创建，故先创建redis.conf文件
+```
+
+##### 3.测试redis
+
+```bash
+docker exec -it redis redis-cli
+```
+
+##### 4.数据持久化
+
+```shell
+# redis.conf下添加
+appendonly yes
+
+# 重启容器
+docker restart redis
+```
+
+##### 5.设置自动重启
+
+```bash
+docker update redis --restart=always
+```
+
+
+
+
 
 
 目前所有软件都为单点部署。

@@ -1,22 +1,22 @@
 package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.FilterDescription;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * @author: Zunjing Chen
- * @create: 2021-09-22
- * @description:
- **/
+ * @author: wh
+ * @create: 2021-10-25
+ * @description: Filter SQL Generator
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class FilterSQLGenerator extends SQLGeneratorBase {
 
     private FilterDescription filterDescription;
-    private String UUID;
 
-    public FilterSQLGenerator(FilterDescription filterDescription, String UUID) {
-        super(filterDescription);
-        this.filterDescription = filterDescription;
-        this.UUID = UUID;
-    }
 
     @Override
     public String project() {
@@ -34,7 +34,10 @@ public class FilterSQLGenerator extends SQLGeneratorBase {
 
     @Override
     public String generate() {
-        String prefix = "CREATE VIEW dataflow." + UUID + " AS ";
-        return prefix + project() + super.datasource() + filter() + super.limit();
+        return project() + super.datasource() + filter() + super.limit();
+    }
+
+    public String generateDataSourceSql(){
+        return project() + super.datasource() + filter();
     }
 }

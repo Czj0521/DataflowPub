@@ -1,6 +1,8 @@
 package com.bdilab.dataflow.dto.jobdescription;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author: Zunjing Chen
@@ -8,6 +10,8 @@ import lombok.Data;
  * @description:
  **/
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class JobDescription {
     // filter;transform;transpose;join;
     String jobType;
@@ -15,13 +19,4 @@ public class JobDescription {
     String dataSource;
     // 返回行数
     Integer limit;
-
-    public JobDescription() {
-    }
-
-    public JobDescription(String jobType, String dataSource, Integer limit) {
-        this.jobType = jobType;
-        this.dataSource = dataSource;
-        this.limit = limit;
-    }
 }

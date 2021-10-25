@@ -3,13 +3,15 @@ package com.bdilab.dataflow.sql.generator;
 import com.bdilab.dataflow.common.enums.ExceptionMsgEnum;
 import com.bdilab.dataflow.common.exception.UncheckException;
 import com.bdilab.dataflow.dto.jobdescription.JobDescription;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public abstract class SQLGeneratorBase {
     private JobDescription jobDescription;
-
-    public SQLGeneratorBase(JobDescription jobDescription) {
-        this.jobDescription = jobDescription;
-    }
 
     public String datasource() {
         // todo 数据源检查
@@ -29,7 +31,6 @@ public abstract class SQLGeneratorBase {
     public  String project(){
         return "";
     }
-
 
     public String filter(){
         return "";

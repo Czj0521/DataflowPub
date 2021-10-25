@@ -55,3 +55,16 @@ spring:
 clickhouse:
   http:
     url: http://47.104.202.153:8123/?query=
+flink:
+  http:
+    address: http://47.104.202.153:8081
+    maxTotal: 2
+    defaultMaxPerRoute: 2
+    connectTimeout: 5000
+    connectionRequestTimeout: 10000
+    socketTimeout: 300000
+  job:
+    jar:
+      path: ./FlinkJob/jar/
+      testpath: D:\JetBrains\local\DataFlow\FlinkJob\target\
+      name: FlinkJob-1.0-SNAPSHOT-jar-with-dependencies.jar

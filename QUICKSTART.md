@@ -5,7 +5,7 @@
 | 序号 | 时间       | 版本 |
 | ---- | ---------- | ---- |
 | 1    | 2021/10/22 |      |
-
+| 2    | 2021/10/25 |      |
 
 
 ### 一、基础环境
@@ -25,6 +25,172 @@
 ### 二、环境安装说明
 
 技术栈部署服务器ip：47.104.202.153（公）172.31.121.149（私有）
+
+#### clickhouse安装部署,导入数据表
+
+##### 1.系统要求
+
+ClickHouse可以在任何具有x86_64，AArch64或PowerPC64LE CPU架构的Linux，FreeBSD或Mac OS X上运行。
+
+下面是检查当前CPU是否支持SSE 4.2的命令:
+
+```bash
+$ grep -q sse4_2 /proc/cpuinfo && echo "SSE 4.2 supported" || echo "SSE 4.2 not supported"
+```
+
+若不支持sse4.2可以通过源代码安装方式（亲测不支持也能用RPM安装）
+
+##### 2.`RPM`安装包
+
+clickhouse有三种安装方式，下面介绍最简单的RPM安装方式
+
+1.添加官方存储库
+
+```
+sudo yum install yum-utils
+sudo rpm --import https://repo.clickhouse.com/CLICKHOUSE-KEY.GPG
+sudo yum-config-manager --add-repo https://repo.clickhouse.com/rpm/stable/x86_64
+```
+
+（若不能访问请移步到官网https://clickhouse.com/docs/zh/getting-started/install/查看最新地址）
+
+2.运行命令安装
+
+```
+sudo yum install clickhouse-server clickhouse-client
+```
+
+##### 3.启动
+
+```
+sudo /etc/init.d/clickhouse-server start
+```
+
+##### 4.启动客户端测试clickhouse
+
+1.启动客户端
+
+```
+clickhouse-client
+```
+
+2.运行sql
+
+```
+select 1
+```
+
+##### 5.配置远程连接
+
+1.打开clickhouse配置文件
+
+```
+vi /etc/clickhouse-server/config.xml
+```
+
+2.修改配置文件
+
+```
+ctrl F 查找<listen_host>0.0.0.0</listen_host>
+去掉<-- <listen_host>0.0.0.0</listen_host> -->两边的注释
+保存退出
+```
+
+##### 6.创建表
+
+可以直接使用远程连接的客户端软件，如Dbeaver，datagrip等
+
+若使用clickhouse自带的命令行客户端
+
+```
+1.创建dataflow数据库
+clickhouse-client --query "CREATE DATABASE IF NOT EXISTS dataflow"
+2.创建table(尽量将语句写到一行，不然会报错)
+clickhouse-client --query "CREATE TABLE dataflow.airuuid
+(
+
+    `time` Nullable(Date),
+
+    `city` Nullable(String),
+
+    `AQI` Nullable(UInt8),
+
+    `PM2_5` Nullable(UInt8),
+
+    `PM10` Nullable(UInt8),
+
+    `SO2` Nullable(UInt8),
+
+    `NO2` Nullable(UInt8),
+
+    `CO` Nullable(Float64),
+
+    `O3` Nullable(UInt8),
+
+    `primary_pollutant` Nullable(String)
+)
+ENGINE = Memory"
+(有关clickhouse引擎详见官方文档)
+3.将准备好的csv文件插入到创建的表中
+clickhouse-client --query "INSERT INTO tutorial.airuuid FORMAT CSV" --max_insert_block_size=100000 < airuuid.csv
+4.select count(*) from [表名] 检验表中是否有数据
+```
+
+#### Flink1.12.5单机，standalone集群搭建
+
+##### 1.下载flink1.12.5安装包
+
+```
+wget https://downloads.apache.org/flink/flink-1.13.3/flink-1.13.3-bin-scala_2.12.tgz
+```
+
+##### 2.解压
+
+```
+tar -zxvf flink-1.13.3-bin-scala_2.12.tgz
+```
+
+##### 3.修改flink-1.12.5/conf/flink-conf.xml
+
+```
+jobmanager.rpc.address: 47.104.202.153//改为master的ip，单机模式可以不改
+jobmanager.rpc.port: 6123 //flink应用的端口，建议不改
+taskmanager.numberOfTaskSlots: 8//flink任务槽数量，建议设置为cpu核数 
+parallelism.default: 1//并行度默认值，可改可不改
+```
+
+##### 4.修改master，worker文件（单机模式跳过此步骤，standalone集群模式需要配置）,目前为单机模式
+
+```
+master文件
+[ip1或主机名]:8081//写哪台机器作为主节点
+worker文件
+[ip1或主机名]//写哪些机器作为worker节点
+[ip2或主机名]
+[ip3或主机名]
+```
+
+##### 5.scp分发到集群的每个主机
+
+```
+1.配置ssh免密登录
+ssh-keygen -t rsa 
+2.将每台主机的/root/.ssh/id_rsa.pub的内容复制，粘贴到另外所有主机的/root/.ssh/authorized_keys中
+3.scp -r flink-1.12.5/ root@[ip]/[安装路径] 分发到所有主机
+```
+
+##### 6.启动flink集群
+
+```
+flink-1.12.5/bin/start-cluster.sh//启动flink集群
+flink-1.12.5/bin/stop-cluster.sh//关闭flink集群
+先关闭再启动就是重启
+（若没配置免密要一直输密码）
+```
+
+##### 7.去浏览器访问 47.104.202.153:8081查看flink集群当前状态
+
+
 
 目前所有软件都为单点部署。
 
@@ -193,10 +359,10 @@ demo jar包来源于FlinkJob模块打包程序。本测试demo需用使用redis�
 
 | 名称       | 组件与版本 |
 | ---------- | ---------- |
-| React      | v17.0.2    | 
-| antv x6    | v1.24.4    | 
-| ant design | v4.14.1    | 
-| Echarts    | v5.0.2     | 
+| React      | v17.0.2    |
+| antv x6    | v1.24.4    |
+| ant design | v4.14.1    |
+| Echarts    | v5.0.2     |
 
 ### 二、前端测试说明
 

@@ -1,7 +1,7 @@
 package com.bdilab.dataflow.controller;
 
 import com.bdilab.dataflow.common.consts.WebConstants;
-import com.bdilab.dataflow.dto.jobdescription.FilterDescription;
+import com.bdilab.dataflow.common.httpresult.ResultMap;
 import com.bdilab.dataflow.service.impl.FilterJobServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -10,31 +10,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
+import javax.annotation.Resource;
+
+import java.util.Map;
+
+import static com.bdilab.dataflow.common.enums.FilterOperatorEnum.FILTER_OPERATORS;
 
 /**
- * @author: Zunjing Chen
- * @create: 2021-09-22
- * @description:
- **/
+ * @author: wh
+ * @create: 2021-10-25
+ * @description: Filter Operator Controller
+ */
 @Slf4j
 @RestController
 @CrossOrigin
-@Api(tags = "filter控件")
-@RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/job")
+@Api(tags = "Filter Operator")
+@RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/operator")
 public class FilterController {
-    @Autowired
+    @Resource
     FilterJobServiceImpl filterJobService;
 
     /**
-     * 根据过滤操作创建视图，返回视图id，并不产生实际数据。等到其作为数据源拖拽出，再展示（调用table api）
-     *
-     * @return datasource id
-     * @throws UnsupportedEncodingException
+     * Get the constant of the filter operator and the SQL substitution corresponding to each operation.
+     * Four types of operators: number, string, time, Boolean
      */
-    @PostMapping("/filter")
-    @ApiOperation(value = "filter控件")
-    public ResponseEntity filter(@RequestBody FilterDescription filterDescription)  {
-        return ResponseEntity.ok(filterJobService.filter(filterDescription));
+    @GetMapping("/getFilterOperators")
+    @ApiOperation(value = "Get Filter Operators")
+    public ResponseEntity filterOperator() {
+        Map<String, Map<String, String>> filterOperators = filterJobService.getFilterOperators();
+        return ResponseEntity.ok(filterOperators);
     }
 }

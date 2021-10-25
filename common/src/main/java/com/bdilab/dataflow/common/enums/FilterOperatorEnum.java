@@ -2,6 +2,8 @@ package com.bdilab.dataflow.common.enums;
 
 import com.bdilab.dataflow.common.consts.OperatorConstants;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -10,7 +12,9 @@ import java.util.NoSuchElementException;
  * @description:
  **/
 public enum FilterOperatorEnum {
-    // string
+    /**
+     * string
+     */
     STRING_EQUALS("string", "equals", OperatorConstants.COLUMN_MAGIC_NUMBER + " = '"+OperatorConstants.VALUE_MAGIC_NUMBER+"'",true),
     STRING_CONTAINS("string","contains","",false),
     STRING_CONTAINS_ANY("string","contains any","",false),
@@ -18,35 +22,59 @@ public enum FilterOperatorEnum {
     STRING_STARTS_WITH("string","starts with","startsWith("+OperatorConstants.COLUMN_MAGIC_NUMBER+",'"+OperatorConstants.VALUE_MAGIC_NUMBER+"')",true),
     STRING_ENDS_WITH("string","ends with","endsWith("+OperatorConstants.COLUMN_MAGIC_NUMBER+",'"+OperatorConstants.VALUE_MAGIC_NUMBER+"')",true),
     STRING_NOT_CONTAINS("string","does not contains","",false),
-    // numeric
+    /**
+     * numeric
+     */
     NUMERIC_EQUALS("numeric","equals(==)",OperatorConstants.COLUMN_MAGIC_NUMBER +"=" +OperatorConstants.VALUE_MAGIC_NUMBER,true),
     NUMERIC_NOT_EQUALS("numeric","does not equals(!=)",OperatorConstants.COLUMN_MAGIC_NUMBER +"!=" +OperatorConstants.VALUE_MAGIC_NUMBER,true),
     NUMERIC_GREATER_THAN("numeric","greater than(>)",OperatorConstants.COLUMN_MAGIC_NUMBER +">" +OperatorConstants.VALUE_MAGIC_NUMBER,true),
     NUMERIC_GREATER_THAN_OR_EQUAL_TO("numeric","greater than or equal to(>=)",OperatorConstants.COLUMN_MAGIC_NUMBER +">=" +OperatorConstants.VALUE_MAGIC_NUMBER,true),
     NUMERIC_LESS_THAN("numeric","less than(<)",OperatorConstants.COLUMN_MAGIC_NUMBER +"<" +OperatorConstants.VALUE_MAGIC_NUMBER,true),
     NUMERIC_LESS_THAN_OR_EQUAL_TO("numeric","less than or equal to(<=)",OperatorConstants.COLUMN_MAGIC_NUMBER +"<=" +OperatorConstants.VALUE_MAGIC_NUMBER,true),
-    // date
+    NUMERIC_RANGE("numeric","range","",false),
+    /**
+     * date
+     */
     DATE_IS("date","is",OperatorConstants.COLUMN_MAGIC_NUMBER +"=" +OperatorConstants.VALUE_MAGIC_NUMBER,true),
     DATE_BEFORE("date","before",OperatorConstants.COLUMN_MAGIC_NUMBER +"<" +OperatorConstants.VALUE_MAGIC_NUMBER,true),
-    DATE_AFTER("date","after",OperatorConstants.COLUMN_MAGIC_NUMBER +">" +OperatorConstants.VALUE_MAGIC_NUMBER,true);
-    // boolean
-//    BOOLEAN_IS("boolean","is",)
+    DATE_ON_OR_BEFORE("date","on or before",OperatorConstants.COLUMN_MAGIC_NUMBER +"<=" +OperatorConstants.VALUE_MAGIC_NUMBER,true),
+    DATE_AFTER("date","after",OperatorConstants.COLUMN_MAGIC_NUMBER +">=" +OperatorConstants.VALUE_MAGIC_NUMBER,true),
+    DATE_ON_OR_AFTER("date","on or after",OperatorConstants.COLUMN_MAGIC_NUMBER +">" +OperatorConstants.VALUE_MAGIC_NUMBER,true),
+    DATE_RANGE("numeric","range","",false),
     /**
-     * 数据类型 string numeric date boolean
+     * boolean
+     */
+    BOOLEAN_IS("boolean","is",OperatorConstants.COLUMN_MAGIC_NUMBER +"=" +OperatorConstants.VALUE_MAGIC_NUMBER,true),
+    BOOLEAN_IS_NOT("boolean","is not",OperatorConstants.COLUMN_MAGIC_NUMBER +"!=" +OperatorConstants.VALUE_MAGIC_NUMBER,true);
+    /**
+     * Data Type: string numeric date boolean
      */
     String dataType;
     /**
-     * 前端操作名称
+     * Operators name in Front-end
      */
     String filterOperatorName;
     /**
-     * 后端sql函数
+     * Back-end SQL
      */
     String SQLParam;
     /**
-     * click是否原生支持
+     * Whether back-end or clickhouse is supported
      */
     boolean support;
+    /**
+     *
+     */
+    public static final Map<String, Map<String, String>> FILTER_OPERATORS = new HashMap<>();
+
+    static {
+        for (FilterOperatorEnum value : FilterOperatorEnum.values()) {
+            Map<String, String> orDefault = FILTER_OPERATORS.getOrDefault(value.getDataType(), new HashMap<>());
+            orDefault.put(value.getFilterOperatorName(), value.getSQLParam());
+            FILTER_OPERATORS.put(value.getDataType(), orDefault);
+        }
+    }
+
     public static FilterOperatorEnum getFilterOperator(String operatorName) {
         for (FilterOperatorEnum filterOperatorEnum : FilterOperatorEnum.values()) {
             if (filterOperatorEnum.filterOperatorName.equals(operatorName)) {

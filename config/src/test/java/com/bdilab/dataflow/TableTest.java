@@ -27,7 +27,6 @@ public class TableTest {
         tableDescription.setLimit(20);
         tableDescription.setProject(new String[]{"city"});
 
-
         long before = System.currentTimeMillis();
         System.out.println(tableJobService.table(tableDescription));
         long after = System.currentTimeMillis();

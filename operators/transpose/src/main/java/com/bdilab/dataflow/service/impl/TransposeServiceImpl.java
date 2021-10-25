@@ -1,6 +1,7 @@
 package com.bdilab.dataflow.service.impl;
 
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
+import com.bdilab.dataflow.service.TransposeService;
 import com.bdilab.dataflow.sql.generator.TransposeSQLGenerator;
 import com.bdilab.dataflow.utils.SQLParseUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
@@ -19,12 +20,15 @@ import java.util.List;
  * @description:
  **/
 @Service
-public class TransposeServiceImpl {
-    @Value("${clickhouse.http.url}")
-    private String httpPrefix;
+public class TransposeServiceImpl implements TransposeService {
     @Autowired
     ClickHouseJdbcUtils clickHouseJdbcUtils;
 
+    /**
+     *
+     * @param transposeDescription
+     * @return column value list
+     */
     private List<String> columnValues(TransposeDescription transposeDescription) {
         String column = transposeDescription.getColumn();
         String datasource = transposeDescription.getDataSource();
@@ -32,12 +36,8 @@ public class TransposeServiceImpl {
         return clickHouseJdbcUtils.queryForStrList(sql);
     }
 
+    @Override
     public String transpose(TransposeDescription transposeDescription) {
-        String uuid = SQLParseUtils.getUUID32();
-        String sql = new TransposeSQLGenerator(uuid, transposeDescription, columnValues(transposeDescription)).generate();
-        URLEncoder urlEncoder = new URLEncoder();
-        sql = urlEncoder.encode(sql, Charset.defaultCharset());
-        ClickHouseHttpUtils.sendPost(httpPrefix + sql);
-        return uuid;
+        return new TransposeSQLGenerator(transposeDescription, columnValues(transposeDescription)).generate();
     }
 }

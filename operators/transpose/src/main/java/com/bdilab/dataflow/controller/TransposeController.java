@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * @author: Zunjing Chen
  * @create: 2021-09-23
@@ -18,14 +20,14 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @CrossOrigin
-@Api(tags = "transpose控件")
+@Api(tags = "transpose")
 @RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/job")
 public class TransposeController {
     @Autowired
     TransposeServiceImpl transposeService;
     @PostMapping("/transpose")
-    @ApiOperation(value = "transpose控件")
-    public ResponseEntity transpose(@RequestBody TransposeDescription transposeDescription)  {
+    @ApiOperation(value = "transpose")
+    public ResponseEntity transpose(@Valid @RequestBody TransposeDescription transposeDescription)  {
         return ResponseEntity.ok(transposeService.transpose(transposeDescription));
     }
 }

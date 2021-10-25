@@ -4,6 +4,11 @@ import com.bdilab.dataflow.common.enums.ExceptionMsgEnum;
 import com.bdilab.dataflow.common.exception.UncheckException;
 import com.bdilab.dataflow.dto.jobdescription.JobDescription;
 
+/**
+ * @author: Zunjing Chen
+ * @create: 2021-09-23
+ * @description: transform the job description to sql (as a datasource or a compute task)
+ **/
 public abstract class SQLGeneratorBase {
     private JobDescription jobDescription;
 
@@ -20,22 +25,19 @@ public abstract class SQLGeneratorBase {
     }
 
     public String limit() {
-        if (jobDescription.getLimit() == null) {
-            return " LIMIT 2000";
-        }
-        return " LIMIT " + jobDescription.getLimit();
+        return jobDescription.getLimit() == null ? " LIMIT 2000" : " LIMIT " + jobDescription.getLimit();
     }
 
-    public  String project(){
+    public String project() {
         return "";
     }
 
 
-    public String filter(){
+    public String filter() {
         return "";
     }
 
-    public String group(){
+    public String group() {
         return "";
     }
 

@@ -2,6 +2,7 @@ package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -10,18 +11,16 @@ import java.util.List;
  * @description:
  **/
 public class TransposeSQLGenerator extends SQLGeneratorBase{
-    private String UUID ;
     private TransposeDescription transposeDescription;
     private List<String> columnValues;
-    public TransposeSQLGenerator(String UUID, TransposeDescription transposeDescription, List<String> columnValues) {
+    public TransposeSQLGenerator(@Valid TransposeDescription transposeDescription, List<String> columnValues) {
         super(transposeDescription);
-        this.UUID = UUID;
         this.transposeDescription = transposeDescription;
         this.columnValues = columnValues;
     }
 
     private String project(TransposeDescription transposeDescription) {
-        String attributes = transposeDescription.getAttributes();
+        String attributes = transposeDescription.getAttribute();
         String column = transposeDescription.getColumn();
         StringBuilder sb = new StringBuilder("SELECT ");
         sb.append(transposeDescription.getGroupCol()+",");
@@ -42,7 +41,6 @@ public class TransposeSQLGenerator extends SQLGeneratorBase{
 
     @Override
     public String generate() {
-        String prefix = "CREATE VIEW dataflow." + UUID + " AS ";
-        return prefix + project(transposeDescription) + super.datasource() + group() + super.limit();
+        return project(transposeDescription) + super.datasource() + group() + super.limit();
     }
 }

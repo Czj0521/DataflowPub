@@ -2,6 +2,7 @@ package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.TableDescription;
 import com.bdilab.dataflow.utils.SQLParseUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author: Zunjing Chen
@@ -25,7 +26,7 @@ public class TableSQLGenerator extends SQLGeneratorBase {
     @Override
     public String filter() {
         String filter = tableDescription.getFilter();
-        if (filter == null) {
+        if (StringUtils.isEmpty(filter)) {
             return "";
         }
         return " WHERE " + filter;

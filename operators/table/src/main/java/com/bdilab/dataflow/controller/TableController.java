@@ -17,13 +17,12 @@ import java.io.UnsupportedEncodingException;
  * @author
  * @version 1.0
  * @date 2021/8/28
- * Table仪表盘-数据处理controller
  * master
  */
 @Slf4j
 @RestController
 @CrossOrigin
-@Api(tags = "Table控件")
+@Api(tags = "Table Operator")
 @RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/job")
 public class TableController {
 
@@ -31,22 +30,22 @@ public class TableController {
     TableJobServiceImpl tableJobService;
 
     @GetMapping("/statistic")
-    @ApiOperation(value = "表结构")
-    public ResponseEntity getBaseTableProfiler(@RequestParam(value = "tableName") @ApiParam(value = "表名") String columnName) {
+    @ApiOperation(value = "Get Table Structure")
+    public ResponseEntity getBaseTableProfiler(@RequestParam(value = "tableName") @ApiParam(value = "tableName") String columnName) {
         return ResponseEntity.ok(tableJobService.getProfiler(columnName));
     }
 
-    @GetMapping("/savastatistic")
-    @ApiOperation(value = "保存表结构")
-    public ResponseEntity saveBaseTableProfiler(@RequestParam(value = "tableName") @ApiParam(value = "表名") String tableName) {
+    @GetMapping("/saveStatistic")
+    @ApiOperation(value = "Save Table Structure")
+    public ResponseEntity saveBaseTableProfiler(@RequestParam(value = "tableName") @ApiParam(value = "tableName") String tableName) {
         tableJobService.saveTableConstruct(tableName);
         return ResponseEntity.ok("save success");
     }
 
 
     @PostMapping("/table")
-    @ApiOperation(value = "table控件")
-    public ResponseEntity table(@RequestBody TableDescription tableDescription) throws UnsupportedEncodingException {
+    @ApiOperation(value = "Table Operator")
+    public ResponseEntity table(@RequestBody TableDescription tableDescription) {
         return ResponseEntity.ok(tableJobService.table(tableDescription));
     }
 }

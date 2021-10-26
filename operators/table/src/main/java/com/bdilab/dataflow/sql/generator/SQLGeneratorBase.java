@@ -14,7 +14,7 @@ public abstract class SQLGeneratorBase {
     private JobDescription jobDescription;
 
     public String datasource() {
-        // todo 数据源检查
+        // todo Check datasource
         if (jobDescription.getDataSource() == null) {
             throw new UncheckException(ExceptionMsgEnum.TABLE_SQL_PARSE_ERROR.getMsg());
         }

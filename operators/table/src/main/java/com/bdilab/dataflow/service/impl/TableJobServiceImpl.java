@@ -26,7 +26,6 @@ import static com.bdilab.dataflow.common.enums.DataTypeEnum.CLICKHOUSE_COLUMN_DA
  * @author gluttony team
  * @version 1.0
  * @date 2021/09/01
- * Table仪表盘-数据处理Service接口实现类
  */
 
 @Service
@@ -40,8 +39,8 @@ public class TableJobServiceImpl implements TableJobService {
     DataSourceStatisticMapper dataSourceStatisticMapper;
 
     /**
-     * 保存表结构
-     * tablename要写全名，XX.xx
+     * Save Table Structure
+     * tableName: XX.xx
      * @param tableName
      */
     public void saveTableConstruct(String tableName) {
@@ -89,7 +88,6 @@ public class TableJobServiceImpl implements TableJobService {
     }
 
     /**
-     * 获取表结构
      * @param tableName
      * @return
      */
@@ -99,7 +97,7 @@ public class TableJobServiceImpl implements TableJobService {
 
 
     /**
-     * table 控件 数据获取
+     * table operator
      * @param tableDescription
      * @return
      */
@@ -109,10 +107,15 @@ public class TableJobServiceImpl implements TableJobService {
         return clickHouseJdbcUtils.queryForList(sql);
     }
 
+    /**
+     * Get Table Structure
+     * @param tableName
+     * @return
+     */
     @Override
-    public DataSourceStatistic getProfiler(String tablename) {
+    public DataSourceStatistic getProfiler(String tableName) {
         QueryWrapper<DataSourceStatistic> qw = new QueryWrapper<>();
-        qw.eq("datasource",tablename);
+        qw.eq("datasource",tableName);
         return dataSourceStatisticMapper.selectOne(qw);
     }
 }

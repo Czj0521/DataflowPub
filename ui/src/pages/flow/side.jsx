@@ -1,3 +1,4 @@
+<<<<<<< af4f8a4f05cd717209cf3269eb48b97e0d015887:ui/src/pages/flow/side.jsx
 import {useEffect,useState} from 'react'
 import {Dom, Addon,Markup} from '@antv/x6'
 import {ReactShape} from '@antv/x6-react-shape'
@@ -39,22 +40,76 @@ function DatasetSide(props){
 	console.log(d)
     setDnd(d)
     },[props.graph])
+=======
+import {
+  useEffect,
+  useState
+} from "react";
 
-    const chooseOperator = (type) => {
-        switch(type) {
-          case 'Table':
-          return <BaseComponent  type={type} size={size}/>
-          case 'Join':
-          return <BaseComponent  type={type} size={size}/>
-          case 'Filter':
-          return <BaseComponent  type={type} size={size}/>
-          case 'dataset':
-          return <BaseComponent  type={type} size={size}/>
-          case 'transpose':
-          return <BaseComponent  type={type} size={size}/>
-        }
+import axios from "axios";
 
+import {
+  Addon,
+  Markup
+} from "@antv/x6";
+import { ReactShape } from "@antv/x6-react-shape";
+>>>>>>> 'virtual-table':frontend/src/pages/flow/side.jsx
+
+import {
+  getTable,
+  getTableColumn
+} from "../../api/table.js";
+import IconFont from "../../font";
+import data from "./data";
+import BaseComponent from "./operators/dataset/baseComponent";
+
+const { Dnd } = Addon;
+
+
+function DatasetSide(props) {
+  const [dnd, setDnd] = useState(null);
+  const [openKey, setOpenKey] = useState('1');
+  const [isOpen, setIsOpen] = useState(false);
+  const [size, setNodeSize] = useState({});
+  // const [jobId, setJobId] = useState('');
+  // const [barData, setBarData] = useState({});
+  // const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    console.log('effect执行了');
+    const d = new Dnd({
+      target: props.graph,
+      scaled: false,
+      animation: true,
+      getDropNode(draggingNode, options) {
+        console.log(options);
+        return draggingNode.getData().dropNode;
+      },
+      // validateNode(droppingNode, options) {
+      //   console.log(droppingNode, options);
+      // },
+    });
+    console.log(d);
+    setDnd(d);
+  }, [props.graph]);
+
+  const chooseOperator = (type) => {
+    switch (type) {
+      case 'Table':
+        return <BaseComponent type={type} size={size} />;
+      case 'Join':
+        return <BaseComponent type={type} size={size} />;
+      case 'Filter':
+        return <BaseComponent type={type} size={size} />;
+      case 'dataset':
+        return <BaseComponent type={type} size={size} />;
+      case 'transpose':
+        return <BaseComponent type={type} size={size} />;
+      default:
+        return <div />;
     }
+<<<<<<< af4f8a4f05cd717209cf3269eb48b97e0d015887:ui/src/pages/flow/side.jsx
 
     const drop = (e) => {
        console.log(e)
@@ -90,61 +145,227 @@ function DatasetSide(props){
             fill: 'rgb(40,40,40)',
             // fill: 'transparent',
             stroke: '#000',
+=======
+  };
+
+  const drop = (e) => {
+    console.log(e);
+    const { graph } = props;
+    const target = e.currentTarget;
+    const type = target.getAttribute('data-type');
+    const parent = target.getAttribute('parent');
+    // console.log(parent)
+    console.log(type);
+    const item = {};
+    const node = graph.createNode({
+      width: 300,
+      height: 300,
+      shape: 'react-shape',
+      data: {
+        brush: false,
+        dataset: {},
+        item: {
+          id: `${new Date().getTime() }`,
+          option: {
+            data: [],
+            column: [],
+>>>>>>> 'virtual-table':frontend/src/pages/flow/side.jsx
           },
         },
-        ports:{
-          items: [
-            {
-              group: 'out',
+        move: true,
+      },
+      // component: <BaseComponent  type={type} size={size}/>,
+      component: chooseOperator(type),
+      portMarkup: [Markup.getForeignObjectMarkup(), {
+        tagName: 'circle',
+        selector: 'portBody',
+      }],
+      attrs: {
+        body: {
+          fill: 'rgb(40,40,40)',
+          // fill: 'transparent',
+          stroke: '#000',
+        },
+      },
+      ports: {
+        items: [
+          {
+            group: 'out',
+          },
+          {
+            group: 'in',
+          },
+          {
+            group: 'in',
+          },
+        ],
+        groups: {
+          in: {
+            position: {
+              name: 'top',
             },
-            {
-              group: 'in',
-            },
-            {
-              group: 'in',
-            },
-          ],
-          groups: {
-            in: {
-              position: {
-                name: 'top',
+            attrs: {
+              fo: {
+                magnet: 'passive',
+                width: 24,
+                height: 24,
+                fill: 'tranaparent',
+                y: -30,
               },
-              attrs: {
-                fo: {
-                  magnet: 'passive',
-                  width:24,
-                  height:24,
-                  fill: 'tranaparent',
-                  y: -30
-                },
-              },
-              zIndex:10
             },
-            out: {
-              position: {
-                name: 'absolute',
-                args: { x: '105%', y: '98%' }
-              },
-              attrs: {
-                portBody: {
-                  magnet: true,
-                  r:10,
-                  fill: 'rgb(40,40,40)',
-                  // y: 40
-                },
+            zIndex: 10,
+          },
+          out: {
+            position: {
+              name: 'absolute',
+              args: { x: '105%', y: '98%' },
+            },
+            attrs: {
+              portBody: {
+                magnet: true,
+                r: 10,
+                fill: 'rgb(40,40,40)',
+                // y: 40
               },
             },
           },
         },
-      })
-      const dragNode = graph.createNode({
-        width:24,
-        height:24,
-        shape:'react-shape',
-        component: <span draggable={true}><IconFont type='hetu-ODIyuanshujuji' style={{fontSize:18}}/></span>,
-        data:{
-          dropNode:node
+      },
+    });
+    const dragNode = graph.createNode({
+      width: 24,
+      height: 24,
+      shape: 'react-shape',
+      component: <span draggable><IconFont type="hetu-ODIyuanshujuji" style={{ fontSize: 18 }} /></span>,
+      data: {
+        dropNode: node,
+      },
+    });
+    console.log('e.nativeEvent', e);
+    dnd.start(dragNode, e.nativeEvent);
+    // type这里是div的属性，我们要取到属性值data-type判断是哪类operator
+    if (type === 'dataset') {
+      const tableDescription = {
+        dataSource: 'databoard_gluttony.test2',
+        limit: 2000,
+        project: [
+          '*',
+        ],
+      };
+      axios.all([getTable(tableDescription), getTableColumn({ datasource: 'databoard_gluttony.test2' })]).then(
+        axios.spread((res1, res2) => {
+          console.log('表数据：', res1);
+          console.log('列数据：', res2);
+          const column = [];
+          Object.keys(res2).map((val) => {
+            column.push({
+              key: val,
+              dataIndex: val,
+              title: val,
+            });
+          });
+          console.log(column);
+          const nodeData = node.getData();
+          nodeData.item.option.data = res1;
+          nodeData.item.option.column = column;
+          node.setData(nodeData);
+        }),
+      );
+    } else if (type === 'table') {
+      //  const promiseData = {
+      // 			  job: "start_job",
+      // 			  jobType: "PivotChart",
+      // 			  jobDescription: {
+      // 				input: "airuuid",//后面要变成动态的
+      // 				axisDimension: "1",
+      // 				mark: "bar",
+      // 				operations: [
+      // 				  {
+      // 				  type: "x-axis",
+      // 				   operation: {  attribute: parent,
+      // 				                        binning: "none",
+      // 				                        aggregation: type,
+      // 				                        sort: "none"
+      // 				                        }
+      // 				  }
+      // 				],
+      // 				output: "createView"
+      // 			  },
+      // 			  jobId:"1212",
+      // 			  workspaceId: "4f5s4f25s4g8z5eg"
+      // 			}
+      // test(promiseData).then(res =>{
+      //      console.log(fieldType[type])
+      // 		  if(fieldType[type] === 'number'){
+      // 		    item = {
+      // 		      id: new Date().getTime()+'',
+      // 		      option: barOption({
+      // 		        xAxisData: data.map(item=>item[type]),
+      // 		        data: data.map(item=>item[type]),
+      // 		        xAxis:type,
+      // 		        title:parent+'-'+type,
+      // 		        xAxisType:'value'
+      // 		      })
+      // 		    }
+      // 		  }else{
+      // 		    const s = new Set(data.map(item=>item[type]))
+      // 		    const obj = {}
+      // 		  		const arr = []
+      // 		  		for(var i=0;i<res.responseJobInfor.responseValues[0].axisCalibration.length;i++)
+      // 		  		{
+      // 		  			arr.push(res.responseJobInfor.responseValues[0].axisCalibration[i].toString())
+      // 		  		}
+      // 		    item = {
+      // 		      id: new Date().getTime()+'',
+      // 		      option: barOption({
+      // 		        xAxisData: arr,
+      // 		        data: res.responseJobInfor.responseValues[0].height,
+      // 		        xAxis:type,
+      // 		        title:parent+'-'+type,
+      // 		        xAxisType:'category'
+      // 		      })
+      // 		    }
+      // 		  }
+      // 	  })
+    }
+  };
+  const openMenu = (key) => {
+    setIsOpen(true);
+    setOpenKey(key);
+  };
+
+  return (
+    <div className="hetu_side">
+      <div className="hetu_side_title">
+        <span />
+        <span />
+      </div>
+      <div>
+        <div key={'1'} className="hetu_side_dataset">
+          <span className="hetu_side_item" draggable onMouseDown={drop} data-type="dataset">airuuid.csv</span>
+          <span className="hetu_side_item_logo" draggable>
+            <IconFont type="hetu-ODIyuanshujuji" style={{ fontSize: 18 }} />
+          </span>
+          <span className="hetu_side_item_dropdown" onClick={() => openMenu('1')}><IconFont type="hetu-xiala" /></span>
+        </div>
+        {
+          isOpen && openKey === '1' &&
+          <div className="hetu_side_item_attrs">
+            {
+              data.map((item) => {
+                if (item !== 'name' && item !== 'key') {
+                  return (
+                    <div key={item} className="hetu_side_item_attrwrapper">
+                      <span className="hetu_side_item_attr" draggable data-type={item} onMouseDown={drop}>{item}</span>
+                      <br />
+                    </div>
+                  );
+                }
+              })
+            }
+          </div>
         }
+<<<<<<< af4f8a4f05cd717209cf3269eb48b97e0d015887:ui/src/pages/flow/side.jsx
       })
       console.log('e.nativeEvent',e)
       dnd.start(dragNode,e.nativeEvent)
@@ -274,13 +495,26 @@ function DatasetSide(props){
             </div>
         </div>
     )
+=======
+      </div>
+    </div>
+  );
+>>>>>>> 'virtual-table':frontend/src/pages/flow/side.jsx
 }
 
 class BaseNode extends ReactShape {
   // eslint-disable-next-line class-methods-use-this
   isGroup() {
+<<<<<<< af4f8a4f05cd717209cf3269eb48b97e0d015887:ui/src/pages/flow/side.jsx
     return false
   }
 }
 
 export default DatasetSide
+=======
+    return false;
+  }
+}
+
+export default DatasetSide;
+>>>>>>> 'virtual-table':frontend/src/pages/flow/side.jsx

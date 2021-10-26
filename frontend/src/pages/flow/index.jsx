@@ -1,15 +1,13 @@
-import React,{useEffect, useState} from 'react'
+import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import {Row,Col,Menu} from 'antd'
-import {Graph,Shape,Addon} from '@antv/x6'
-import {useSelector} from 'react-redux'
-
-import DatasetSide from './side'
-import CanvasContent from './canvasContent'
-import MyPorts from './components/myPorts'
-import data from './data'
+import { Row, Col, Menu } from 'antd';
+import { Graph, Shape, Addon } from '@antv/x6';
+import { useSelector } from 'react-redux';
+import DatasetSide from './side';
+import MyPorts from './components/myPorts';
+import CanvasContent from './canvasContent';
 import barOption from './components/barOption';
-import './index.scss'
+import './index.scss';
 
 const { Dnd } = Addon
 
@@ -23,10 +21,10 @@ const fieldType = {
 
 export default function FlowComponent(props){
 
-    const [graph, setGraph] = useState(null)
-    const [brush, setBrush] = useState(false)
+  const [graph, setGraph] = useState(null)
+  const [brush, setBrush] = useState(false)
 
-	
+
     useEffect(() => {
         const g = new Graph({
             container: document.getElementById('hetu_canvas'),
@@ -41,6 +39,7 @@ export default function FlowComponent(props){
             mousewheel: {
                 enabled: true,
             },
+            //目前滚动画布有点bug scroller:true,
             onPortRendered(args) {
 				//console.log(args)
                 const selectors = args.contentSelectors
@@ -88,19 +87,20 @@ export default function FlowComponent(props){
                   })
                 },
                 validateEdge({ edge, type, previous }){
-                    // console.log(edge, type, previous)
+                     console.log(edge, type, previous)
                     const target = g.getCellById(edge.target.cell)
                     const source = g.getCellById(edge.source.cell)
                     const children = source.getChildren()
                     const current = target.getData()
                     children ? source.setChildren([...children,target]) : source.setChildren([target])
-
                     // target.setData({
                     //   ...current,
                     //   parent: current.parent ? [...current.parent,source] : [source]
                     // })
+					console.log(source.getData().select)
                     if(source.getData().select && JSON.stringify(source.getData().select) !== '{}'){
                       // const current = target.getData()
+					  console.log(target)
                       target.setData({
                         ...current,
                         filter: current.filter ? {
@@ -108,18 +108,18 @@ export default function FlowComponent(props){
                           [source.id]:{
                             type:source.getData().type,
                             select:source.getData().select,
-                          } 
+                          }
                         } : {
                           [source.id]:{
                             type:source.getData().type,
                             select:source.getData().select,
-                          } 
+                          }
                         }
                       })
                     }
                     // console.log(target,source)
                     return true
-                }, 
+                },
                 validateConnection({ sourceView, targetView, targetMagnet }) {
                   return true
                 },
@@ -140,7 +140,7 @@ export default function FlowComponent(props){
               }
         })
         setGraph(g)
-        
+
     }, [])
 
     useEffect(()=>{
@@ -157,7 +157,7 @@ export default function FlowComponent(props){
             },
           ])
         })
-        
+
         graph.on('edge:mouseleave', ({ edge }) => {
           edge.removeTools()
         })
@@ -231,7 +231,7 @@ export default function FlowComponent(props){
           const children = args.cell.getChildren()
           const d = args.cell.getData()
           const select = d.select
-    
+
           if(children && select && select.length > 0 && JSON.stringify(args.current.select) !== JSON.stringify(args.previous.select)){
             console.log(args.current,args.previous)
             children.forEach(item=>{
@@ -260,7 +260,7 @@ export default function FlowComponent(props){
         })
         // graph.on('node:moved',({ e, x, y, node, view })=>{
         //   console.log( e, x, y, node, view,)
-          
+
         // })
       }
     })
@@ -311,12 +311,12 @@ export default function FlowComponent(props){
           item
         })
       }else{
-        
+
         let filterData = []
-        
+
         if(fieldType[current.type] === 'number'){
           filterData = data.filter(el=>{
-            // el[d.type] >= 
+            // el[d.type] >=
           })
           item = {
             id: current.item.id,
@@ -366,7 +366,7 @@ export default function FlowComponent(props){
           filterData.map(i=>i[current.type]).forEach((item,i)=>{
             obj[item] = obj[item] + 1
           })
-          
+
           for( let i of s){
             arr.push(obj[i])
           }
@@ -404,4 +404,3 @@ export default function FlowComponent(props){
       </div>
     )
 }
-

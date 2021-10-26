@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react'
+import {useState,useEffect} from 'react'
 import {WidthProvider, Responsive} from 'react-grid-layout'
 import {Graph,Shape,Addon} from '@antv/x6'
 
@@ -36,13 +36,13 @@ function MyPorts (props){
                 isBounded:true,
             }]
         }
-		data.item.option.xAxis.data = 
-			[
-				"0-10",
-				"10-20",
-				"20-30"
-			]
-		console.log(data.item.option.xAxis.data)
+		// data.item.option.xAxis.data = 
+		// 	[
+		// 		"0-10",
+		// 		"10-20",
+		// 		"20-30"
+		// 	]
+		//console.log(data.item.option.xAxis.data)
         props.node.setData(data)
 		console.log(data)
         // setItems([

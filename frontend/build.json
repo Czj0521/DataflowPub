@@ -1,5 +1,5 @@
 {
-  "vite": true,
+  "vite": false,
   "plugins": [
     [
       "build-plugin-antd"

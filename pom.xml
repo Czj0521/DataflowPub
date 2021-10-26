@@ -130,6 +130,11 @@
         <dependencies>
             <dependency>
                 <groupId>com.bdilab</groupId>
+                <artifactId>operator-join</artifactId>
+                <version>${dataflow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bdilab</groupId>
                 <artifactId>utils</artifactId>
                 <version>${dataflow.version}</version>
             </dependency>
@@ -162,11 +167,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>
                 <version>${spring-boot-starter-data-redis.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>${httpclient.version}</version>
             </dependency>
             <!--多数据源-->
             <dependency>

@@ -122,7 +122,7 @@
         <mybatis-plus-boot-starter.version>3.3.2</mybatis-plus-boot-starter.version>
         <mybatis-plus-extension.verson>3.4.1</mybatis-plus-extension.verson>
         <druid-spring-boot-starter.version>1.2.5</druid-spring-boot-starter.version>
-        <dynamic-datasource-spring-boot-starter.version>3.2.0</dynamic-datasource-spring-boot-starter.version>
+        <dynamic-datasource-spring-boot-starter.version>3.4.1</dynamic-datasource-spring-boot-starter.version>
         <dataflow.version>1.0-SNAPSHOT</dataflow.version>
     </properties>
 

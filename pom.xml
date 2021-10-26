@@ -17,6 +17,7 @@
         <module>common</module>
         <module>config</module>
         <module>utils</module>
+        <module>operators/join</module>
     </modules>
 
     <groupId>com.bdilab</groupId>

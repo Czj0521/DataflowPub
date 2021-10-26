@@ -1,4 +1,4 @@
-import {api2,api} from './ajax';
+import {api2} from './ajax';
 
 //参考之前index.js
 export const test = (data) => api2('http://115.28.131.19:8080/api/v1/gluttony/job/pivotChart',data,'POST');  

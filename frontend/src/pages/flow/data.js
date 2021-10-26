@@ -1,20 +1,11 @@
 const data = [
-	// {
-	// 	city:{
-	// 		count:1
-	// 	},
-	// 	AQI:{
-	// 		count:1,
-	// 		average:2
-	// 	}
-	// }
   'Table',
   'Join',
   'Transpose',
   'Python',
   'Materialize',
   'Filter',
-  'Mutual'
-]
+  'Mutual',
+];
 
-  export default data
+export default data;

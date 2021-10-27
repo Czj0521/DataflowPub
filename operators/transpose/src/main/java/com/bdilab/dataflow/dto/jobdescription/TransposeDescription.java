@@ -1,7 +1,6 @@
 package com.bdilab.dataflow.dto.jobdescription;
 
 import lombok.Data;
-
 /**
  * @author: Zunjing Chen
  * @create: 2021-09-23

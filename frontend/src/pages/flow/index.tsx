@@ -1,27 +1,17 @@
-import "./index.scss";
+import './index.scss';
 
-import React, {
-  useEffect,
-  useState
-} from "react";
-import ReactDOM from "react-dom";
+import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 
-import {
-  Col,
-  Row
-} from "antd";
+import { Col, Row } from 'antd';
 
-import {
-  Addon,
-  Graph,
-  Shape
-} from "@antv/x6";
+import { Addon, Graph, Shape } from '@antv/x6';
 
-import CanvasContent from "./canvasContent";
-import barOption from "./components/barOption";
-import MyPorts from "./components/myPorts";
-import data from "./data";
-import DatasetSide from "./side";
+import CanvasContent from './canvasContent';
+import barOption from './components/barOption';
+import MyPorts from './components/myPorts';
+import data from './data';
+import DatasetSide from './side';
 
 const { Dnd } = Addon;
 
@@ -104,30 +94,33 @@ export default function FlowComponent(props) {
           const source = g.getCellById(edge.source.cell);
           const children = source.getChildren();
           const current = target.getData();
-          children ? source.setChildren([...children, target]) : source.setChildren([target]);
+          children
+            ? source.setChildren([...children, target])
+            : source.setChildren([target]);
 
           // target.setData({
           //   ...current,
           //   parent: current.parent ? [...current.parent,source] : [source]
           // })
-          if (source.getData().select && JSON.stringify(source.getData().select) !== '{}') {
+          if (
+            source.getData().select &&
+            JSON.stringify(source.getData().select) !== '{}'
+          ) {
             // const current = target.getData()
             target.setData({
               ...current,
-              filter: current.filter
-                ? {
-                  ...current.filter,
-                  [source.id]: {
-                    type: source.getData().type,
-                    select: source.getData().select,
-                  },
-                }
-                : {
-                  [source.id]: {
-                    type: source.getData().type,
-                    select: source.getData().select,
-                  },
+              filter: current.filter ? {
+                ...current.filter,
+                [source.id]: {
+                  type: source.getData().type,
+                  select: source.getData().select,
                 },
+              } : {
+                [source.id]: {
+                  type: source.getData().type,
+                  select: source.getData().select,
+                },
+              },
             });
           }
           // console.log(target,source)
@@ -138,7 +131,10 @@ export default function FlowComponent(props) {
         },
       },
       interacting(cellView) {
-        if (cellView.cell.getData() && (cellView.cell.getData().brush || !cellView.cell.getData().move)) {
+        if (
+          cellView.cell.getData() &&
+          (cellView.cell.getData().brush || !cellView.cell.getData().move)
+        ) {
           // console.log(cellView.cell.getData().move)
           return false;
         }
@@ -259,31 +255,34 @@ export default function FlowComponent(props) {
           children &&
           select &&
           select.length > 0 &&
-          JSON.stringify(args.current.select) !== JSON.stringify(args.previous.select)
+          JSON.stringify(args.current.select) !==
+            JSON.stringify(args.previous.select)
         ) {
           console.log(args.current, args.previous);
           children.forEach((item) => {
             const childrenData = item.getData();
             item.setData({
               ...childrenData,
-              filter: childrenData.filter
-                ? {
-                  ...childrenData.filter,
-                  [args.cell.id]: {
-                    type: d.type,
-                    select,
-                  },
-                }
-                : {
-                  [args.cell.id]: {
-                    type: d.type,
-                    select,
-                  },
+              filter: childrenData.filter ? {
+                ...childrenData.filter,
+                [args.cell.id]: {
+                  type: d.type,
+                  select,
                 },
+              } : {
+                [args.cell.id]: {
+                  type: d.type,
+                  select,
+                },
+              },
             });
           });
         }
-        if (args.current.filter && JSON.stringify(args.current.filter) !== JSON.stringify(args.previous.filter)) {
+        if (
+          args.current.filter &&
+          JSON.stringify(args.current.filter) !==
+            JSON.stringify(args.previous.filter)
+        ) {
           childrenFilter(args.current, args.cell);
         }
         console.log(args);
@@ -320,7 +319,7 @@ export default function FlowComponent(props) {
             if (obj[item] === undefined) {
               obj[item] = 1;
             } else {
-              obj[item] = obj[item] + 1;
+              obj[item] += 1;
             }
           });
         for (const i of s) {
@@ -367,7 +366,10 @@ export default function FlowComponent(props) {
           for (const f of Object.keys(current.filter)) {
             const t = current.filter[f].type;
             const d = current.filter[f].select;
-            if (fieldType[t] === 'number' && (el[t] < d[0] || el[t] > d[d.length - 1])) {
+            if (
+              fieldType[t] === 'number' &&
+              (el[t] < d[0] || el[t] > d[d.length - 1])
+            ) {
               return false;
             } else if (fieldType[t] === 'string' && d.indexOf(el[t]) === -1) {
               return false;
@@ -397,7 +399,7 @@ export default function FlowComponent(props) {
         filterData
           .map((i) => i[current.type])
           .forEach((item, i) => {
-            obj[item] = obj[item] + 1;
+            obj[item] += 1;
           });
 
         for (const i of s) {

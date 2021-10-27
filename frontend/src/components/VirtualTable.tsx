@@ -1,9 +1,5 @@
 /* eslint-disable quotes */
-import {
-  useEffect,
-  useRef,
-  useState
-} from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Table } from "antd";
 import classNames from "classnames";

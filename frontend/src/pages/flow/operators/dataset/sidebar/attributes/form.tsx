@@ -32,7 +32,7 @@ const AdvancedSearchForm = (props) => {
   };
 
   useEffect(() => {
-    getTableColumn({ datasource: 'databoard_gluttony.test2' }).then((res) => {
+    getTableColumn({ datasource: 'dataflow.airuuid' }).then((res) => {
       const tempColumn = [];
       Object.keys(res).map((val) => {
         tempColumn.push(val);
@@ -56,7 +56,7 @@ const AdvancedSearchForm = (props) => {
       };
     });
     const data = {
-      dataSource: 'databoard_gluttony.test2',
+      dataSource: 'dataflow.airuuid',
       limit: 2000,
       project: checkedList,
     };

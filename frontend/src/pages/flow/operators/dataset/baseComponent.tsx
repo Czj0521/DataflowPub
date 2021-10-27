@@ -138,7 +138,7 @@ function BaseComponent(props) {
             title={() => `${length}条数据`}
             size="small"
             pagination={false}
-            style={{ height: '100%', width: '100%', backgroundColor: 'transparent', color: 'white' }}
+            style={{ height: '100%', width: '100%', overFlow:'hidden', backgroundColor: 'transparent', color: 'white' }}
             scroll={{
               x: width,
               y: height - 100,

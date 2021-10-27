@@ -1,3 +1,4 @@
+/*
 package com.bdilab.dataflow.controller;
 
 
@@ -11,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+*/
 /**
  * @author: Yu Shaochao
  * @create: 2021-10-24
  * @description:
- **/
+ **//*
+
 @Slf4j
 @RestController
 @CrossOrigin
@@ -30,3 +33,4 @@ public class JoinController {
         return ResponseEntity.ok(joinService.join(joinJson));
     }
 }
+*/

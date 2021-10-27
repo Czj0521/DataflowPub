@@ -12,8 +12,9 @@ import com.bdilab.dataflow.dto.JoinJson;
  * @create: 2021-10-24
  * @description:
  * "JoinDescription": {
- *       "inputLeft": "test1",
- *       "inputRight": "test2",
+ *       "jobType":"join"
+ *       "leftDataSource": "test1",
+ *       "rightDataSource": "test2",
  *       "joinType":"innerJoin",
  *       "joinKeys":[{"left":"id","right":"id"},{"left":"id2","right":"id2"}],
  *       "includePrefixes":"false",
@@ -21,17 +22,13 @@ import com.bdilab.dataflow.dto.JoinJson;
  *       "rightPrefix":"right_"
  *  }
  */
-public class JoinSQLGenerator extends SQLGeneratorBase{
-    private JoinJson joinJson;
+public class JoinSQLGenerator{
     private JoinDescription joinDescription;
     private String UUID;
     public JoinSQLGenerator(JoinJson joinJson, String UUID){
-        super(joinJson);
-        this.joinJson = joinJson;
         this.joinDescription = joinJson.getJoinDescription();
         this.UUID = UUID;
     }
-    @Override
     public String project() {
         return "SELECT * ";
 //        if(joinDescription.getIncludePrefixes().equals("false")){
@@ -41,11 +38,11 @@ public class JoinSQLGenerator extends SQLGeneratorBase{
 //
 //        }
     }
-    @Override
+
     public String datasource(){
-        String inputLeft = joinDescription.getInputLeft();
-        String inputRight = joinDescription.getInputRight();
-        String joinType = joinDescription.getJointype();
+        String inputLeft = joinDescription.getLeftDataSource();
+        String inputRight = joinDescription.getRightDataSource();
+        String joinType = joinDescription.getJoinType();
         if(inputLeft == null|| inputRight == null || joinType == null){
             throw new UncheckException(ExceptionMsgEnum.TABLE_SQL_PARSE_ERROR.getMsg());
         }
@@ -64,17 +61,17 @@ public class JoinSQLGenerator extends SQLGeneratorBase{
             }
         }
         return  new String(onString);
-
     }
 
     public  String sql(){
         return project()+datasource()+on();
     }
-    @Override
+
     public String generate() {
         //String prefix = "CREATE VIEW dataflow." + UUID + " AS ";
         String prefix = "";
-        return prefix+sql()+super.limit();
+        //return prefix+sql()+super.limit();
+        return prefix+sql();
     }
 
 }

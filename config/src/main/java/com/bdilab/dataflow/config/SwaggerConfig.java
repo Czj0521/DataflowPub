@@ -33,9 +33,9 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("dataflow 饕餮")
+                .title("dataflow")
                 .description("测试api")
-                .version("1.0")
+                .version("0.1")
                 .build();
     }
 }

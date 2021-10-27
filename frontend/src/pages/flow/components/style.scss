@@ -1,4 +1,5 @@
 .hetu_basecomponent_wrapper{
+  z-index: 0;
     position: relative;
     height:100%;
     padding: 10px;
@@ -78,6 +79,7 @@
     top: 15px;
     left: -130px;
     .hetu_sidebar_wrapper{
+        z-index: 1;
         position: relative;
         .hetu_sidebar_item{
             background-color: rgb(40,40,40);
@@ -178,4 +180,3 @@
         }
     }
 }
-

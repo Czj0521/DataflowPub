@@ -160,14 +160,14 @@ function DatasetSide(props) {
     // type这里是div的属性，我们要取到属性值data-type判断是哪类operator
     if (type === 'dataset') {
       const tableDescription = {
-        dataSource: 'databoard_gluttony.test2',
+        dataSource: 'dataflow.airuuid',
         limit: 2000,
         project: ['*'],
       };
       axios
         .all([
           getTable(tableDescription),
-          getTableColumn({ datasource: 'databoard_gluttony.test2' }),
+          getTableColumn({ datasource: 'dataflow.airuuid' }),
         ])
         .then(
           axios.spread((res1, res2) => {

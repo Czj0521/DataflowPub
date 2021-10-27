@@ -16,7 +16,7 @@ const AdvancedSearchForm = (props) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getTableColumn({ datasource: 'databoard_gluttony.test2' }).then((res) => {
+    getTableColumn({ datasource: 'dataflow.airuuid' }).then((res) => {
       const tempColumn = [];
       Object.keys(res).map((val) => {
         tempColumn.push(val);
@@ -314,7 +314,7 @@ const AdvancedSearchForm = (props) => {
     }
     console.log(str);
     const tableData = {
-      dataSource: 'databoard_gluttony.test2',
+      dataSource: 'dataflow.airuuid',
       filter: str,
       limit: 2000,
       project: ['*'],

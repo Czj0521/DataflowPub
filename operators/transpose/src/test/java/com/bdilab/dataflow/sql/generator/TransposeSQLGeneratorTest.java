@@ -1,7 +1,11 @@
 package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author: Zunjing Chen
@@ -9,6 +13,11 @@ import org.junit.jupiter.api.Test;
  * @description:
  **/
 public class TransposeSQLGeneratorTest {
+    TransposeSQLGenerator transposeSQLGenerator;
+    @Before
+    void init(){
+        List<String> columnValues = new ArrayList<>();
+    }
     @Test
     void construct(){
         TransposeDescription td1 = new TransposeDescription("transpose","student",2000);
@@ -17,5 +26,9 @@ public class TransposeSQLGeneratorTest {
 //        td1.setGroupFunc();
 //        td1.setAttribute();
 //        td1.setColumnIsNumeric(false);
+    }
+    @Test
+    void appendGroupColumnsTest(){
+
     }
 }

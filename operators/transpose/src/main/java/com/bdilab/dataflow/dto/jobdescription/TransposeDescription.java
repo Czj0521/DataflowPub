@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 /**
  * @author: Zunjing Chen
@@ -12,16 +13,17 @@ import javax.validation.constraints.NotNull;
  **/
 @Data
 public class TransposeDescription extends JobDescription {
-    @NotEmpty
-    String attribute;
+
     @NotEmpty
     String column;
     @NotNull
     boolean columnIsNumeric;
-    @NotEmpty
-    String groupCol;
-    @NotEmpty
-    String groupFunc;
+    @NotNull
+    String[] groupBy;
+    String[] aggregation;
+    String[] attributes;
+    @NotNull
+    Map<String,String> attributeWithAggregationMap;
 
     public TransposeDescription(String jobType, String dataSource, Integer limit) {
         super(jobType, dataSource, limit);

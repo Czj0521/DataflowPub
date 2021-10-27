@@ -13,15 +13,12 @@ import java.util.Map;
  **/
 @Data
 public class TransposeDescription extends JobDescription {
-
     @NotEmpty
     String column;
     @NotNull
     boolean columnIsNumeric;
     @NotNull
     String[] groupBy;
-    String[] aggregation;
-    String[] attributes;
     @NotNull
     Map<String,String> attributeWithAggregationMap;
 

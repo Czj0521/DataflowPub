@@ -104,6 +104,11 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
         </dependency>
+        <!--私有方法测试-->
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito2</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -125,7 +130,8 @@
         <dynamic-datasource-spring-boot-starter.version>3.4.1</dynamic-datasource-spring-boot-starter.version>
         <dataflow.version>1.0-SNAPSHOT</dataflow.version>
         <commons-text.version>1.9</commons-text.version>
-        <guava.version>30.1.1-jre</guava.version>
+        <guava.version>20.0</guava.version>
+        <powermock-api-mockito2.version>2.0.4</powermock-api-mockito2.version>
     </properties>
 
     <dependencyManagement>
@@ -242,6 +248,12 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito2</artifactId>
+                <version>${powermock-api-mockito2.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

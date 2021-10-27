@@ -23,8 +23,8 @@ public class TransposeSQLGenerator extends SQLGeneratorBase {
     private static final String COLUMN = "column";
     private static final String COLUMN_NAME = "columnName";
     private static final String COLUMN_VALUE = "columnValue";
-    private static final String STRING_TEMPLATE = "${groupFunction} (${attribute},${column} = '${columnValue}' )  AS `${columnName}` ";
-    private static final String NUMERIC_TEMPLATE = "${groupFunction} (${attribute},${column}  = ${columnValue} )  AS `${columnName}` ";
+    private static final String STRING_TEMPLATE = "${groupFunction}(${attribute},${column} = '${columnValue}' )  AS `${columnName}` ";
+    private static final String NUMERIC_TEMPLATE = "${groupFunction}(${attribute},${column}  = ${columnValue} )  AS `${columnName}` ";
 
     public TransposeSQLGenerator(@Valid TransposeDescription transposeDescription, List<String> columnValues) {
         super(transposeDescription);
@@ -34,18 +34,18 @@ public class TransposeSQLGenerator extends SQLGeneratorBase {
 
     /**
      * generate sql like select ** ,** means columns
-     * @param transposeDescription
      * @return sql
      */
-    private String project(TransposeDescription transposeDescription) {
+    @Override
+    public String project() {
         StringBuilder stringBuilder = new StringBuilder("SELECT ");
-        appendGroupColumns(stringBuilder, transposeDescription.getGroupBy());
-        appendColumns(stringBuilder,transposeDescription);
+        appendGroupColumns(stringBuilder);
+        appendColumns(stringBuilder);
         return stringBuilder.toString();
     }
 
 
-    private void appendColumns(StringBuilder stringBuilder, TransposeDescription transposeDescription) {
+    private void appendColumns(StringBuilder stringBuilder) {
         String template = transposeDescription.isColumnIsNumeric() ? NUMERIC_TEMPLATE : STRING_TEMPLATE;
         for (String columnValue : columnValues) {
             for (Map.Entry<String, String> entry : transposeDescription.getAttributeWithAggregationMap().entrySet()) {
@@ -67,21 +67,21 @@ public class TransposeSQLGenerator extends SQLGeneratorBase {
     /**
      * append group column names
      */
-    private void appendGroupColumns(StringBuilder stringBuilder, String[] groupColumns) {
-        stringBuilder.append(SQLParseUtils.combineWithSeparator(groupColumns, ",")).append(",");
+    private void appendGroupColumns(StringBuilder stringBuilder) {
+        stringBuilder.append(SQLParseUtils.combineWithSeparator(transposeDescription.getGroupBy(), ",")).append(",");
     }
 
 
     @Override
     public String group() {
         StringBuilder stringBuilder = new StringBuilder(GROUP_BY);
-        return stringBuilder.append(SQLParseUtils.combineWithSeparator(transposeDescription.getGroupBy(),",")).deleteCharAt(stringBuilder.length() - 1).toString();
+        return stringBuilder.append(SQLParseUtils.combineWithSeparator(transposeDescription.getGroupBy(),",")).toString();
 
     }
 
 
     @Override
     public String generate() {
-        return project(transposeDescription) + super.datasource() + group() + super.limit();
+        return project() + super.datasource() + group() + super.limit();
     }
 }

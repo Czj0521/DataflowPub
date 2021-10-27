@@ -1,13 +1,12 @@
 .hetu_basecomponent_wrapper{
-  z-index: 0;
     position: relative;
     height:100%;
     padding: 10px;
     .hetu_basecomponent{
         height:100%;
         .ant-table{
-            background-color: transparent;
             color: #bbb;
+            background-color: rgb(40,40,40);
             .ant-table-thead > tr > th , .ant-table-small .ant-table-thead > tr > th{
                 background-color: rgb(40,40,40);
                 color: #bbb;
@@ -79,7 +78,6 @@
     top: 15px;
     left: -130px;
     .hetu_sidebar_wrapper{
-        // z-index: -1;
         position: relative;
         .hetu_sidebar_item{
             background-color: rgb(40,40,40);
@@ -94,7 +92,7 @@
             transform: translateX(100px);
             transition: all .3s;
             margin-top: 6px;
-            &:hover{
+            :hover{
                 transform: translateX(0);
                 .hetu_sidebar_item_icon{
                     margin-right: 10px;
@@ -109,6 +107,7 @@
             .hetu_sidebar_item_icon{
                 margin-right: 10px;
             }
+            &:hover{}
         }
 		// .hetu_sidebar_item2{
 		//     background-color: rgb(40,40,40);

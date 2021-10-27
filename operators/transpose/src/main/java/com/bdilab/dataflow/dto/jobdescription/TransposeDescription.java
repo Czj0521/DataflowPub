@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.dto.jobdescription;
 
+import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import lombok.Data;
 /**
  * @author: Zunjing Chen

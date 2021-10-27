@@ -1,6 +1,7 @@
 package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
+import com.bdilab.dataflow.operator.dto.jobdescription.SQLGeneratorBase;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * @create: 2021-09-23
  * @description:
  **/
-public class TransposeSQLGenerator extends SQLGeneratorBase{
+public class TransposeSQLGenerator extends SQLGeneratorBase {
     private String UUID ;
     private TransposeDescription transposeDescription;
     private List<String> columnValues;

@@ -1,6 +1,7 @@
 package com.bdilab.dataflow.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -16,6 +17,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  *
  */
 @Configuration
+@ComponentScan("com.bdilab.dataflow")
 @EnableSwagger2
 public class SwaggerConfig {
 
@@ -31,9 +33,9 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("dataflow 饕餮")
+                .title("dataflow")
                 .description("测试api")
-                .version("1.0")
+                .version("0.1")
                 .build();
     }
 }

@@ -3,7 +3,7 @@ package com.bdilab.dataflow.sql.generator;
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
 import com.bdilab.dataflow.utils.SQLParseUtils;
 import org.apache.commons.text.StringSubstitutor;
-
+import com.bdilab.dataflow.operator.dto.jobdescription.SQLGeneratorBase;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;

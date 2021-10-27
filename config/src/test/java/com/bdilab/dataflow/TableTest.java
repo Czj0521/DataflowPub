@@ -2,7 +2,6 @@ package com.bdilab.dataflow;
 
 import com.alibaba.fastjson.JSON;
 import com.bdilab.dataflow.dto.jobdescription.TableDescription;
-import com.bdilab.dataflow.service.impl.FilterJobServiceImpl;
 import com.bdilab.dataflow.service.impl.TableJobServiceImpl;
 import org.json.JSONArray;
 import org.junit.jupiter.api.Test;

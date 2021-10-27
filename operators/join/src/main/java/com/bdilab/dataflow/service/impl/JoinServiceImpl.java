@@ -2,7 +2,7 @@ package com.bdilab.dataflow.service.impl;
 
 
 
-import com.bdilab.dataflow.dto.JoinJson;
+import com.bdilab.dataflow.dto.JoinDescription;
 import com.bdilab.dataflow.service.JoinService;
 import com.bdilab.dataflow.sql.generator.JoinSQLGenerator;
 import com.bdilab.dataflow.utils.SQLParseUtils;
@@ -24,9 +24,9 @@ public class JoinServiceImpl implements JoinService {
     @Autowired
     ClickHouseJdbcUtils clickHouseJdbcUtils;
     @Override
-    public List<Map<String, Object>> join(JoinJson joinJson){
+    public List<Map<String, Object>> join(JoinDescription joinDescription){
         String UUID = SQLParseUtils.getUUID32();
-        String sql = new JoinSQLGenerator(joinJson,UUID).generate();
+        String sql = new JoinSQLGenerator(joinDescription).generate();
         System.out.println(sql);
         //clickHouseJdbcUtils.execute(sql);
         List<Map<String, Object>> result = clickHouseJdbcUtils.queryForList(sql);

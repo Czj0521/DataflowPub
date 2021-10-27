@@ -33,8 +33,8 @@ public class TransposeSQLGeneratorTest {
     @Test
     public void appendGroupColumnsTest() throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
-        Whitebox.invokeMethod(transposeSQLGenerator, "appendGroupColumns",stringBuilder,  new String[]{"age","name"});
-        assertEquals(stringBuilder.toString(), "age,name,");
+        Whitebox.invokeMethod(transposeSQLGenerator, "appendGroupColumns",stringBuilder);
+        assertEquals(stringBuilder.toString(), "name,");
     }
     @Test
     public void appendColumnsTest() throws Exception {

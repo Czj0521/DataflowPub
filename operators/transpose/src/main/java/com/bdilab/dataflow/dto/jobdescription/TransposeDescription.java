@@ -1,11 +1,10 @@
 package com.bdilab.dataflow.dto.jobdescription;
 
+import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import lombok.Data;
-
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
-
 /**
  * @author: Zunjing Chen
  * @create: 2021-09-23

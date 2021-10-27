@@ -1,6 +1,7 @@
 package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.TableDescription;
+import com.bdilab.dataflow.operator.dto.jobdescription.SQLGeneratorBase;
 import com.bdilab.dataflow.utils.SQLParseUtils;
 import org.springframework.util.StringUtils;
 

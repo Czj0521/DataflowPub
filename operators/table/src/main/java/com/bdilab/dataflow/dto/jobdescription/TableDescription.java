@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.dto.jobdescription;
 
+import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import lombok.Data;
 
 /**
@@ -14,7 +15,7 @@ import lombok.Data;
  *        }
  **/
 @Data
-public class TableDescription  extends  JobDescription{
+public class TableDescription extends JobDescription {
     String filter;
     String[] project;
     String[] group;

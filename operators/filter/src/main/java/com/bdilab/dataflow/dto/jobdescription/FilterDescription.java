@@ -1,7 +1,5 @@
 package com.bdilab.dataflow.dto.jobdescription;
 
-import com.alibaba.fastjson.JSONObject;
-import com.bdilab.dataflow.common.consts.JobTypeConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -12,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @date 2021/10/24
  * Application Start Class
  */
-@ComponentScan("com.bdilab.dataflow")
+@ComponentScan("com.bdilab.dataflow.config")
 @MapperScan("com.bdilab.dataflow.mapper")
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class DataFlowApplication {

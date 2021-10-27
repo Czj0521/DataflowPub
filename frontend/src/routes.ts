@@ -2,7 +2,7 @@ import { IRouterConfig } from 'ice';
 import Layout from '@/Layouts/BasicLayout';
 import Dashboard from '@/pages/Dashboard';
 import Home from '@/pages/Home';
-import Flow from '@/pages/Flow';
+import Flow from '@/pages/flow';
 import NotFound from '@/components/NotFound';
 
 const routerConfig: IRouterConfig[] = [

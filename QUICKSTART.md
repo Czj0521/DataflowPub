@@ -5,7 +5,7 @@
 | 序号 | 时间       | 版本 |
 | ---- | ---------- | ---- |
 | 1    | 2021/10/22 |      |
-
+| 2    | 2021/10/25 |      |
 
 
 ### 一、基础环境
@@ -24,9 +24,302 @@
 
 ### 二、环境安装说明
 
+
 技术栈部署服务器ip：47.104.202.153（公）172.31.121.149（私有）
 
+#### clickhouse安装部署,导入数据表
+
+##### 1.系统要求
+
+ClickHouse可以在任何具有x86_64，AArch64或PowerPC64LE CPU架构的Linux，FreeBSD或Mac OS X上运行。
+
+下面是检查当前CPU是否支持SSE 4.2的命令:
+
+```bash
+$ grep -q sse4_2 /proc/cpuinfo && echo "SSE 4.2 supported" || echo "SSE 4.2 not supported"
+```
+
+若不支持sse4.2可以通过源代码安装方式（亲测不支持也能用RPM安装）
+
+##### 2.`RPM`安装包
+
+clickhouse有三种安装方式，下面介绍最简单的RPM安装方式
+
+1.添加官方存储库
+
+```
+sudo yum install yum-utils
+sudo rpm --import https://repo.clickhouse.com/CLICKHOUSE-KEY.GPG
+sudo yum-config-manager --add-repo https://repo.clickhouse.com/rpm/stable/x86_64
+```
+
+（若不能访问请移步到官网https://clickhouse.com/docs/zh/getting-started/install/查看最新地址）
+
+2.运行命令安装
+
+```
+sudo yum install clickhouse-server clickhouse-client
+```
+
+##### 3.启动
+
+```
+sudo /etc/init.d/clickhouse-server start
+```
+
+##### 4.启动客户端测试clickhouse
+
+1.启动客户端
+
+```
+clickhouse-client
+```
+
+2.运行sql
+
+```
+select 1
+```
+
+##### 5.配置远程连接
+
+1.打开clickhouse配置文件
+
+```
+vi /etc/clickhouse-server/config.xml
+```
+
+2.修改配置文件
+
+```
+ctrl F 查找<listen_host>0.0.0.0</listen_host>
+去掉<-- <listen_host>0.0.0.0</listen_host> -->两边的注释
+保存退出
+```
+
+##### 6.创建表
+
+可以直接使用远程连接的客户端软件，如Dbeaver，datagrip等
+
+若使用clickhouse自带的命令行客户端
+
+```
+1.创建dataflow数据库
+clickhouse-client --query "CREATE DATABASE IF NOT EXISTS dataflow"
+2.创建table(尽量将语句写到一行，不然会报错)
+clickhouse-client --query "CREATE TABLE dataflow.airuuid
+(
+
+    `time` Nullable(Date),
+
+    `city` Nullable(String),
+
+    `AQI` Nullable(UInt8),
+
+    `PM2_5` Nullable(UInt8),
+
+    `PM10` Nullable(UInt8),
+
+    `SO2` Nullable(UInt8),
+
+    `NO2` Nullable(UInt8),
+
+    `CO` Nullable(Float64),
+
+    `O3` Nullable(UInt8),
+
+    `primary_pollutant` Nullable(String)
+)
+ENGINE = Memory"
+(有关clickhouse引擎详见官方文档)
+3.将准备好的csv文件插入到创建的表中
+clickhouse-client --query "INSERT INTO tutorial.airuuid FORMAT CSV" --max_insert_block_size=100000 < airuuid.csv
+4.select count(*) from [表名] 检验表中是否有数据
+```
+
+#### Flink1.12.5单机，standalone集群搭建
+
+##### 1.下载flink1.12.5安装包
+
+```
+wget https://downloads.apache.org/flink/flink-1.13.3/flink-1.13.3-bin-scala_2.12.tgz
+```
+
+##### 2.解压
+
+```
+tar -zxvf flink-1.13.3-bin-scala_2.12.tgz
+```
+
+##### 3.修改flink-1.12.5/conf/flink-conf.xml
+
+```
+jobmanager.rpc.address: 47.104.202.153//改为master的ip，单机模式可以不改
+jobmanager.rpc.port: 6123 //flink应用的端口，建议不改
+taskmanager.numberOfTaskSlots: 8//flink任务槽数量，建议设置为cpu核数 
+parallelism.default: 1//并行度默认值，可改可不改
+```
+
+##### 4.修改master，worker文件（单机模式跳过此步骤，standalone集群模式需要配置）,目前为单机模式
+
+```
+master文件
+[ip1或主机名]:8081//写哪台机器作为主节点
+worker文件
+[ip1或主机名]//写哪些机器作为worker节点
+[ip2或主机名]
+[ip3或主机名]
+```
+
+##### 5.scp分发到集群的每个主机
+
+```
+1.配置ssh免密登录
+ssh-keygen -t rsa 
+2.将每台主机的/root/.ssh/id_rsa.pub的内容复制，粘贴到另外所有主机的/root/.ssh/authorized_keys中
+3.scp -r flink-1.12.5/ root@[ip]/[安装路径] 分发到所有主机
+```
+
+##### 6.启动flink集群
+
+```
+flink-1.12.5/bin/start-cluster.sh//启动flink集群
+flink-1.12.5/bin/stop-cluster.sh//关闭flink集群
+先关闭再启动就是重启
+（若没配置免密要一直输密码）
+```
+
+##### 7.去浏览器访问 47.104.202.153:8081查看flink集群当前状态
+
+#### MySQL安装说明
+
+MySQL使用Docker安装
+
+##### 1.下载镜像docker pull
+
+dockerhub中搜索MySQL，找到对应版本号，下载
+
+```bash
+docker pull mysql:5.7
+```
+
+查看镜像
+
+```
+docker images
+```
+
+##### 2.创建实例并启动
+
+```bash
+sudo docker run \
+-p 3306:3306 \
+--name mysql \
+-v /usr/mysql/conf:/etc/mysql \
+-v /usr/mysql/log:/var/log/mysql \
+-v /usr/mysql/data:/var/lib/mysql \
+-e MYSQL_ROOT_PASSWORD=bdilab@1308 \
+-d mysql:5.7
+	
+# -p：表示端口映射，冒号左面的是宿主机的端口，而右侧则表示的是MySQL容器内的端口
+# --name：给MySQL容器取的名字
+# -d：表示后台运行
+# -e MYSQL_ROOT_PASSWORD：设置root用户密码
+# -v：表示挂载路径，冒号左面的表示宿主机的挂载目录，冒号右边则表示容器内部的路径。
+```
+
+##### 3.创建配置文件
+
+```bash
+vim /usr/mysql/conf/my.cnf
+```
+
+```
+[client]
+default-character-set=utf8
+
+[mysql]
+default-character-set=utf8
+
+[mysqld]
+character-set-server=utf8
+skip-name-resolve
+```
+
+##### 4.进入mysql容器内查看
+
+```bash
+docker exec -it mysql /bin/bash
+```
+
+##### 5.重启mysql
+
+```bash
+docker restart mysql
+```
+
+##### 6.设置自动重启
+
+```bash
+docker update mysql --restart=always
+```
+
+
+
+#### Redis安装说明
+
+Redis也使用Docker安装
+
+##### 1.下载镜像
+
+```bash
+docker pull redis
+```
+
+##### 2.创建实例并启动
+
+```bash
+sudo docker run \
+-p 6379:6379 \
+--name redis \
+-v /usr/redis/conf/redis.conf:/etc/redis/redis.conf \
+-v /usr/redis/data:/data \
+-d redis redis-server /etc/redis/redis.conf \
+--requirepass bdilab@1308
+
+# 注意，直接运行此命令会将redis.conf作为一个目录创建，故先创建redis.conf文件
+```
+
+##### 3.测试redis
+
+```bash
+docker exec -it redis redis-cli
+```
+
+##### 4.数据持久化
+
+```shell
+# redis.conf下添加
+appendonly yes
+
+# 重启容器
+docker restart redis
+```
+
+##### 5.设置自动重启
+
+```bash
+docker update redis --restart=always
+```
+
+
+
+
+
+
 目前所有软件都为单点部署。
+
+**如果需要访问服务，请先联系我们将您的ip加入白名单**
 
 ### 三、平台部署说明
 
@@ -193,6 +486,28 @@ demo jar包来源于FlinkJob模块打包程序。本测试demo需用使用redis�
 
 | 名称       | 组件与版本 |
 | ---------- | ---------- |
+| React      | v17.0.2    |
+| antv x6    | v1.24.4    |
+| ant design | v4.14.1    |
+| Echarts    | v5.0.2     |
+
+### 二、前端测试说明
+
+```
+#项目地址
+https://github.com/xdsselab/DataFlow
+```
+frontend为前端项目代码
+
+
+### 一、基础环境
+
+#### 1.1 硬件环境
+
+#### 1.2 软件环境
+
+| 名称       | 组件与版本 |
+| ---------- | ---------- |
 | React      | v17.0.2    | 
 | antv x6    | v1.24.4    | 
 | ant design | v4.14.1    | 
@@ -206,3 +521,42 @@ https://github.com/xdsselab/DataFlow
 ```
 frontend为前端项目代码
 
+#### 2.1项目运行说明
+##### 2.1.1 拉取git项目代码
+```
+#git地址：
+https://github.com/xdsselab/DataFlow.git
+```
+##### 2.1.2 安装项目依赖
+在控制台中的frontend文件夹下使用命令 npm install 即可安装前端项目依赖
+
+##### 2.1.3 运行前端项目
+在控制台中的frontend文件夹下使用命令 npm start 即可运行前端项目，如果页面关闭可在浏览器中输入地址http://localhost:3000重新访问
+
+##### 2.1.3 使用前端项目
+
+**注：因前端功能目前很少，还有一些样式上的bug需要修改，所以目前仅能作为测试使用
+
+###### 测试① Table组件拖拽
+如下图在页面左侧的侧边栏提供用户可拖拽的操作符，最上面的.csv为现有数据集，将数据集拖入画布（目前因为有一个样式上的小bug需要用户当鼠标变成蓝色的图标后点击生成拖拽组件，本次冲刺阶段即可解决此bug）
+![image](https://user-images.githubusercontent.com/69236203/138457874-2bb4c903-b1f7-423d-98e0-f6ec5381d8a6.png)
+在画布上生成的组件如下图
+![image](https://user-images.githubusercontent.com/69236203/138458374-93f1d6eb-7617-4f79-a933-f36b30a87cb4.png)
+
+###### 测试② Table组件过滤及筛选
+以table组件为例，侧边栏有filter和Attributes属性
+通过点击属性可展示侧边栏，包含过滤操作和列筛选操作
+点击filter，过滤属性后效果如下图
+![image](https://user-images.githubusercontent.com/69236203/138458923-71eba3bc-c43a-4a69-ab49-720b1d5b3cdf.png)
+下图展示的是id4字段以a或h结尾的所有内容
+![image](https://user-images.githubusercontent.com/69236203/138459024-e6892118-ebe4-4d0b-80d2-4458e5f32446.png)
+
+点击Attributes,圈选所需要展示的列，列表既会刷新，如下图
+展示的是仅有id2和id4属性的列表
+![image](https://user-images.githubusercontent.com/69236203/138459313-36d97dea-5b8c-4376-9d72-cb8abb28ddf6.png)
+
+###### 测试③ chart组件拖拽
+**注：目前chart因为工作量较大且实现复杂，只做了分布图的展示功能
+
+拖拽结果如下图
+![image](https://user-images.githubusercontent.com/69236203/138459647-9b28cbb8-5338-4f1a-906e-013543ac2410.png)

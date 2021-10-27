@@ -3,21 +3,19 @@ package com.bdilab.dataflow.sql.generator;
 import com.bdilab.dataflow.common.enums.ExceptionMsgEnum;
 import com.bdilab.dataflow.common.exception.UncheckException;
 import com.bdilab.dataflow.dto.jobdescription.JobDescription;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * @author: Zunjing Chen
- * @create: 2021-09-23
- * @description: transform the job description to sql (as a datasource or a compute task)
- **/
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public abstract class SQLGeneratorBase {
     private JobDescription jobDescription;
 
-    public SQLGeneratorBase(JobDescription jobDescription) {
-        this.jobDescription = jobDescription;
-    }
-
     public String datasource() {
-        // todo 数据源检查
+        // todo Check datasource
         if (jobDescription.getDataSource() == null) {
             throw new UncheckException(ExceptionMsgEnum.TABLE_SQL_PARSE_ERROR.getMsg());
         }
@@ -33,7 +31,7 @@ public abstract class SQLGeneratorBase {
     }
 
 
-    public String filter() {
+    public String filter(){
         return "";
     }
 

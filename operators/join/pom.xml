@@ -8,23 +8,14 @@
         <version>1.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>operator-transpose</artifactId>
-    <name>operator-transpose</name>
 
+    <artifactId>operator-join</artifactId>
     <dependencies>
-        <dependency>
-            <groupId>com.bdilab</groupId>
-            <artifactId>utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.bdilab</groupId>
-            <artifactId>common</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.bdilab</groupId>
             <artifactId>operator-table</artifactId>
         </dependency>
     </dependencies>
+
 </project>

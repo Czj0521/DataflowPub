@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 @DS("mysql")
 public  interface TableStatisticMapper extends BaseMapper<TableStatistic> {
     /**
-     * 查询对应表的所有列名和属性
+     * Query all column names and attributes of the corresponding table
      * @param tableName
      * @return
      */

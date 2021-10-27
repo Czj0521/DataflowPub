@@ -28,12 +28,11 @@ spring:
       validation-query: select 'x'
       max-open-prepared-statements: 50
       max-pool-prepared-statement-per-connection-size: 20
-#      druid不支持clickhouse需要将防火墙去掉
       filters: config,stat
   devtools:
     restart:
-      enabled: true  #设置开启热部署
-      additional-paths: src/main/java #重启目录
+      enabled: true
+      additional-paths: src/main/java
       exclude: WEB-INF/**
     freemarker:
       cache: false

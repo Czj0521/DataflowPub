@@ -16,10 +16,10 @@ public class JoinTest {
     public void testJoin() {
         String profilerJson = "{" +
                 "\"job\": \"start_job\"," +
-                "\"jobType\": \"join\"," +
                 "\"joinDescription\": { " +
-                " \"inputLeft\": \"JoinTest.student\", " +
-                "\"inputRight\": \"JoinTest.class\", " +
+                "\"jobType\": \"join\"," +
+                "\"leftDataSource\": \"JoinTest.student\", " +
+                "\"rightDataSource\": \"JoinTest.class\", " +
                 "\"joinType\": \"inner join\", " +
                 "\"joinKeys\":[{\"left\": \"classId\",\"right\": \"id\"}]," +
                 "\"includePrefixes\": \"false\", " +

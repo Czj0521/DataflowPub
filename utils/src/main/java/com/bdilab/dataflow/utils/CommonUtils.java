@@ -1,5 +1,8 @@
 package com.bdilab.dataflow.utils;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +22,17 @@ public class CommonUtils {
         }
         return l;
     }
+
+    public static JSONObject[] jsonArrayToJsonObejct(JSONArray jsonArray){
+        int len = jsonArray.size();
+        JSONObject[] jsonObjects = new JSONObject[len];
+        for (int i = 0; i < len; i++) {
+            jsonObjects[i]=jsonArray.getJSONObject(i);
+        }
+        return jsonObjects;
+    }
+
+
 
 
 }

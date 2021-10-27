@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class JoinJson extends JobDescription {
+public class JoinJson{
     private String job;
     private JoinDescription joinDescription;
     private String jobId;

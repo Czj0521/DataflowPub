@@ -1,8 +1,7 @@
 package com.bdilab.dataflow;
 
 import com.alibaba.fastjson.JSONObject;
-import com.bdilab.dataflow.dto.JoinJson;
-import com.bdilab.dataflow.service.JoinService;
+import com.bdilab.dataflow.dto.JoinDescription;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,8 +14,6 @@ public class JoinTest {
     @Test
     public void testJoin() {
         String profilerJson = "{" +
-                "\"job\": \"start_job\"," +
-                "\"joinDescription\": { " +
                 "\"jobType\": \"join\"," +
                 "\"leftDataSource\": \"JoinTest.student\", " +
                 "\"rightDataSource\": \"JoinTest.class\", " +
@@ -25,12 +22,9 @@ public class JoinTest {
                 "\"includePrefixes\": \"false\", " +
                 "\"leftPrefix\": \"left_\"," +
                 "\"rightPrefix\": \"right_\" " +
-                "}," +
-                "\"jobId\": \"1212\"," +
-                "\"workspaceId\": \"4f5s4f25s4g8z5eg\" " +
                 "}";
-        JoinJson ps = JSONObject.parseObject(profilerJson, JoinJson.class);
+        JoinDescription joinDescription = JSONObject.parseObject(profilerJson, JoinDescription.class);
         //joinService.Join(ps);
-        joinService.join(ps);
+        joinService.join(joinDescription);
     }
 }

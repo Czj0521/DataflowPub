@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.enums.ExceptionMsgEnum;
 import com.bdilab.dataflow.common.exception.UncheckException;
 import com.bdilab.dataflow.dto.JoinDescription;
-import com.bdilab.dataflow.dto.JoinJson;
 
 
 /**
@@ -24,10 +23,8 @@ import com.bdilab.dataflow.dto.JoinJson;
  */
 public class JoinSQLGenerator{
     private JoinDescription joinDescription;
-    private String UUID;
-    public JoinSQLGenerator(JoinJson joinJson, String UUID){
-        this.joinDescription = joinJson.getJoinDescription();
-        this.UUID = UUID;
+    public JoinSQLGenerator(JoinDescription joinDescription){
+        this.joinDescription = joinDescription;
     }
     public String project() {
         return "SELECT * ";

@@ -5,6 +5,7 @@ import com.bdilab.dataflow.common.enums.ExceptionMsgEnum;
 import com.bdilab.dataflow.common.exception.UncheckException;
 import com.bdilab.dataflow.dto.JoinDescription;
 import com.bdilab.dataflow.dto.JoinJson;
+import com.bdilab.dataflow.operator.dto.jobdescription.SQLGeneratorBase;
 
 
 /**
@@ -21,7 +22,7 @@ import com.bdilab.dataflow.dto.JoinJson;
  *       "rightPrefix":"right_"
  *  }
  */
-public class JoinSQLGenerator extends SQLGeneratorBase{
+public class JoinSQLGenerator extends SQLGeneratorBase {
     private JoinJson joinJson;
     private JoinDescription joinDescription;
     private String UUID;

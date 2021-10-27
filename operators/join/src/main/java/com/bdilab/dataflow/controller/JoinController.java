@@ -17,16 +17,16 @@ import org.springframework.web.bind.annotation.*;
  * @description:
  **/
 @Slf4j
-@RestController
+//@RestController
 @CrossOrigin
-@Api(tags = "join控件")
-@RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/job")
+//@Api(tags = "join控件")
+//@RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/job")
 public class JoinController {
-    @Autowired
-    JoinServiceImpl joinService;
-    @PostMapping("/join")
-    @ApiOperation(value = "join控件")
-    public ResponseEntity filter(@RequestBody JoinJson joinJson){
-        return ResponseEntity.ok(joinService.join(joinJson));
-    }
+//    @Autowired
+//    JoinServiceImpl joinService;
+//    @PostMapping("/join")
+//    @ApiOperation(value = "join控件")
+//    public ResponseEntity filter(@RequestBody JoinJson joinJson){
+//        return ResponseEntity.ok(joinService.join(joinJson));
+//    }
 }

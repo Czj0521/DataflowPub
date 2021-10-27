@@ -2,6 +2,7 @@ package com.bdilab.dataflow.service.impl;
 
 import com.bdilab.dataflow.common.consts.OperatorConstants;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.util.URLEncoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * @author: Zunjing Chen
@@ -16,13 +18,14 @@ import java.util.Map;
  * @description:
  **/
 @Service
+@Slf4j
 public class TableMetadataServiceImpl {
     @Value("${clickhouse.http.url}")
     private String httpPrefix;
 
 
     public Map<String, String> metadataFromDatasource(String datasource) {
-        return metadata("SELECT * FROM " + datasource);
+        return metadata("SELECT * FROM dataflow." + datasource);
     }
 
     /**
@@ -37,6 +40,7 @@ public class TableMetadataServiceImpl {
         sql = encoder.encode(sql, Charset.defaultCharset());
         String url = httpPrefix + query.replace(OperatorConstants.COLUMN_MAGIC_NUMBER, sql);
         Map<String, String> result = new HashMap<>();
+        log.info(url);
         String content = ClickHouseHttpUtils.sendGet(url);
         String[] split = content.split("\n");
         for (String s : split) {

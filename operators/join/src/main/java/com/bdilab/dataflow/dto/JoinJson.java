@@ -1,6 +1,6 @@
 package com.bdilab.dataflow.dto;
 
-import com.bdilab.dataflow.dto.jobdescription.JobDescription;
+import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

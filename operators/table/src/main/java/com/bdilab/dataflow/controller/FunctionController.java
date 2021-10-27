@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import static com.bdilab.dataflow.common.enums.FilterOperatorEnum.FILTER_OPERATORS;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,14 +33,7 @@ public class FunctionController {
     @GetMapping("/filter")
     @ApiOperation(value = "Filter Function")
     public ResponseEntity filterOperator() {
-        Map<String, Map<String, String>> objectObjectHashMap = new HashMap<>();
-        for (FilterOperatorEnum value : FilterOperatorEnum.values()) {
-            Map<String, String> orDefault = objectObjectHashMap.getOrDefault(value.getDataType(), new HashMap<>());
-            orDefault.put(value.getFilterOperatorName(), value.getSQLParam());
-            objectObjectHashMap.put(value.getDataType(), orDefault);
-        }
-        ResultMap resultMap = new ResultMap().success().payload(objectObjectHashMap);
-        return ResponseEntity.ok(resultMap);
+        return ResponseEntity.ok(FILTER_OPERATORS);
     }
 
     /**

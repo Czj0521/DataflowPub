@@ -1,10 +1,10 @@
-import { IRouterConfig } from "ice";
+import { IRouterConfig } from 'ice';
 
-import NotFound from "@/components/NotFound";
-import Layout from "@/Layouts/BasicLayout";
-import Dashboard from "@/pages/Dashboard";
-import Flow from "@/pages/Flow";
-import Home from "@/pages/Home";
+import NotFound from '@/components/NotFound';
+import Layout from '@/Layouts/BasicLayout';
+import Dashboard from '@/pages/Dashboard';
+import Flow from '@/pages/flow';
+import Home from '@/pages/Home';
 
 const routerConfig: IRouterConfig[] = [
   {

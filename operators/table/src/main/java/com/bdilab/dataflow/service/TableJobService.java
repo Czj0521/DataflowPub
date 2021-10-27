@@ -8,6 +8,5 @@ import com.bdilab.dataflow.model.DataSourceStatistic;
  * @date 2021/09/01
  */
 public interface TableJobService {
-
     DataSourceStatistic getProfiler(String tablename);
 }

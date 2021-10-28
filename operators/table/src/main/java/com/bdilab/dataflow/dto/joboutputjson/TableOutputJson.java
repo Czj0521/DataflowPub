@@ -1,6 +1,5 @@
 package com.bdilab.dataflow.dto.joboutputjson;
 
-import com.bdilab.dataflow.dto.jobdescription.TableDescription;
 import com.bdilab.dataflow.operator.dto.joboutputjson.AbstractJobOutputJson;
 import lombok.AllArgsConstructor;
 import lombok.Data;

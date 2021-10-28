@@ -23,12 +23,12 @@ import java.util.Map;
 public class JoinServiceImpl implements JoinService {
     @Autowired
     ClickHouseJdbcUtils clickHouseJdbcUtils;
+    @Autowired
+    TableMetadataServiceImpl tableMetadataService;
     @Override
     public List<Map<String, Object>> join(JoinJson joinJson){
-        String UUID = SQLParseUtils.getUUID32();
-        String sql = new JoinSQLGenerator(joinJson,UUID).generate();
+        String sql = new JoinSQLGenerator(joinJson,tableMetadataService).generate();
         System.out.println(sql);
-        //clickHouseJdbcUtils.execute(sql);
         List<Map<String, Object>> result = clickHouseJdbcUtils.queryForList(sql);
         System.out.println(result);
         return result;

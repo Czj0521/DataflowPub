@@ -5,6 +5,14 @@ import com.bdilab.dataflow.common.enums.ExceptionMsgEnum;
 import com.bdilab.dataflow.common.exception.UncheckException;
 import com.bdilab.dataflow.dto.JoinDescription;
 import com.bdilab.dataflow.dto.JoinJson;
+import com.bdilab.dataflow.service.impl.TableMetadataServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -22,21 +30,45 @@ import com.bdilab.dataflow.dto.JoinJson;
  *       "rightPrefix":"right_"
  *  }
  */
+
 public class JoinSQLGenerator{
+   // @Autowired
+    TableMetadataServiceImpl tableMetadataService;
     private JoinDescription joinDescription;
-    private String UUID;
-    public JoinSQLGenerator(JoinJson joinJson, String UUID){
+
+    public JoinSQLGenerator(JoinJson joinJson,TableMetadataServiceImpl tableMetadataService){
         this.joinDescription = joinJson.getJoinDescription();
-        this.UUID = UUID;
+        this.tableMetadataService = tableMetadataService;
     }
+
     public String project() {
-        return "SELECT * ";
-//        if(joinDescription.getIncludePrefixes().equals("false")){
-//            return "SELECT * ";
-//        }
-//        else{
-//
-//        }
+        String inputLeft = joinDescription.getLeftDataSource();
+        String inputRight = joinDescription.getRightDataSource();
+        String leftPrefix = joinDescription.getLeftPrefix();
+        String rightPrefix = joinDescription.getRightPrefix();
+        Set<String> joinkeysRight = new HashSet<>();
+        for(JSONObject jsonObject : joinDescription.getJoinKeys()){
+            joinkeysRight.add((String)jsonObject.get("right"));
+        }
+        if(joinDescription.getIncludePrefixes().equals("false")){
+            leftPrefix = "";
+            rightPrefix = "";
+        }
+        Set<String> leftColumnSet= tableMetadataService.metadataFromDatasource(inputLeft).keySet();
+        Set<String> rightColumnSet= tableMetadataService.metadataFromDatasource(inputRight).keySet();
+
+        StringBuilder selectString = new StringBuilder("SELECT ");
+
+        for(String str: leftColumnSet){
+            selectString.append(" ds1."+str+" "+leftPrefix+str+",");
+        }
+        for(String str:rightColumnSet){
+            if(!joinkeysRight.contains(str) &&
+                    (!(leftColumnSet.contains(str)&&leftPrefix.equals(rightPrefix)))){
+                selectString.append(" ds2."+str+" "+rightPrefix+str+",");
+            }
+        }
+        return new String(selectString).substring(0,selectString.length()-1);
     }
 
     public String datasource(){

@@ -7,7 +7,7 @@ import com.bdilab.dataflow.utils.CommonUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import org.springframework.stereotype.Repository;
 
 
 /**
@@ -29,6 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Repository
 public class JoinDescription {
 
     private String jobType;

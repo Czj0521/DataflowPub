@@ -25,9 +25,11 @@ public class JoinServiceImpl implements JoinService {
     ClickHouseJdbcUtils clickHouseJdbcUtils;
     @Autowired
     TableMetadataServiceImpl tableMetadataService;
+    @Autowired
+    JoinSQLGenerator joinSQLGenerator;
     @Override
     public List<Map<String, Object>> join(JoinDescription joinDescription){
-        String sql = new JoinSQLGenerator(joinDescription,tableMetadataService).generate();
+        String sql = joinSQLGenerator.generate(joinDescription);
         System.out.println(sql);
         List<Map<String, Object>> result = clickHouseJdbcUtils.queryForList(sql);
         System.out.println(result);

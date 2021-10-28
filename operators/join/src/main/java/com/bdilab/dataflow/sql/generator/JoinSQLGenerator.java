@@ -5,8 +5,10 @@ import com.bdilab.dataflow.common.enums.ExceptionMsgEnum;
 import com.bdilab.dataflow.common.exception.UncheckException;
 import com.bdilab.dataflow.dto.JoinDescription;
 import com.bdilab.dataflow.service.impl.TableMetadataServiceImpl;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
@@ -29,18 +31,12 @@ import java.util.Set;
  *       "rightPrefix":"right_"
  *  }
  */
-
+@Service
 public class JoinSQLGenerator{
-   // @Autowired
+    @Autowired
     TableMetadataServiceImpl tableMetadataService;
-    private JoinDescription joinDescription;
 
-    public JoinSQLGenerator(JoinDescription joinDescription,TableMetadataServiceImpl tableMetadataService){
-        this.joinDescription = joinDescription;
-        this.tableMetadataService = tableMetadataService;
-    }
-
-    public String project() {
+    public String project(JoinDescription joinDescription) {
         String inputLeft = joinDescription.getLeftDataSource();
         String inputRight = joinDescription.getRightDataSource();
         String leftPrefix = joinDescription.getLeftPrefix();
@@ -53,6 +49,8 @@ public class JoinSQLGenerator{
             leftPrefix = "";
             rightPrefix = "";
         }
+
+
         Set<String> leftColumnSet= tableMetadataService.metadata("SELECT * FROM "+inputLeft).keySet();
         Set<String> rightColumnSet= tableMetadataService.metadata("SELECT * FROM "+inputRight).keySet();
 
@@ -70,7 +68,7 @@ public class JoinSQLGenerator{
         return new String(selectString).substring(0,selectString.length()-1);
     }
 
-    public String datasource(){
+    public String datasource(JoinDescription joinDescription){
         String inputLeft = joinDescription.getLeftDataSource();
         String inputRight = joinDescription.getRightDataSource();
         String joinType = joinDescription.getJoinType();
@@ -80,7 +78,7 @@ public class JoinSQLGenerator{
         return  " FROM "+inputLeft+"  ds1 "+joinType+"  "+inputRight+"  ds2 ";
     }
 
-    public String on() {
+    public String on(JoinDescription joinDescription) {
         JSONObject[] joinKeys = joinDescription.getJoinKeys();
         StringBuilder onString = new StringBuilder(" ON ");
         for(JSONObject joinKey : joinKeys){
@@ -93,16 +91,13 @@ public class JoinSQLGenerator{
         }
         return  new String(onString);
     }
-
-    public  String sql(){
-        return project()+datasource()+on();
+    public  String sql(JoinDescription joinDescription){
+        return project(joinDescription)+datasource(joinDescription)+on(joinDescription);
     }
-
-    public String generate() {
+    public String generate(JoinDescription joinDescription) {
         //String prefix = "CREATE VIEW dataflow." + UUID + " AS ";
         String prefix = "";
         //return prefix+sql()+super.limit();
-        return prefix+sql();
+        return prefix+sql(joinDescription);
     }
-
 }

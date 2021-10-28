@@ -43,6 +43,8 @@ public class CommonConstants {
     public static final String AGGREGATION_NAME = "aggregation";
     public static final String SORT_NAME = "sort";
 
-
+    /**
+     * CLICKHOUSE database
+     */
     public static final String DATABASE = "dataflow";
 }

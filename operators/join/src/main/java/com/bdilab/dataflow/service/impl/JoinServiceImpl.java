@@ -5,7 +5,6 @@ package com.bdilab.dataflow.service.impl;
 import com.bdilab.dataflow.dto.JoinDescription;
 import com.bdilab.dataflow.service.JoinService;
 import com.bdilab.dataflow.sql.generator.JoinSQLGenerator;
-import com.bdilab.dataflow.utils.SQLParseUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,5 +31,9 @@ public class JoinServiceImpl implements JoinService {
         List<Map<String, Object>> result = clickHouseJdbcUtils.queryForList(sql);
         System.out.println(result);
         return result;
+    }
+
+    public String generateDataSourceSql(JoinDescription joinDescription) {
+        return new JoinSQLGenerator(joinDescription,tableMetadataService).generateDataSourceSql();
     }
 }

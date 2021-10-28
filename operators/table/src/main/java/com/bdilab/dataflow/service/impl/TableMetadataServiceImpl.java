@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static com.bdilab.dataflow.common.consts.CommonConstants.DATABASE;
+
 /**
  * @author: Zunjing Chen
  * @create: 2021-09-18
@@ -25,7 +27,7 @@ public class TableMetadataServiceImpl {
 
 
     public Map<String, String> metadataFromDatasource(String datasource) {
-        return metadata("SELECT * FROM dataflow." + datasource);
+        return metadata("SELECT * FROM " + DATABASE + "." + datasource);
     }
 
     /**

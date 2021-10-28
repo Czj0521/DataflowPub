@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.enums.ExceptionMsgEnum;
 import com.bdilab.dataflow.common.exception.UncheckException;
 import com.bdilab.dataflow.dto.JoinDescription;
+import com.bdilab.dataflow.operator.link.LinkSqlGenerator;
 import com.bdilab.dataflow.service.impl.TableMetadataServiceImpl;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +32,7 @@ import java.util.Set;
  *  }
  */
 
-public class JoinSQLGenerator{
+public class JoinSQLGenerator implements LinkSqlGenerator {
     // @Autowired
     TableMetadataServiceImpl tableMetadataService;
     private JoinDescription joinDescription;
@@ -105,4 +107,9 @@ public class JoinSQLGenerator{
         return prefix+sql();
     }
 
+
+    @Override
+    public String generateDataSourceSql() {
+        return generate();
+    }
 }

@@ -49,7 +49,6 @@ public class TableController {
     @PostMapping("/table")
     @ApiOperation(value = "Table Operator")
     public ResponseEntity table(@RequestBody TableInputJson tableInputJson) {
-        //todo 我（wh）统一dto格式，麻烦把这部分加的代码放到service
         List<Map<String, Object>> table = tableJobService.table(tableInputJson.getTableDescription());
         TableOutputJson tableOutputJson = new TableOutputJson();
         tableOutputJson.setOutputs(table);

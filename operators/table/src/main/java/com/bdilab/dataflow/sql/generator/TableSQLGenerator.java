@@ -2,6 +2,7 @@ package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.TableDescription;
 import com.bdilab.dataflow.operator.dto.jobdescription.SQLGeneratorBase;
+import com.bdilab.dataflow.operator.link.LinkSqlGenerator;
 import com.bdilab.dataflow.utils.SQLParseUtils;
 import org.springframework.util.StringUtils;
 
@@ -13,7 +14,7 @@ import java.util.Set;
  * @create: 2021-09-18
  * @description: generate SQL
  **/
-public class TableSQLGenerator extends SQLGeneratorBase {
+public class TableSQLGenerator extends SQLGeneratorBase implements LinkSqlGenerator {
     private TableDescription tableDescription;
     String[] project;
     String[] groups;
@@ -53,6 +54,11 @@ public class TableSQLGenerator extends SQLGeneratorBase {
 
     @Override
     public String generate() {
+        return generateDataSourceSql() + super.limit();
+    }
+
+    @Override
+    public String generateDataSourceSql() {
         String projectStr = project();
         String groupStr = group();
 
@@ -76,8 +82,6 @@ public class TableSQLGenerator extends SQLGeneratorBase {
             projectStr = "SELECT " + sb.substring(0, sb.length() - 1);
         }
 
-        return projectStr + super.datasource() + filter() + groupStr + super.limit();
+        return projectStr + super.datasource() + filter() + groupStr;
     }
-
-
 }

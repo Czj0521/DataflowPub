@@ -40,4 +40,8 @@ public class TransposeServiceImpl implements TransposeService {
     public String transpose(TransposeDescription transposeDescription) {
         return new TransposeSQLGenerator(transposeDescription, columnValues(transposeDescription)).generate();
     }
+
+    public String generateDataSourceSql(TransposeDescription transposeDescription) {
+        return new TransposeSQLGenerator(transposeDescription, columnValues(transposeDescription)).generateDataSourceSql();
+    }
 }

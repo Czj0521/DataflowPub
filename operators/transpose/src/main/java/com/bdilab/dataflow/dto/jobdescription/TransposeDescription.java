@@ -1,7 +1,10 @@
 package com.bdilab.dataflow.dto.jobdescription;
 
 import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
@@ -11,6 +14,8 @@ import java.util.Map;
  * @description:
  **/
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TransposeDescription extends JobDescription {
     @NotEmpty
     String column;

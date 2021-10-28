@@ -14,10 +14,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FilterSQLGenerator extends SQLGeneratorBase {
+public class FilterSQLGenerator extends SQLGeneratorBase{
 
     private FilterDescription filterDescription;
-
 
     @Override
     public String project() {
@@ -35,10 +34,10 @@ public class FilterSQLGenerator extends SQLGeneratorBase {
 
     @Override
     public String generate() {
-        return project() + super.datasource() + filter() + super.limit();
+        return project() + super.datasource() + filter();
     }
 
     public String generateDataSourceSql(){
-        return project() + super.datasource() + filter();
+        return generate();
     }
 }

@@ -1,0 +1,88 @@
+package com.bdilab.dataflow.service.impl;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.dto.JoinDescription;
+import com.bdilab.dataflow.dto.jobdescription.MaterializeDescription;
+import com.bdilab.dataflow.dto.jobdescription.TableDescription;
+import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
+import com.bdilab.dataflow.dto.jobinputjson.MaterializeInputJson;
+import com.bdilab.dataflow.dto.joboutputjson.MaterializeOutputJson;
+import com.bdilab.dataflow.service.MaterializeJobService;
+import com.bdilab.dataflow.service.TableJobService;
+import com.bdilab.dataflow.sql.generator.TableSQLGenerator;
+import com.bdilab.dataflow.utils.SQLParseUtils;
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.util.URLEncoder;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+
+import java.nio.charset.Charset;
+import java.util.Map;
+
+import static com.bdilab.dataflow.common.consts.CommonConstants.DATABASE;
+/**
+ * @author: wh
+ * @create: 2021-10-28
+ * @description:
+ */
+@Service
+@Slf4j
+public class MaterializeJobServiceImpl implements MaterializeJobService {
+    @Value("${clickhouse.http.url}")
+    private String httpPrefix;
+    @Resource
+    TransposeServiceImpl transposeServiceImpl;
+    @Resource
+    JoinServiceImpl joinServiceImpl;
+    @Resource
+    TableMetadataServiceImpl tableMetadataServiceImpl;
+
+    @Override
+    public MaterializeOutputJson materialize(MaterializeInputJson materializeInputJson) {
+        MaterializeDescription materializeDescription = materializeInputJson.getMaterializeDescription();
+        JSONObject materializedOperator = materializeDescription.getMaterializedOperator();
+        String datasourceSql;
+        switch (materializeDescription.getMaterializedType()) {
+            case "table":
+                TableDescription tableDescription = JSON.toJavaObject(materializedOperator,TableDescription.class);
+                datasourceSql = new TableSQLGenerator(tableDescription).generateDataSourceSql();
+                break;
+            case "transpose":
+                TransposeDescription transposeDescription = JSON.toJavaObject(materializedOperator,TransposeDescription.class);
+                datasourceSql = transposeServiceImpl.generateDataSourceSql(transposeDescription);
+                break;
+            case "join":
+                JoinDescription joinDescription = JSON.toJavaObject(materializedOperator, JoinDescription.class);
+                datasourceSql = joinServiceImpl.generateDataSourceSql(joinDescription);
+                break;
+            default:
+                throw new RuntimeException("Wrong materialized type!");
+        }
+
+        StringBuilder sbSql = new StringBuilder();
+        String name = DATABASE + "." + SQLParseUtils.getUUID32();
+        sbSql.append("CREATE VIEW ").append(name).append(" AS ").append("(").append(datasourceSql).append(")");
+        String sql = new String(sbSql);
+        URLEncoder urlEncoder = new URLEncoder();
+        sql = urlEncoder.encode(sql, Charset.defaultCharset());
+        log.info("Materialize Sql: {}", sql);
+        while(ClickHouseHttpUtils.sendPost(httpPrefix + sql).length()>0){
+            log.info("Error: View name already exists, try again.");
+        }
+        log.info("Materialize job: {} has been created", name);
+        Map<String, String> metadata = tableMetadataServiceImpl.metadataFromDatasource(name);
+        MaterializeOutputJson materializeOutputJson =
+                new MaterializeOutputJson();
+        materializeOutputJson.setJobStatus("JOB_FINISH");
+        materializeOutputJson.setRequestId(materializeInputJson.getRequestId());
+        materializeOutputJson.setWorkspaceId(materializeInputJson.getWorkspaceId());
+        materializeOutputJson.setMetadata(metadata);
+        materializeOutputJson.setSubTableId(name);
+        return materializeOutputJson;
+    }
+}

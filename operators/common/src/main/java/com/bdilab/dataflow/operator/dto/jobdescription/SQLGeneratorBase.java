@@ -1,12 +1,17 @@
-package com.bdilab.dataflow.sql.generator;
+package com.bdilab.dataflow.operator.dto.jobdescription;
 
 import com.bdilab.dataflow.common.enums.ExceptionMsgEnum;
 import com.bdilab.dataflow.common.exception.UncheckException;
-import com.bdilab.dataflow.dto.jobdescription.JobDescription;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+/**
+ * @author: Zunjing Chen
+ * @create: 2021-09-18
+ * @description:
+ **/
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,21 +27,19 @@ public abstract class SQLGeneratorBase {
     }
 
     public String limit() {
-        if (jobDescription.getLimit() == null) {
-            return " LIMIT 2000";
-        }
-        return " LIMIT " + jobDescription.getLimit();
+        return jobDescription.getLimit() == null ? " LIMIT 2000" : " LIMIT " + jobDescription.getLimit();
     }
 
-    public  String project(){
+    public String project() {
         return "";
     }
+
 
     public String filter(){
         return "";
     }
 
-    public String group(){
+    public String group() {
         return "";
     }
 

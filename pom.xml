@@ -14,10 +14,11 @@
         <module>operators/filter</module>
         <module>operators/transpose</module>
         <module>operators/table</module>
+        <module>operators/join</module>
+        <module>operators/common</module>
         <module>common</module>
         <module>config</module>
         <module>utils</module>
-        <module>operators/join</module>
     </modules>
 
     <groupId>com.bdilab</groupId>
@@ -124,6 +125,9 @@
         <druid-spring-boot-starter.version>1.2.5</druid-spring-boot-starter.version>
         <dynamic-datasource-spring-boot-starter.version>3.4.1</dynamic-datasource-spring-boot-starter.version>
         <dataflow.version>1.0-SNAPSHOT</dataflow.version>
+        <commons-text.version>1.9</commons-text.version>
+        <guava.version>20.0</guava.version>
+        <powermock-api-mockito2.version>2.0.4</powermock-api-mockito2.version>
     </properties>
 
     <dependencyManagement>
@@ -231,12 +235,36 @@
                 <artifactId>mybatis-plus-extension</artifactId>
                 <version>${mybatis-plus-extension.verson}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${commons-text.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito2</artifactId>
+                <version>${powermock-api-mockito2.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                    </configuration>
+                </plugin>
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>

@@ -1,6 +1,10 @@
 package com.bdilab.dataflow.dto.jobdescription;
 
+import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import lombok.Data;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.Map;
 /**
  * @author: Zunjing Chen
  * @create: 2021-09-23
@@ -8,15 +12,14 @@ import lombok.Data;
  **/
 @Data
 public class TransposeDescription extends JobDescription {
-    // 计算列
-    String attributes;
-    // 横轴
+    @NotEmpty
     String column;
+    @NotNull
     boolean columnIsNumeric;
-    // 聚合列 纵轴
-    String groupCol;
-    // 聚合函数
-    String groupFunc;
+    @NotNull
+    String[] groupBy;
+    @NotNull
+    Map<String,String> attributeWithAggregationMap;
 
     public TransposeDescription(String jobType, String dataSource, Integer limit) {
         super(jobType, dataSource, limit);

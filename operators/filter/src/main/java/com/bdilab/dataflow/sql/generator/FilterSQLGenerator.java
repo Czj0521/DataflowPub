@@ -1,6 +1,7 @@
 package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.FilterDescription;
+import com.bdilab.dataflow.operator.dto.jobdescription.SQLGeneratorBase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

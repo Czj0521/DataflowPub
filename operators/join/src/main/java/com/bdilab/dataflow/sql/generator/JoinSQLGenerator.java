@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.enums.ExceptionMsgEnum;
 import com.bdilab.dataflow.common.exception.UncheckException;
 import com.bdilab.dataflow.dto.JoinDescription;
-import com.bdilab.dataflow.dto.JoinJson;
 import com.bdilab.dataflow.service.impl.TableMetadataServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,8 +35,8 @@ public class JoinSQLGenerator{
     TableMetadataServiceImpl tableMetadataService;
     private JoinDescription joinDescription;
 
-    public JoinSQLGenerator(JoinJson joinJson,TableMetadataServiceImpl tableMetadataService){
-        this.joinDescription = joinJson.getJoinDescription();
+    public JoinSQLGenerator(JoinDescription joinDescription,TableMetadataServiceImpl tableMetadataService){
+        this.joinDescription = joinDescription;
         this.tableMetadataService = tableMetadataService;
     }
 
@@ -54,8 +53,8 @@ public class JoinSQLGenerator{
             leftPrefix = "";
             rightPrefix = "";
         }
-        Set<String> leftColumnSet= tableMetadataService.metadataFromDatasource(inputLeft).keySet();
-        Set<String> rightColumnSet= tableMetadataService.metadataFromDatasource(inputRight).keySet();
+        Set<String> leftColumnSet= tableMetadataService.metadata("SELECT * FROM "+inputLeft).keySet();
+        Set<String> rightColumnSet= tableMetadataService.metadata("SELECT * FROM "+inputRight).keySet();
 
         StringBuilder selectString = new StringBuilder("SELECT ");
 

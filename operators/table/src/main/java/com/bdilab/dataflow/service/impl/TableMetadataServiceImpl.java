@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * @author: Zunjing Chen
@@ -25,7 +24,7 @@ public class TableMetadataServiceImpl {
 
 
     public Map<String, String> metadataFromDatasource(String datasource) {
-        return metadata("SELECT * FROM dataflow." + datasource);
+        return metadata("SELECT * FROM " + datasource);
     }
 
     /**

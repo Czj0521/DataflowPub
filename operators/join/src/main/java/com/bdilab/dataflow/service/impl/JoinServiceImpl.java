@@ -35,4 +35,5 @@ public class JoinServiceImpl implements JoinService {
         System.out.println(result);
         return result;
     }
+
 }

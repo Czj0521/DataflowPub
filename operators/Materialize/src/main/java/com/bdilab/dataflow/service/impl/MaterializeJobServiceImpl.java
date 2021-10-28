@@ -65,9 +65,8 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
         }
 
         StringBuilder sbSql = new StringBuilder();
-        String name = SQLParseUtils.getUUID32();
-        sbSql.append("CREATE VIEW ").append(DATABASE).append(".").append(name)
-                .append(" AS ").append("(").append(datasourceSql).append(")");
+        String name = DATABASE + "." + SQLParseUtils.getUUID32();
+        sbSql.append("CREATE VIEW ").append(name).append(" AS ").append("(").append(datasourceSql).append(")");
         String sql = new String(sbSql);
         URLEncoder urlEncoder = new URLEncoder();
         sql = urlEncoder.encode(sql, Charset.defaultCharset());

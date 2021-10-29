@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
+
 /**
  * @author: Zunjing Chen
  * @create: 2021-09-23
@@ -18,15 +19,22 @@ import java.util.Map;
 @NoArgsConstructor
 public class TransposeDescription extends JobDescription {
     @NotEmpty
-    String column;
+    private String column;
     @NotNull
-    boolean columnIsNumeric;
+    private boolean columnIsNumeric;
     @NotNull
-    String[] groupBy;
+    private String[] groupBy;
     @NotNull
-    Map<String,String> attributeWithAggregationMap;
+    private Map<String, String> attributeWithAggregationMap;
+    private int topTransposedValuesNum;
 
-    public TransposeDescription(String jobType, String dataSource, Integer limit) {
+    public TransposeDescription(String jobType, String dataSource, int limit, int topTransposedValuesNum) {
         super(jobType, dataSource, limit);
+        this.topTransposedValuesNum = topTransposedValuesNum;
+    }
+
+    public TransposeDescription(String jobType, String dataSource, int limit) {
+        super(jobType, dataSource, limit);
+        topTransposedValuesNum = 20;
     }
 }

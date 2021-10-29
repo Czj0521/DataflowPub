@@ -3,6 +3,7 @@ package com.bdilab.dataflow.sql.generator;
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
 import com.bdilab.dataflow.operator.link.LinkSqlGenerator;
 import com.bdilab.dataflow.utils.SQLParseUtils;
+import lombok.Data;
 import org.apache.commons.text.StringSubstitutor;
 import com.bdilab.dataflow.operator.dto.jobdescription.SQLGeneratorBase;
 import javax.validation.Valid;
@@ -15,6 +16,7 @@ import java.util.Map;
  * @create: 2021-09-23
  * @description:
  **/
+@Data
 public class TransposeSQLGenerator extends SQLGeneratorBase implements LinkSqlGenerator {
     private TransposeDescription transposeDescription;
     private List<String> columnValues;
@@ -30,7 +32,7 @@ public class TransposeSQLGenerator extends SQLGeneratorBase implements LinkSqlGe
     public TransposeSQLGenerator(@Valid TransposeDescription transposeDescription, List<String> columnValues) {
         super(transposeDescription);
         this.transposeDescription = transposeDescription;
-        this.columnValues = columnValues;
+        this.columnValues = transposeDescription.getTopTransposedValuesNum() < columnValues.size()?columnValues.subList(0,transposeDescription.getTopTransposedValuesNum()):columnValues;
     }
 
     /**

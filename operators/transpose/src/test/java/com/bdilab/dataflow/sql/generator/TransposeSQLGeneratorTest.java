@@ -65,4 +65,12 @@ public class TransposeSQLGeneratorTest {
     public void limitTest() {
         assertEquals(transposeSQLGenerator.limit()," LIMIT 3000");
     }
+
+    @Test
+    public void topTransposedValuesNumTest(){
+        TransposeDescription transposeDescription = new TransposeDescription("transpose","airuuid",3000,3);
+        List<String> columnValues = Lists.newArrayList("杭州","南京","杭州","南京","杭州","南京");
+        TransposeSQLGenerator transposeSQLGenerator = new TransposeSQLGenerator(transposeDescription,columnValues);
+        assertEquals(transposeSQLGenerator.getColumnValues().size(),3);
+    }
 }

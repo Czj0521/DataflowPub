@@ -1,18 +1,19 @@
 package com.bdilab.dataflow.service.impl;
 
 
-
 import com.bdilab.dataflow.dto.JoinDescription;
 import com.bdilab.dataflow.service.JoinService;
 import com.bdilab.dataflow.sql.generator.JoinSQLGenerator;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
 
 /**
+ * join service implement.
+
  * @author: Yu Shaochao
  * @create: 2021-10-24
  * @description:
@@ -22,11 +23,13 @@ import java.util.Map;
 public class JoinServiceImpl implements JoinService {
     @Autowired
     ClickHouseJdbcUtils clickHouseJdbcUtils;
+
     @Autowired
     TableMetadataServiceImpl tableMetadataService;
+
     @Override
-    public List<Map<String, Object>> join(JoinDescription joinDescription){
-        String sql = new JoinSQLGenerator(joinDescription,tableMetadataService).generate();
+    public List<Map<String, Object>> join(JoinDescription joinDescription) {
+        String sql = new JoinSQLGenerator(joinDescription, tableMetadataService).generate();
         System.out.println(sql);
         List<Map<String, Object>> result = clickHouseJdbcUtils.queryForList(sql);
         System.out.println(result);
@@ -34,6 +37,6 @@ public class JoinServiceImpl implements JoinService {
     }
 
     public String generateDataSourceSql(JoinDescription joinDescription) {
-        return new JoinSQLGenerator(joinDescription,tableMetadataService).generateDataSourceSql();
+        return new JoinSQLGenerator(joinDescription, tableMetadataService).generateDataSourceSql();
     }
 }

@@ -7,13 +7,11 @@ import com.bdilab.dataflow.service.MaterializeJobService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import javax.annotation.Resource;
+import javax.validation.Valid;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Materialize Operator Controller.
@@ -34,5 +32,11 @@ public class MaterializeController {
     @ApiOperation(value = "materialize")
     public ResponseEntity table(@RequestBody MaterializeInputJson materializeInputJson) {
         return ResponseEntity.ok(materializeJobService.materialize(materializeInputJson));
+    }
+
+    @DeleteMapping("/deleteMaterializeView")
+    @ApiOperation(value = "deleteMaterializeView")
+    public ResponseEntity table(@Valid @RequestParam("viewId") String viewId) {
+        return ResponseEntity.ok(materializeJobService.deleteMaterializeView(viewId));
     }
 }

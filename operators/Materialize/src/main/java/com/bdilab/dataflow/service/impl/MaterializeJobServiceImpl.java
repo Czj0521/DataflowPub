@@ -15,10 +15,13 @@ import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
 import java.nio.charset.Charset;
 import java.util.Map;
 import javax.annotation.Resource;
+
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.util.URLEncoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 
 /**
  * Materialize Job Service Impl.
@@ -37,6 +40,8 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
     JoinServiceImpl joinServiceImpl;
     @Resource
     TableMetadataServiceImpl tableMetadataServiceImpl;
+    @Resource
+    ClickHouseJdbcUtils clickHouseJdbcUtils;
 
     @Override
     public MaterializeOutputJson materialize(MaterializeInputJson materializeInputJson) {
@@ -57,7 +62,7 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
                 break;
             case "join":
                 JoinDescription joinDescription =
-                        JSON.toJavaObject(materializedOperator, JoinDescription.class);
+                        com.bdilab.dataflow.dto.JoinDescription.generateFromJson(materializedOperator);
                 datasourceSql = joinServiceImpl.generateDataSourceSql(joinDescription);
                 break;
             default:
@@ -85,5 +90,11 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
         materializeOutputJson.setMetadata(metadata);
         materializeOutputJson.setSubTableId(name);
         return materializeOutputJson;
+    }
+
+    @Override
+    public String deleteMaterializeView(String viewId) {
+        clickHouseJdbcUtils.execute("DROP VIEW "+viewId);
+        return "success";
     }
 }

@@ -16,4 +16,10 @@ public interface MaterializeJobService {
      * @return MaterializeOutputJson
      */
     MaterializeOutputJson materialize(MaterializeInputJson materializeInputJson);
+
+    /**
+     * Delete Materializem View.
+
+     */
+    String deleteMaterializeView(String viewId);
 }

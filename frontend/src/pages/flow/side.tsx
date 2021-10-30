@@ -63,10 +63,10 @@ function DatasetSide(props) {
     const type = target.getAttribute('data-type');
     const parent = target.getAttribute('parent');
     // console.log(parent)
-    console.log(type);
+    console.log('type', type);
     const item = {};
     const node = graph.createNode({
-      width: 300,
+      width: 500,
       height: 300,
       shape: 'react-shape',
       data: {
@@ -259,6 +259,10 @@ function DatasetSide(props) {
     setOpenKey(key);
   };
 
+  const handleDragStart = (event, dataSource, iconName) => {
+    event.dataTransfer.setData('dragItem', JSON.stringify({ dataSource, iconName }));
+  };
+
   return (
     <div className="hetu_side">
       <div className="hetu_side_title">
@@ -275,7 +279,7 @@ function DatasetSide(props) {
           >
             airuuid.csv
           </span>
-          <span className="hetu_side_item_logo" draggable>
+          <span className="hetu_side_item_logo" draggable onDragStart={(e) => handleDragStart(e, 'airuuid.csv', 'hetu-ODIyuanshujuji')}>
             <IconFont type="hetu-ODIyuanshujuji" style={{ fontSize: 18 }} />
           </span>
           <span

@@ -435,6 +435,7 @@ export default function FlowComponent(props) {
           <div className="hetu_minimap" id="miniMap" />
         </Col>
       </Row>
+      <button onClick={() => console.log(graph.toJSON())}>get Graph Data</button>
       <div />
     </div>
   );

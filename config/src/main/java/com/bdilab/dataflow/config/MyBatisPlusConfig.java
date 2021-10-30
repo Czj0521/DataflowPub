@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
+ * MyBatis Plus Config.
+
  * @author wh
- * @version 1.0
  * @date 2021/09/10
- *
  */
 @EnableTransactionManagement
 @Configuration
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class MyBatisPlusConfig {
 
     /**
-     * 分页插件
+     * Paging plug-in.
      */
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {

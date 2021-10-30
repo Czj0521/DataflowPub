@@ -1,15 +1,17 @@
 package com.bdilab.dataflow.utils.clickhouse;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
 
 /**
- * @author
+ * ClickHouse Jdbc Utils.
+
+ * @author wh
  * @version 1.0
  * @date 2021/09/13
  */

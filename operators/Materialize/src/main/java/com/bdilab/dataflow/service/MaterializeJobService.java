@@ -21,5 +21,5 @@ public interface MaterializeJobService {
      * Delete Materializem View.
 
      */
-    String deleteMaterializeView(String viewId);
+    String deleteSubTable(String subTableId);
 }

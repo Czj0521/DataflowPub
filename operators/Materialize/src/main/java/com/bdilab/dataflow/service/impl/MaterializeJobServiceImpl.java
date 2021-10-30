@@ -93,8 +93,8 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
     }
 
     @Override
-    public String deleteMaterializeView(String viewId) {
-        clickHouseJdbcUtils.execute("DROP VIEW "+viewId);
+    public String deleteSubTable(String subTableId) {
+        clickHouseJdbcUtils.execute("DROP VIEW "+subTableId);
         return "success";
     }
 }

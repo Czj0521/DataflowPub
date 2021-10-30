@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * Abstract JobOnputJson for some operators.
+ * Operators job can extends or not.
+
  * @author: wh
  * @create: 2021-10-27
  */

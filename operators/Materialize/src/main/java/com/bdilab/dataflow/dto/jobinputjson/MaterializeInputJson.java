@@ -5,6 +5,7 @@ import com.bdilab.dataflow.operator.dto.jobinputjson.AbstractJobInputJson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * Materialize Input Json.

@@ -34,9 +34,9 @@ public class MaterializeController {
         return ResponseEntity.ok(materializeJobService.materialize(materializeInputJson));
     }
 
-    @DeleteMapping("/deleteMaterializeView")
-    @ApiOperation(value = "deleteMaterializeView")
-    public ResponseEntity table(@Valid @RequestParam("viewId") String viewId) {
-        return ResponseEntity.ok(materializeJobService.deleteMaterializeView(viewId));
+    @DeleteMapping("/deleteSubTable")
+    @ApiOperation(value = "deleteSubTable")
+    public ResponseEntity deleteSubTable(@Valid @RequestParam("subTableId") String subTableId) {
+        return ResponseEntity.ok(materializeJobService.deleteSubTable(subTableId));
     }
 }

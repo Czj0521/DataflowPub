@@ -7,9 +7,10 @@ import * as echarts from 'echarts';
 import VirtualTable from '../../../../components/VirtualTable';
 import IconFont from '../../../../font';
 import TableSidebar from './tableSidebar';
+import Filter from '../Filter';
 
 function BaseComponent(props) {
-  // console.log('type',props.type)
+  console.log('type',props);
 
   console.log(props.node.getData().item.option.column);
   const [myChart, setMyChart] = useState(null);
@@ -24,9 +25,9 @@ function BaseComponent(props) {
     // 因为接口不同，所以每一个数据操作的数据返回值都要变
     if (props.node.getData().item.option.data) {
       const { column: columns } = props.node.getData().item.option;
-      console.log('column', column)
+      console.log('column', column);
       setData(props.node.getData().item.option.data);
-      setColumn(columns ? columns.map(c => ({ ...c, width: 300, align: 'center' })) : []);
+      setColumn(columns ? columns.map((c) => ({ ...c, width: 300, align: 'center' })) : []);
       setLength(props.node.getData().item.option.data.length);
     }
   }, [props.node]);
@@ -36,7 +37,7 @@ function BaseComponent(props) {
     console.log(item);
     setData(item.option.data);
     // setColumn(item.option.column);
-    setColumn(item.option.column ? item.option.column.map(c => ({ ...c, width: 300, align: 'center' })) : []);
+    setColumn(item.option.column ? item.option.column.map((c) => ({ ...c, width: 300, align: 'center' })) : []);
     if (props.type === 'dataset') return;
     const dom = document.getElementById(item.id);
     const myDom = echarts.init(dom);
@@ -139,13 +140,24 @@ function BaseComponent(props) {
             title={() => `${length}条数据`}
             size="small"
             pagination={false}
+<<<<<<< d634cbc65e111b57eef47378c81b3b2a473a7c13
             style={{ height: '100%', width: '100%', overFlow:'hidden', color: 'white' }}
+=======
+            style={{ height: '100%', width: '100%', overFlow: 'hidden', backgroundColor: 'transparent', color: 'white' }}
+>>>>>>> Filter组件调整
             scroll={{
               x: width,
               y: height - 100,
             }}
           />
         )}
+      </div>
+      <div>
+        {
+          props.type === 'Filter' && (
+            <Filter {...props.node.getData()} />
+          )
+        }
       </div>
       {props.type !== 'dataset' && (
         <IconFont

@@ -41,17 +41,17 @@ const AdvancedSearchForm = (props) => {
         children.push(
           <Row gutter={24}>
             <Col span={6} key={`filter-${i}`}>
-              <Form.Item initialValue={"Where"} name={`filter-${i}`}>
+              <Form.Item initialValue={'Where'} name={`filter-${i}`}>
                 <Input
-                  defaultValue={"Where"}
-                  disabled={true}
+                  defaultValue={'Where'}
+                  disabled
                   style={{
-                    color: "white",
-                    background: "#282820",
-                    width: "100%",
-                    borderColor: "#2e3c51",
+                    color: 'white',
+                    background: '#282820',
+                    width: '100%',
+                    borderColor: '#2e3c51',
                   }}
-                  size={"small"}
+                  size={'small'}
                 />
               </Form.Item>
             </Col>
@@ -61,24 +61,24 @@ const AdvancedSearchForm = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Input something!",
+                    message: 'Input something!',
                   },
                 ]}
               >
-                {/*<Input   style={{color:'white',background:'#282820',width:'100%',borderColor:'#2e3c51'}} size={'small'}/>*/}
+                {/* <Input   style={{color:'white',background:'#282820',width:'100%',borderColor:'#2e3c51'}} size={'small'}/> */}
                 <Select
                   onChange={onChange}
-                  dropdownStyle={{ color: "white", background: "#282820" }}
-                  size={"small"}
+                  dropdownStyle={{ color: 'white', background: '#282820' }}
+                  size={'small'}
                 >
                   {column
                     ? column.map((val) => {
-                        return (
-                          <Option i={i} key={val}>
-                            {val}
-                          </Option>
-                        );
-                      })
+                      return (
+                        <Option i={i} key={val}>
+                          {val}
+                        </Option>
+                      );
+                    })
                     : null}
                 </Select>
               </Form.Item>
@@ -89,14 +89,14 @@ const AdvancedSearchForm = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Input something!",
+                    message: 'Input something!',
                   },
                 ]}
               >
                 {operations[i] ? (
                   <Select
-                    dropdownStyle={{ color: "white", background: "#282820" }}
-                    size={"small"}
+                    dropdownStyle={{ color: 'white', background: '#282820' }}
+                    size={'small'}
                   >
                     {Object.keys(operations[i]).map((val) => {
                       return <Option key={val}>{val}</Option>;
@@ -105,12 +105,12 @@ const AdvancedSearchForm = (props) => {
                 ) : (
                   <Input
                     style={{
-                      color: "white",
-                      background: "#282820",
-                      width: "100%",
-                      borderColor: "#2e3c51",
+                      color: 'white',
+                      background: '#282820',
+                      width: '100%',
+                      borderColor: '#2e3c51',
                     }}
-                    size={"small"}
+                    size={'small'}
                   />
                 )}
               </Form.Item>
@@ -121,22 +121,22 @@ const AdvancedSearchForm = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Input something!",
+                    message: 'Input something!',
                   },
                 ]}
               >
                 <Input
                   style={{
-                    color: "white",
-                    background: "#282820",
-                    width: "100%",
-                    borderColor: "#2e3c51",
+                    color: 'white',
+                    background: '#282820',
+                    width: '100%',
+                    borderColor: '#2e3c51',
                   }}
-                  size={"small"}
+                  size={'small'}
                 />
               </Form.Item>
             </Col>
-          </Row>
+          </Row>,
         );
       } else {
         children.push(
@@ -144,11 +144,11 @@ const AdvancedSearchForm = (props) => {
             <Col span={6} key={`filter-${i}`}>
               <Form.Item name={`filter-${i}`}>
                 <Select
-                  dropdownStyle={{ background: "#282820" }}
-                  size={"small"}
+                  dropdownStyle={{ background: '#282820' }}
+                  size={'small'}
                 >
-                  <Option key="And">{"AND"}</Option>
-                  <Option key="Or">{"OR"}</Option>
+                  <Option key="And">{'AND'}</Option>
+                  <Option key="Or">{'OR'}</Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -158,23 +158,23 @@ const AdvancedSearchForm = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Input something!",
+                    message: 'Input something!',
                   },
                 ]}
               >
                 <Select
                   onChange={onChange}
-                  dropdownStyle={{ color: "white", background: "#282820" }}
-                  size={"small"}
+                  dropdownStyle={{ color: 'white', background: '#282820' }}
+                  size={'small'}
                 >
                   {column
                     ? column.map((val) => {
-                        return (
-                          <Option i={i} key={val}>
-                            {val}
-                          </Option>
-                        );
-                      })
+                      return (
+                        <Option i={i} key={val}>
+                          {val}
+                        </Option>
+                      );
+                    })
                     : null}
                 </Select>
               </Form.Item>
@@ -185,14 +185,14 @@ const AdvancedSearchForm = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Input something!",
+                    message: 'Input something!',
                   },
                 ]}
               >
                 {operations[i] ? (
                   <Select
-                    dropdownStyle={{ color: "white", background: "#282820" }}
-                    size={"small"}
+                    dropdownStyle={{ color: 'white', background: '#282820' }}
+                    size={'small'}
                   >
                     {Object.keys(operations[i]).map((val) => {
                       return <Option key={val}>{val}</Option>;
@@ -201,12 +201,12 @@ const AdvancedSearchForm = (props) => {
                 ) : (
                   <Input
                     style={{
-                      color: "white",
-                      background: "#282820",
-                      width: "100%",
-                      borderColor: "#2e3c51",
+                      color: 'white',
+                      background: '#282820',
+                      width: '100%',
+                      borderColor: '#2e3c51',
                     }}
-                    size={"small"}
+                    size={'small'}
                   />
                 )}
               </Form.Item>
@@ -217,65 +217,65 @@ const AdvancedSearchForm = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Input something!",
+                    message: 'Input something!',
                   },
                 ]}
               >
                 <Input
                   style={{
-                    color: "white",
-                    background: "#282820",
-                    width: "100%",
-                    borderColor: "#2e3c51",
+                    color: 'white',
+                    background: '#282820',
+                    width: '100%',
+                    borderColor: '#2e3c51',
                   }}
-                  size={"small"}
+                  size={'small'}
                 />
               </Form.Item>
             </Col>
-          </Row>
+          </Row>,
         );
       }
     }
     return children;
   };
-  //selectNum:第几个值
+  // selectNum:第几个值
   const onChange = (val, selectNum) => {
-    const i = selectNum.i;
-    let type = "";
-    let operationType = "";
+    const { i } = selectNum;
+    let type = '';
+    let operationType = '';
     Object.keys(columnType).map((item) => {
       if (val == item) {
         type = columnType[item];
-        return;
       }
     });
     console.log(type);
     switch (type) {
-      case "String": {
-        operationType = "string";
+      case 'String': {
+        operationType = 'string';
         break;
       }
-      case "Int8": {
-        operationType = "numeric";
+      case 'Int8': {
+        operationType = 'numeric';
         break;
       }
-      case "Date": {
-        operationType = "date";
+      case 'Date': {
+        operationType = 'date';
         break;
       }
     }
-    //拿操作符
+    // 拿操作符
     getAllOperation().then((res) => {
       const temp = operations;
       Object.keys(res.payload).map((val) => {
         if (val == operationType) {
           console.log(temp);
           temp[i] = res.payload[val];
-          console.log(temp);
+          // console.log(temp);
           setOperations(temp);
           setLoading(!loading);
         }
       });
+      console.log('ope', temp);
     });
   };
 
@@ -291,16 +291,16 @@ const AdvancedSearchForm = (props) => {
   };
   const onFinish = (values) => {
     // 记录了所有的数组的操作类型
-    console.log(operations);
+    console.log('operations', operations);
     const arr = [];
     for (let i = 0; i < count; i++) {
       Object.keys(operations[i]).map((val) => {
         if (values[`condition-${i}`] == val) {
           console.log(operations[i][val]);
           arr.push(operations[i][val]);
-          arr[i] = arr[i].replace("&*&", values[`column-${i}`]);
-          arr[i] = arr[i].replace("#$#", values[`value-${i}`]);
-          console.log(arr);
+          arr[i] = arr[i].replace('&*&', values[`column-${i}`]);
+          arr[i] = arr[i].replace('#$#', values[`value-${i}`]);
+          // console.log(arr);
         }
       });
       // console.log(values[`filter-${i}`])
@@ -308,11 +308,12 @@ const AdvancedSearchForm = (props) => {
       // console.log(values[`condition-${i}`])
       // console.log(values[`value-${i}`])
     }
-    var str = arr[0];
+    console.log('arr', arr);
+    let str = arr[0];
     for (let i = 1; i < count; i++) {
-      str = str + ' ' + values[`filter-${i}`] + ' ' + arr[i];
+      str = `${str } ${ values[`filter-${i}`] } ${ arr[i]}`;
     }
-    console.log(str);
+    console.log('str', arr, str);
     const tableData = {
       dataSource: 'dataflow.airuuid',
       filter: str,

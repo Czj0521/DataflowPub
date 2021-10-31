@@ -5,7 +5,7 @@ function Filter(props) {
   const { item = {} } = props;
   const { dataFrame = '' } = item;
   return (
-    <div style={{ width: '100%', height: '600px' }}>
+    <div style={{ width: '100%', height: '600px', position: 'absolute', left: '0', top: 0 }}>
       <FilterForm dataFrame={dataFrame} />
     </div>
   );

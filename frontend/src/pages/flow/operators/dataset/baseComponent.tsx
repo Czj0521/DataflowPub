@@ -159,7 +159,7 @@ function BaseComponent(props) {
           style={{ position: 'absolute', right: 15, top: 15, zIndex: 15, color: '#bbb', cursor: 'pointer' }}
         />
       )}
-      
+
     </div>
   );
 }

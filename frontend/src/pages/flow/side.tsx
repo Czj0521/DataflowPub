@@ -12,6 +12,8 @@ import BaseComponent from './operators/dataset/baseComponent';
 import Transpose from './operators/transpose';
 import Filter from './operators/Filter';
 import store from '@/store';
+import { Join } from './operators';
+
 
 const { Dnd } = Addon;
 
@@ -51,7 +53,7 @@ function DatasetSide(props) {
       case 'Table':
         return <BaseComponent type={type} size={size} />;
       case 'Join':
-        return <BaseComponent type={type} size={size} />;
+        return <Join />;
       case 'Filter':
         return <Filter type={type} size={size} />;
       case 'dataset':

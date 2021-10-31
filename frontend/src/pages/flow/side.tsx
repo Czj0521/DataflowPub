@@ -10,6 +10,8 @@ import Transpose from './operators/transpose';
 import { Join } from './operators'
 import Filter from './operators/filter';
 import store from '@/store';
+import { Join } from './operators';
+
 
 
 const { Dnd } = Addon;

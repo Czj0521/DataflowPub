@@ -9,6 +9,8 @@ import { getTable, getTableColumn } from '../../api/table';
 import IconFont from '../../font';
 import data from './data';
 import BaseComponent from './operators/dataset/baseComponent';
+import { Join } from './operators'
+
 
 const { Dnd } = Addon;
 
@@ -44,7 +46,7 @@ function DatasetSide(props) {
       case 'Table':
         return <BaseComponent type={type} size={size} />;
       case 'Join':
-        return <BaseComponent type={type} size={size} />;
+        return <Join />;
       case 'Filter':
         return <BaseComponent type={type} size={size} />;
       case 'dataset':

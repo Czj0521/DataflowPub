@@ -1,10 +1,9 @@
-/* eslint-disable quotes */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
-import { Table } from "antd";
-import classNames from "classnames";
-import ResizeObserver from "rc-resize-observer";
-import { VariableSizeGrid as Grid } from "react-window";
+import { Table } from 'antd';
+import classNames from 'classnames';
+import ResizeObserver from 'rc-resize-observer';
+import { VariableSizeGrid as Grid } from 'react-window';
 
 function VirtualTable(props) {
   const { columns, scroll } = props;

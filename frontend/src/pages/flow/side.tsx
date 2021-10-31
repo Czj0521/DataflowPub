@@ -9,6 +9,7 @@ import { getTable, getTableColumn } from '../../api/table';
 import IconFont from '../../font';
 import data from './data';
 import BaseComponent from './operators/dataset/baseComponent';
+import Transpose from './operators/transpose';
 
 const { Dnd } = Addon;
 
@@ -49,22 +50,26 @@ function DatasetSide(props) {
         return <BaseComponent type={type} size={size} />;
       case 'dataset':
         return <BaseComponent type={type} size={size} />;
-      case 'transpose':
-        return <BaseComponent type={type} size={size} />;
+      case 'Transpose':
+        return <Transpose type={type} size={size} />;
       default:
         return <div />;
     }
   };
 
   const drop = (e) => {
-    console.log(e);
+    console.log(e, props);
     const { graph } = props;
     const target = e.currentTarget;
     const type = target.getAttribute('data-type');
     const parent = target.getAttribute('parent');
     // console.log(parent)
+<<<<<<< fead2bcf1e00f2c10aa6c59e17a155ee20f74cc5
     console.log('type', type);
     const item = {};
+=======
+    console.log(type);
+>>>>>>> feat: transpose配置label
     const node = graph.createNode({
       width: 500,
       height: 300,

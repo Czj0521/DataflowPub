@@ -128,7 +128,11 @@ function BaseComponent(props) {
         );
       });
   };
+<<<<<<< fead2bcf1e00f2c10aa6c59e17a155ee20f74cc5
   console.log('type', props.type);
+=======
+  
+>>>>>>> feat: transpose配置label
   return (
     <div className="hetu_basecomponent_wrapper" draggable>
       <TableSidebar setColumn={setColumn} data={data} setData={setData} filter={filter} />
@@ -140,11 +144,7 @@ function BaseComponent(props) {
             title={() => `${length}条数据`}
             size="small"
             pagination={false}
-<<<<<<< d634cbc65e111b57eef47378c81b3b2a473a7c13
             style={{ height: '100%', width: '100%', overFlow:'hidden', color: 'white' }}
-=======
-            style={{ height: '100%', width: '100%', overFlow: 'hidden', backgroundColor: 'transparent', color: 'white' }}
->>>>>>> Filter组件调整
             scroll={{
               x: width,
               y: height - 100,

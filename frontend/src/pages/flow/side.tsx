@@ -279,7 +279,7 @@ function DatasetSide(props) {
           >
             airuuid.csv
           </span>
-          <span className="hetu_side_item_logo" draggable onDragStart={(e) => handleDragStart(e, 'airuuid.csv', 'hetu-ODIyuanshujuji')}>
+          <span className="hetu_side_item_logo" draggable onDragStart={(e) => handleDragStart(e, 'dataflow.airuuid', 'hetu-ODIyuanshujuji')}>
             <IconFont type="hetu-ODIyuanshujuji" style={{ fontSize: 18 }} />
           </span>
           <span

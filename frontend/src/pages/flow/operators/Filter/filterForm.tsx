@@ -11,6 +11,7 @@ const rules = [{
 }];
 const cusDropDownStyle = {
   color: '#282828',
+  position: 'relative',
   background: '#f4f5f7',
 };
 const rowData = { filter: 'Where', column: '', condition: '', value: '' };
@@ -30,10 +31,9 @@ function reducer(state, action) {
       return { filterRules: state.filterRules.concat({ ...rowData, filter: str, key: ++state.uniqueKey }),
         uniqueKey: state.uniqueKey + 1 };
     case 'changeRowData':
-      const { filterRules } = state;
+      const filterRules = state.filterRules;
       filterRules[action.index][action.name] = action.value;
       return { ...state, filterRules };
-      // return update(state, {tableColumn: {[action.index]: {[action.name]: {$set: action.value}}}})
     default:
       return state;
   }
@@ -56,7 +56,7 @@ function FilterForm({ dataFrame, ...props }) {
       const temp = operations;
       setOperations(res.payload);
     });
-  }, []);
+  }, [dataFrame]);
   const onFinish = (values) => {
     console.log(state.filterRules, values);
     const formData: Array<any> = [];

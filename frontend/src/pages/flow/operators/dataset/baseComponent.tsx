@@ -38,7 +38,7 @@ function BaseComponent(props) {
     setData(item.option.data);
     // setColumn(item.option.column);
     setColumn(item.option.column ? item.option.column.map((c) => ({ ...c, width: 300, align: 'center' })) : []);
-    if (props.type === 'dataset') return;
+    if (props.type === 'dataset' || props.type === 'Filter') return;
     const dom = document.getElementById(item.id);
     const myDom = echarts.init(dom);
     myDom.setOption(item.option);
@@ -59,10 +59,10 @@ function BaseComponent(props) {
           selectedData += `Y: ${v.coordRange[1].join('~')}\n`;
         }
       });
-      const data = props.node.getData();
+      const nodeData = props.node.getData();
       // console.log(selectedData)
       props.node.setData({
-        ...data,
+        ...nodeData,
         select: selectedData,
         brush: false,
       });
@@ -128,7 +128,7 @@ function BaseComponent(props) {
         );
       });
   };
-
+  console.log('type', props.type);
   return (
     <div className="hetu_basecomponent_wrapper" draggable>
       <TableSidebar setColumn={setColumn} data={data} setData={setData} filter={filter} />
@@ -151,12 +151,12 @@ function BaseComponent(props) {
             }}
           />
         )}
+        {
+          props.type === 'Filter' && (
+            <Filter {...props.node.getData()} />
+          )
+        }
       </div>
-      {
-        props.type === 'Filter' && (
-          <Filter {...props.node.getData()} />
-        )
-      }
       {props.type !== 'dataset' && (
         <IconFont
           type="hetu-clearselection"

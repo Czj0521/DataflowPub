@@ -147,13 +147,11 @@ function BaseComponent(props) {
           />
         )}
       </div>
-      <div>
-        {
-          props.type === 'Filter' && (
-            <Filter {...props.node.getData()} />
-          )
-        }
-      </div>
+      {
+        props.type === 'Filter' && (
+          <Filter {...props.node.getData()} />
+        )
+      }
       {props.type !== 'dataset' && (
         <IconFont
           type="hetu-clearselection"

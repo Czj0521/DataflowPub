@@ -85,6 +85,7 @@ function FilterForm({ dataFrame, ...props }) {
     };
     getTable(tableData).then((res) => {
       // props.setData(res);
+      // 待处理
       console.log(res);
     });
     console.log('Received values of form: ', values);
@@ -118,7 +119,7 @@ function FilterForm({ dataFrame, ...props }) {
                   (<Select dropdownStyle={cusDropDownStyle} size={'small'}>
                     <Option key="And">{'AND'}</Option>
                     <Option key="Or">{'OR'}</Option>
-                   </Select>) :
+                  </Select>) :
                   <Input 
                     style={{
                       color: 'white',

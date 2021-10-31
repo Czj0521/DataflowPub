@@ -24,26 +24,29 @@ const mapTypeToOperateType = { String: 'string', Date: 'date', UInt8: 'numeric',
 function reducer(state, action) {
   const len = state.filterRules.length;
   const str = len >= 1 ? 'Where' : 'Or';
+  const { filterRules } = state;
   switch (action.type) {
     case 'deleteRow':
-      return { filterRules: state.filterRules.splice(action.index, 1) };
+      console.log('delete', action.index);
+      filterRules.splice(action.index, 1);
+      return { ...state, filterRules };
     case 'addRow':
       return { filterRules: state.filterRules.concat({ ...rowData, filter: str, key: ++state.uniqueKey }),
         uniqueKey: state.uniqueKey + 1 };
     case 'changeRowData':
-      const filterRules = state.filterRules;
       filterRules[action.index][action.name] = action.value;
       return { ...state, filterRules };
     default:
       return state;
   }
 }
-function FilterForm({ dataFrame, ...props }) {
+function FilterForm({ dataFrame, setData, ...props }) {
   const [form] = Form.useForm();
   const [column, setColumn] = useState([]);
   const [columnType, setColumnType] = useState({});
   const [operations, setOperations] = useState(new Array(100));
   const [state, dispatch] = useReducer(reducer, initialState);
+  console.log('in filterForm', dataFrame);
   useEffect(() => {
     // 'dataflow.airuuid'
     dataFrame && getTableColumn({ datasource: dataFrame || 'dataflow.airuuid' }).then((res) => {
@@ -53,7 +56,6 @@ function FilterForm({ dataFrame, ...props }) {
     // 拿操作符
     getAllOperation().then((res) => {
       console.log('res operate', res.payload);
-      const temp = operations;
       setOperations(res.payload);
     });
   }, [dataFrame]);
@@ -74,7 +76,7 @@ function FilterForm({ dataFrame, ...props }) {
       let colType = columnType[values[`column-${uKey}`]]; // 列类型
       colType = mapTypeToOperateType[colType];
       const finalCondition = operations[colType][values[`condition-${uKey}`]].replace('&*&', values[`column-${uKey}`]).replace('#$#', values[`value-${uKey}`]);
-      str += `${ i > 1 ? values[`filter-${i}`] : '' } ${finalCondition}`;
+      str += `${ i > 0 ? values[`filter-${i}`] : '' } ${finalCondition} `;
     }
     console.log('formData', formData, str);
     const tableData = {
@@ -83,8 +85,9 @@ function FilterForm({ dataFrame, ...props }) {
       limit: 2000,
       project: ['*'],
     };
+    // 存储 表单值和
     getTable(tableData).then((res) => {
-      // props.setData(res);
+      setData(res);
       // 待处理
       console.log(res);
     });
@@ -117,9 +120,9 @@ function FilterForm({ dataFrame, ...props }) {
               >{
                 i === 1 ? 
                   (<Select dropdownStyle={cusDropDownStyle} size={'small'}>
-                    <Option key="And">{'AND'}</Option>
-                    <Option key="Or">{'OR'}</Option>
-                  </Select>) :
+                    <Option key="And" value={'And'}>{'AND'}</Option>
+                    <Option key="Or" value={'Or'}>{'OR'}</Option>
+                   </Select>) :
                   <Input 
                     style={{
                       color: 'white',

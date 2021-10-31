@@ -4,6 +4,7 @@ import com.bdilab.dataflow.operator.dto.joboutputjson.AbstractJobOutputJson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.Map;

@@ -1,6 +1,7 @@
 package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.FilterDescription;
+import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import com.bdilab.dataflow.operator.dto.jobdescription.SQLGeneratorBase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,11 +13,15 @@ import lombok.NoArgsConstructor;
  * @description: Filter SQL Generator
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class FilterSQLGenerator extends SQLGeneratorBase{
 
     private FilterDescription filterDescription;
+
+    public FilterSQLGenerator(FilterDescription filterDescription) {
+        super(filterDescription);
+        this.filterDescription = filterDescription;
+    }
 
     @Override
     public String project() {

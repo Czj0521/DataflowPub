@@ -4,15 +4,22 @@ import com.bdilab.dataflow.dto.jobinputjson.MaterializeInputJson;
 import com.bdilab.dataflow.dto.joboutputjson.MaterializeOutputJson;
 
 /**
+ * Materialize Job Service.
+
  * @author: wh
  * @create: 2021-10-27
- * @description:
  */
 public interface MaterializeJobService {
     /**
-     * Materialize Job
-     * @param materializeInputJson
-     * @return
+     * Materialize Job.
+
+     * @return MaterializeOutputJson
      */
     MaterializeOutputJson materialize(MaterializeInputJson materializeInputJson);
+
+    /**
+     * Delete Materializem View.
+
+     */
+    String deleteSubTable(String subTableId);
 }

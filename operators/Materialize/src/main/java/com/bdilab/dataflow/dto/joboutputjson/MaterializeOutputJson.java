@@ -1,20 +1,18 @@
 package com.bdilab.dataflow.dto.joboutputjson;
 
-import com.alibaba.fastjson.JSONObject;
-import com.bdilab.dataflow.dto.jobdescription.MaterializeDescription;
-import com.bdilab.dataflow.operator.dto.jobinputjson.AbstractJobInputJson;
 import com.bdilab.dataflow.operator.dto.joboutputjson.AbstractJobOutputJson;
+import java.util.Map;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import java.util.Map;
 
 /**
+ * Materialize Output Json.
+
  * @author: wh
  * @create: 2021-10-27
- * @description:
  */
 @Data
 @AllArgsConstructor

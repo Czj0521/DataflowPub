@@ -9,26 +9,25 @@ import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
 import com.bdilab.dataflow.dto.jobinputjson.MaterializeInputJson;
 import com.bdilab.dataflow.dto.joboutputjson.MaterializeOutputJson;
 import com.bdilab.dataflow.service.MaterializeJobService;
-import com.bdilab.dataflow.service.TableJobService;
 import com.bdilab.dataflow.sql.generator.TableSQLGenerator;
 import com.bdilab.dataflow.utils.SQLParseUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
+import java.nio.charset.Charset;
+import java.util.Map;
+import javax.annotation.Resource;
+
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.util.URLEncoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 
-import java.nio.charset.Charset;
-import java.util.Map;
-
-import static com.bdilab.dataflow.common.consts.CommonConstants.DATABASE;
 /**
+ * Materialize Job Service Impl.
+
  * @author: wh
  * @create: 2021-10-28
- * @description:
  */
 @Service
 @Slf4j
@@ -41,37 +40,44 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
     JoinServiceImpl joinServiceImpl;
     @Resource
     TableMetadataServiceImpl tableMetadataServiceImpl;
+    @Resource
+    ClickHouseJdbcUtils clickHouseJdbcUtils;
 
     @Override
     public MaterializeOutputJson materialize(MaterializeInputJson materializeInputJson) {
-        MaterializeDescription materializeDescription = materializeInputJson.getMaterializeDescription();
+        MaterializeDescription materializeDescription =
+                materializeInputJson.getMaterializeDescription();
         JSONObject materializedOperator = materializeDescription.getMaterializedOperator();
         String datasourceSql;
         switch (materializeDescription.getMaterializedType()) {
             case "table":
-                TableDescription tableDescription = JSON.toJavaObject(materializedOperator,TableDescription.class);
+                TableDescription tableDescription =
+                        JSON.toJavaObject(materializedOperator, TableDescription.class);
                 datasourceSql = new TableSQLGenerator(tableDescription).generateDataSourceSql();
                 break;
             case "transpose":
-                TransposeDescription transposeDescription = JSON.toJavaObject(materializedOperator,TransposeDescription.class);
+                TransposeDescription transposeDescription =
+                        JSON.toJavaObject(materializedOperator, TransposeDescription.class);
                 datasourceSql = transposeServiceImpl.generateDataSourceSql(transposeDescription);
                 break;
             case "join":
-                JoinDescription joinDescription = JSON.toJavaObject(materializedOperator, JoinDescription.class);
+                JoinDescription joinDescription =
+                        com.bdilab.dataflow.dto.JoinDescription.generateFromJson(materializedOperator);
                 datasourceSql = joinServiceImpl.generateDataSourceSql(joinDescription);
                 break;
             default:
                 throw new RuntimeException("Wrong materialized type!");
         }
-
         StringBuilder sbSql = new StringBuilder();
-        String name = DATABASE + "." + SQLParseUtils.getUUID32();
-        sbSql.append("CREATE VIEW ").append(name).append(" AS ").append("(").append(datasourceSql).append(")");
+        String name = com.bdilab.dataflow.common.consts.CommonConstants.DATABASE
+                + "." + SQLParseUtils.getUUID32();
+        sbSql.append("CREATE VIEW ").append(name).append(" AS ")
+                .append("(").append(datasourceSql).append(")");
         String sql = new String(sbSql);
         URLEncoder urlEncoder = new URLEncoder();
         sql = urlEncoder.encode(sql, Charset.defaultCharset());
         log.info("Materialize Sql: {}", sql);
-        while(ClickHouseHttpUtils.sendPost(httpPrefix + sql).length()>0){
+        while (ClickHouseHttpUtils.sendPost(httpPrefix + sql).length() > 0) {
             log.info("Error: View name already exists, try again.");
         }
         log.info("Materialize job: {} has been created", name);
@@ -84,5 +90,11 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
         materializeOutputJson.setMetadata(metadata);
         materializeOutputJson.setSubTableId(name);
         return materializeOutputJson;
+    }
+
+    @Override
+    public String deleteSubTable(String subTableId) {
+        clickHouseJdbcUtils.execute("DROP VIEW "+subTableId);
+        return "success";
     }
 }

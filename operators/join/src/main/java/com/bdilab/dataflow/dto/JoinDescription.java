@@ -11,10 +11,12 @@ import org.springframework.stereotype.Repository;
 
 
 /**
- * @author Yu Shaochao
+ * Join Input Json.
+
+ * @author YuShaochao
  * @create: 2021-10-24
  * @description:
- * "jobDescription": {
+ * "JoinDescription": {
  *       "leftDataSource": "test1",
  *       "rightDataSource": "test2",
  *       "joinType":"innerJoin",
@@ -24,7 +26,6 @@ import org.springframework.stereotype.Repository;
  *       "rightPrefix":"right_"
  *  }
  */
-
 
 @Data
 @AllArgsConstructor
@@ -41,9 +42,13 @@ public class JoinDescription {
     private String leftPrefix;
     private String rightPrefix;
 
+    /** transform json to JoinDescription.
 
-    /*联动时删除leftDataSource和rightDataSource字段*/
-    public static JoinDescription generateFromJson(JSONObject json){
+     * @param json (json from table)
+     * @return JoinDescription
+     * 联动时删除leftDataSource和rightDataSource字段
+     */
+    public static JoinDescription generateFromJson(JSONObject json) {
         String jobType = json.getString("jobType");
         String leftDataSource = json.getString("leftDataSource");
         String rightDataSource = json.getString("rightDataSource");
@@ -52,7 +57,8 @@ public class JoinDescription {
         String includePrefixes = json.getString("includePrefixes");
         String leftPrefix = json.getString("leftPrefix");
         String rightPrefix = json.getString("rightPrefix");
-        return new JoinDescription(jobType,leftDataSource,rightDataSource,joinType,joinKeys,includePrefixes,leftPrefix,rightPrefix);
+        return new JoinDescription(jobType, leftDataSource, rightDataSource,
+                joinType, joinKeys, includePrefixes, leftPrefix, rightPrefix);
     }
 
 }

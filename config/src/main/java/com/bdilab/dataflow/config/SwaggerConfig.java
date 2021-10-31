@@ -11,16 +11,21 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 /**
+ * Swagger Config.
+
  * @author wh
  * @version 1.0
  * @date 2021/09/10
- *
  */
 @Configuration
 @ComponentScan("com.bdilab.dataflow")
 @EnableSwagger2
 public class SwaggerConfig {
 
+    /**
+     * create Rest Api.
+
+     */
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)

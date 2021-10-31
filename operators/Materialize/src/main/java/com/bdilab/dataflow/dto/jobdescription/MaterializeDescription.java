@@ -6,16 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 /**
+ * The description field of the Materialize input JSON.
+
  * @author: wh
  * @create: 2021-10-27
- * @description:
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class MaterializeDescription {
-    private String MaterializedType;
+    private String materializedType;
     private JSONObject materializedOperator;
 }

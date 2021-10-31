@@ -166,10 +166,13 @@ function BaseComponent(props) {
           style={{ position: 'absolute', right: 15, top: 15, zIndex: 15, color: '#bbb', cursor: 'pointer' }}
         />
       )}
+<<<<<<< 7ff9462e30d12722a64d89abe5f3aa45cc8441c2
 <<<<<<< 01e4cd086270a5ceb36261011fd9f3728335e619
 =======
 
 >>>>>>> 'feat:join-init'
+=======
+>>>>>>> refactor:SideItem
     </div>
   );
 }

@@ -141,7 +141,7 @@ function FilterForm({ dataFrame, ...props }) {
               >
                 <Select
                   onChange={(val) => dispatch({ type: 'changeRowData', index: i, name: 'column', value: val })}
-                  dropdownStyle={cusDropDownStyle}
+                  // dropdownStyle={cusDropDownStyle}
                   size={'small'}
                 >
                   {

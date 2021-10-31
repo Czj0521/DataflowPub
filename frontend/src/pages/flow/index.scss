@@ -68,3 +68,19 @@
 .hetu_canvas{
     height: calc(100vh);
 }
+
+.operators-container {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    .operators-display {
+        color: #fff;
+        font-size: larger;
+        font-weight: bold;
+    }
+}
+
+.labelForm {
+    padding: 8px;
+}

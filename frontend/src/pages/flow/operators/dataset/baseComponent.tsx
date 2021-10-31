@@ -128,7 +128,7 @@ function BaseComponent(props) {
         );
       });
   };
-  console.log('type', props.type);
+  
   return (
     <div className="hetu_basecomponent_wrapper" draggable>
       <TableSidebar setColumn={setColumn} data={data} setData={setData} filter={filter} />

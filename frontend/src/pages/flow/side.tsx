@@ -9,6 +9,7 @@ import { getTable, getTableColumn } from '../../api/table';
 import IconFont from '../../font';
 import data from './data';
 import BaseComponent from './operators/dataset/baseComponent';
+import Transpose from './operators/transpose';
 
 const { Dnd } = Addon;
 
@@ -49,15 +50,15 @@ function DatasetSide(props) {
         return <BaseComponent type={type} size={size} />;
       case 'dataset':
         return <BaseComponent type={type} size={size} />;
-      case 'transpose':
-        return <BaseComponent type={type} size={size} />;
+      case 'Transpose':
+        return <Transpose type={type} size={size} />;
       default:
         return <div />;
     }
   };
 
   const drop = (e) => {
-    console.log(e);
+    console.log(e, props);
     const { graph } = props;
     const target = e.currentTarget;
     const type = target.getAttribute('data-type');

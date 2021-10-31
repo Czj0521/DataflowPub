@@ -176,7 +176,7 @@ function DatasetSide(props) {
             console.log('表数据：', res1);
             console.log('列数据：', res2);
             const column = [];
-            Object.keys(res2).map((val) => {
+            Object.keys(res2).forEach((val) => {
               column.push({
                 key: val,
                 dataIndex: val,
@@ -305,6 +305,7 @@ function DatasetSide(props) {
                   </div>
                 );
               }
+              return null;
             })}
           </div>
         )}

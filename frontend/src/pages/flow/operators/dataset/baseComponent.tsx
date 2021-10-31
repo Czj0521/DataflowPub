@@ -131,6 +131,7 @@ function BaseComponent(props) {
 
   return (
     <div className="hetu_basecomponent_wrapper" draggable>
+      <TableSidebar setColumn={setColumn} data={data} setData={setData} filter={filter} />
       <div className="hetu_basecomponent" id={props.node.getData().item.id}>
         {props.type === 'dataset' && (
           <VirtualTable
@@ -139,7 +140,7 @@ function BaseComponent(props) {
             title={() => `${length}条数据`}
             size="small"
             pagination={false}
-            style={{ height: '100%', width: '100%', overFlow: 'hidden', backgroundColor: 'transparent', color: 'white' }}
+            style={{ height: '100%', width: '100%', overFlow: 'hidden', color: 'white' }}
             scroll={{
               x: width,
               y: height - 100,
@@ -159,7 +160,7 @@ function BaseComponent(props) {
           style={{ position: 'absolute', right: 15, top: 15, zIndex: 15, color: '#bbb', cursor: 'pointer' }}
         />
       )}
-      <TableSidebar setColumn={setColumn} data={data} setData={setData} filter={filter} />
+      
     </div>
   );
 }

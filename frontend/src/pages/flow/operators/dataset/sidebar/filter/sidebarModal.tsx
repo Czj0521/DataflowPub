@@ -1,4 +1,4 @@
-import AdvancedSearchForm from './form';
+import AdvancedSearchForm from '../../../filter/filterForm';
 import IconFont from '../../../../../../font';
 
 function SidebarModal(props) {
@@ -8,6 +8,7 @@ function SidebarModal(props) {
       <div className="hetu_sidebar_modal">
         <AdvancedSearchForm
           data={props.data}
+          dataFrame={props.dataFrame}
           setData={props.setData}
           filter={props.filter}
         />

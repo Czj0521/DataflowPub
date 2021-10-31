@@ -290,6 +290,21 @@ export default function FlowComponent(props) {
         }
         console.log(args);
       });
+
+      // 边连接
+      graph.on('edge:connected', ({ isNew, edge }) => {
+        if (isNew) {
+          const source = edge.getSourceCell();
+          const target = edge.getTargetCell();
+          const tarData = target.getData();
+          // Filter为target时将source的dataFrame赋给filter的对应字段
+          // 处理不完整，缺少对source,target具体是什么类型标识(Filter, Table等)
+          tarData.item.dataFrame = source.data.item.dataFrame;
+          target.setData(tarData);
+          console.log('new edge', edge, source, target);
+          // 对新创建的边进行插入数据库等持久化操作
+        }
+      });
       // graph.on('node:moved',({ e, x, y, node, view })=>{
       //   console.log( e, x, y, node, view,)
 

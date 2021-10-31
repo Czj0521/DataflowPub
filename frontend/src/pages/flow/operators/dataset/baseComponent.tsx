@@ -7,7 +7,6 @@ import * as echarts from 'echarts';
 import VirtualTable from '../../../../components/VirtualTable';
 import IconFont from '../../../../font';
 import TableSidebar from './tableSidebar';
-import Filter from '../Filter';
 
 function BaseComponent(props) {
   console.log('type',props);
@@ -38,7 +37,7 @@ function BaseComponent(props) {
     setData(item.option.data);
     // setColumn(item.option.column);
     setColumn(item.option.column ? item.option.column.map((c) => ({ ...c, width: 300, align: 'center' })) : []);
-    if (props.type === 'dataset' || props.type === 'Filter') return;
+    if (props.type === 'dataset') return;
     const dom = document.getElementById(item.id);
     const myDom = echarts.init(dom);
     myDom.setOption(item.option);
@@ -135,7 +134,7 @@ function BaseComponent(props) {
 >>>>>>> feat: transpose配置label
   return (
     <div className="hetu_basecomponent_wrapper" draggable>
-      <TableSidebar setColumn={setColumn} data={data} setData={setData} filter={filter} />
+      <TableSidebar setColumn={setColumn} dataFrame={props.node.data.item.dataFrame} data={data} setData={setData} filter={filter} />
       <div className="hetu_basecomponent" id={props.node.getData().item.id}>
         {props.type === 'dataset' && (
           <VirtualTable

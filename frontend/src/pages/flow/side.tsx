@@ -11,10 +11,14 @@ import data from './data';
 import BaseComponent from './operators/dataset/baseComponent';
 <<<<<<< c662a0f836aaad2f6d8ab5d7f17540f91774af9f
 import Transpose from './operators/transpose';
+<<<<<<< 82bd3c705b99334b3b0fa7369cb71182fb3a0925
 =======
 import { Join } from './operators'
 
 >>>>>>> 'feat:join-init'
+=======
+import Filter from './operators/filter';
+>>>>>>> feat:Filter 连线改变Filter的源
 
 const { Dnd } = Addon;
 
@@ -52,7 +56,7 @@ function DatasetSide(props) {
       case 'Join':
         return <Join />;
       case 'Filter':
-        return <BaseComponent type={type} size={size} />;
+        return <Filter type={type} size={size} />;
       case 'dataset':
         return <BaseComponent type={type} size={size} />;
       case 'Transpose':
@@ -61,12 +65,13 @@ function DatasetSide(props) {
         return <div />;
     }
   };
-
+  
   const drop = (e) => {
-    console.log(e, props);
+    console.log('drop', e, props);
     const { graph } = props;
     const target = e.currentTarget;
     const type = target.getAttribute('data-type');
+    const dataSource = target.getAttribute('data-dataSource');
     const parent = target.getAttribute('parent');
     // console.log(parent)
 <<<<<<< fead2bcf1e00f2c10aa6c59e17a155ee20f74cc5
@@ -76,13 +81,14 @@ function DatasetSide(props) {
     console.log(type);
 >>>>>>> feat: transpose配置label
     const node = graph.createNode({
-      width: 500,
+      width: 400,
       height: 300,
       shape: 'react-shape',
       data: {
         brush: false,
         dataset: {},
         item: {
+          dataFrame: dataSource, // 输入槽数据帧
           id: `${new Date().getTime()}`,
           option: {
             data: [],
@@ -286,6 +292,7 @@ function DatasetSide(props) {
             draggable
             onMouseDown={drop}
             data-type="dataset"
+            data-dataSource={'dataflow.airuuid'}
           >
             airuuid.csv
           </span>
@@ -320,6 +327,7 @@ function DatasetSide(props) {
             })}
           </div>
         )}
+        <button onClick={(e) => console.log(props.graph.toJSON())}>get Graph data </button>
       </div>
     </div>
   );

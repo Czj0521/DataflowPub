@@ -18,12 +18,13 @@ function Filters(props) {
 
   return (
     <div className="hetu_sidebar_wrapper">
-      <div className={visible ? "hetu_sidebar_item active" : "hetu_sidebar_item"} onClick={expandSidebarItem}>
+      <div className={visible ? 'hetu_sidebar_item active' : 'hetu_sidebar_item'} onClick={expandSidebarItem}>
         <IconFont type="hetu-shuxing" className="hetu_sidebar_item_icon" />{' '}
         filter
       </div>
       {visible && (
         <SidebarModal
+          dataFrame={props.dataFrame}
           data={props.data}
           setData={props.setData}
           filter={props.filter}

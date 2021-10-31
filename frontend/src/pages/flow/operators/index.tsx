@@ -1,3 +1,3 @@
-import  Join  from './Join'
+import Join from './Join'
 
 export { Join }

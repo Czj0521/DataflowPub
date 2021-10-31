@@ -127,7 +127,7 @@ function BaseComponent(props) {
         );
       });
   };
-
+  
   return (
     <div className="hetu_basecomponent_wrapper" draggable>
       <div className="hetu_basecomponent" id={props.node.getData().item.id}>

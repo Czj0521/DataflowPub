@@ -20,6 +20,7 @@ const AdvancedSearchForm = (props) => {
       const tempColumn = [];
       Object.keys(res).map((val) => {
         tempColumn.push(val);
+        return 1
       });
       setColumn(tempColumn);
       setColumnType(res);
@@ -41,17 +42,17 @@ const AdvancedSearchForm = (props) => {
         children.push(
           <Row gutter={24}>
             <Col span={6} key={`filter-${i}`}>
-              <Form.Item initialValue={"Where"} name={`filter-${i}`}>
+              <Form.Item initialValue={'Where'} name={`filter-${i}`}>
                 <Input
-                  defaultValue={"Where"}
+                  defaultValue={'Where'}
                   disabled={true}
                   style={{
-                    color: "white",
-                    background: "#282820",
-                    width: "100%",
-                    borderColor: "#2e3c51",
+                    color: 'white',
+                    background: '#282820',
+                    width: '100%',
+                    borderColor: '#2e3c51',
                   }}
-                  size={"small"}
+                  size={'small'}
                 />
               </Form.Item>
             </Col>
@@ -61,24 +62,24 @@ const AdvancedSearchForm = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Input something!",
+                    message: 'Input something!',
                   },
                 ]}
               >
-                {/*<Input   style={{color:'white',background:'#282820',width:'100%',borderColor:'#2e3c51'}} size={'small'}/>*/}
+                {/* <Input   style={{color:'white',background:'#282820',width:'100%',borderColor:'#2e3c51'}} size={'small'}/> */}
                 <Select
                   onChange={onChange}
-                  dropdownStyle={{ color: "white", background: "#282820" }}
-                  size={"small"}
+                  dropdownStyle={{ color: 'white', background: '#282820' }}
+                  size={'small'}
                 >
                   {column
                     ? column.map((val) => {
-                        return (
-                          <Option i={i} key={val}>
-                            {val}
-                          </Option>
-                        );
-                      })
+                      return (
+                        <Option i={i} key={val}>
+                          {val}
+                        </Option>
+                      );
+                    })
                     : null}
                 </Select>
               </Form.Item>
@@ -89,14 +90,14 @@ const AdvancedSearchForm = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Input something!",
+                    message: 'Input something!',
                   },
                 ]}
               >
                 {operations[i] ? (
                   <Select
-                    dropdownStyle={{ color: "white", background: "#282820" }}
-                    size={"small"}
+                    dropdownStyle={{ color: 'white', background: '#282820' }}
+                    size={'small'}
                   >
                     {Object.keys(operations[i]).map((val) => {
                       return <Option key={val}>{val}</Option>;
@@ -105,12 +106,12 @@ const AdvancedSearchForm = (props) => {
                 ) : (
                   <Input
                     style={{
-                      color: "white",
-                      background: "#282820",
-                      width: "100%",
-                      borderColor: "#2e3c51",
+                      color: 'white',
+                      background: '#282820',
+                      width: '100%',
+                      borderColor: '#2e3c51',
                     }}
-                    size={"small"}
+                    size={'small'}
                   />
                 )}
               </Form.Item>
@@ -121,22 +122,22 @@ const AdvancedSearchForm = (props) => {
                 rules={[
                   {
                     required: true,
-                    message: "Input something!",
+                    message: 'Input something!',
                   },
                 ]}
               >
                 <Input
                   style={{
-                    color: "white",
-                    background: "#282820",
-                    width: "100%",
-                    borderColor: "#2e3c51",
+                    color: 'white',
+                    background: '#282820',
+                    width: '100%',
+                    borderColor: '#2e3c51',
                   }}
-                  size={"small"}
+                  size={'small'}
                 />
               </Form.Item>
             </Col>
-          </Row>
+          </Row>,
         );
       } else {
         children.push(
@@ -169,12 +170,12 @@ const AdvancedSearchForm = (props) => {
                 >
                   {column
                     ? column.map((val) => {
-                        return (
-                          <Option i={i} key={val}>
-                            {val}
-                          </Option>
-                        );
-                      })
+                      return (
+                        <Option i={i} key={val}>
+                          {val}
+                        </Option>
+                      );
+                    })
                     : null}
                 </Select>
               </Form.Item>
@@ -250,27 +251,23 @@ const AdvancedSearchForm = (props) => {
       }
     });
     console.log(type);
-    switch (type) {
-      case "String": {
-        operationType = "string";
-        break;
-      }
-      case "Int8": {
-        operationType = "numeric";
-        break;
-      }
-      case "Date": {
-        operationType = "date";
-        break;
-      }
+    if (type.includes('Int') || type.includes('Float') || type.includes('Nullable')) {
+      operationType = "numeric";
+    }
+    else if (type.includes('String')) {
+      operationType = "string";
+    }
+    else if (type.includes('Date')) {
+      operationType = "date";
     }
     //拿操作符
     getAllOperation().then((res) => {
       const temp = operations;
-      Object.keys(res.payload).map((val) => {
+      console.log(res)
+      Object.keys(res).map((val) => {
         if (val == operationType) {
           console.log(temp);
-          temp[i] = res.payload[val];
+          temp[i] = res[val];
           console.log(temp);
           setOperations(temp);
           setLoading(!loading);
@@ -279,34 +276,52 @@ const AdvancedSearchForm = (props) => {
     });
   };
 
-  const save = () => {
-    // axios({
-    //  method:'GET',
-    //  url:'http://192.168.0.53:8080/api/v1/tablejob/filter?filterString=(%20%5Btime%5D.before(%222014-02-01%22)%20and%20%5Btime%5D.after(%222014-01-01%22)%20and%20%5Bcity%5D.containsAny(%22%E5%8D%97%2C%E9%97%A8%22)%20and%20%5BSO2%5D%20%3E%2010%20)&limit=2000&tableName=air.csv'
-    // }).then(res =>{
-    //  console.log(form.getFieldsValue())
-    //  //console.log(res.data.payload)
-    //  props.setData(res.data.payload)
-    // })
-  };
   const onFinish = (values) => {
     // 记录了所有的数组的操作类型
     console.log(operations);
     const arr = [];
+    console.log(operations)
     for (let i = 0; i < count; i++) {
       Object.keys(operations[i]).map((val) => {
         if (values[`condition-${i}`] == val) {
-          console.log(operations[i][val]);
-          arr.push(operations[i][val]);
-          arr[i] = arr[i].replace("&*&", values[`column-${i}`]);
-          arr[i] = arr[i].replace("#$#", values[`value-${i}`]);
-          console.log(arr);
+          if (val == 'contains all') {
+            const containsAllArr = values[`value-${i}`].split('，')
+            // 拼接contains all的字符串
+            let containsAllStr = ''
+            console.log(containsAllArr)
+            arr.push(operations[i][val]);
+            for (let j = 0; j < containsAllArr.length; j++) {
+              if (j < containsAllArr.length - 1)
+                containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j]) + ' and '
+              else
+                containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j])
+            }
+            arr[i] = containsAllStr
+          }
+          else if (val == 'contains any') {
+            const containsAllArr = values[`value-${i}`].split('，')
+            //拼接contains all的字符串
+            let containsAllStr = ''
+            console.log(containsAllArr)
+            arr.push(operations[i][val]);
+            for (let j = 0; j < containsAllArr.length; j++) {
+              if (j < containsAllArr.length - 1)
+                containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j]) + ' or '
+              else
+                containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j])
+            }
+            arr[i] = containsAllStr
+          }
+          else {
+            console.log(operations[i][val]);
+            arr.push(operations[i][val]);
+            arr[i] = arr[i].replace("&*&", values[`column-${i}`]);
+            arr[i] = arr[i].replace("#$#", values[`value-${i}`]);
+            console.log(arr);
+          }
         }
+        return 1
       });
-      // console.log(values[`filter-${i}`])
-      // console.log(values[`column-${i}`])
-      // console.log(values[`condition-${i}`])
-      // console.log(values[`value-${i}`])
     }
     var str = arr[0];
     for (let i = 1; i < count; i++) {
@@ -314,13 +329,20 @@ const AdvancedSearchForm = (props) => {
     }
     console.log(str);
     const tableData = {
-      dataSource: 'dataflow.airuuid',
-      filter: str,
-      limit: 2000,
-      project: ['*'],
-    };
+      job: 'table_start_job',
+      requestId: 'ac6wa2ds6c62',
+      operatorType: 'table',
+      tableDescription: {
+        dataSource: 'airuuid',
+        filter: str,
+        jobType: 'table',
+        limit: 2000,
+        project: ['*'],
+      },
+      workspaceId: 'string',
+    }
     getTable(tableData).then((res) => {
-      props.setData(res);
+      props.setData(res.outputs);
       console.log(res);
     });
     console.log('Received values of form: ', values);
@@ -342,7 +364,7 @@ const AdvancedSearchForm = (props) => {
             textAlign: 'right',
           }}
         >
-          <Button type="primary" htmlType="submit" onClick={save}>
+          <Button type="primary" htmlType="submit" >
             确认
           </Button>
           <Button

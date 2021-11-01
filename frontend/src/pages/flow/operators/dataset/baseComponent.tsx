@@ -11,7 +11,6 @@ import TableSidebar from './tableSidebar';
 function BaseComponent(props) {
   // console.log('type',props.type)
 
-  console.log(props.node.getData().item.option.column);
   const [myChart, setMyChart] = useState(null);
   const [container, setContainer] = useState({});
   const [backgroundColor, setBackgroundColor] = useState('white');
@@ -130,7 +129,7 @@ function BaseComponent(props) {
 
   return (
     <div className="hetu_basecomponent_wrapper" draggable>
-      <TableSidebar setColumn={setColumn} data={data} setData={setData} filter={filter} />
+      <TableSidebar tableDescription={props.node.getData().item.option.tableDescription} column={column} setColumn={setColumn} data={data} setData={setData} filter={filter} />
       <div className="hetu_basecomponent" id={props.node.getData().item.id}>
         {props.type === 'dataset' && (
           <VirtualTable

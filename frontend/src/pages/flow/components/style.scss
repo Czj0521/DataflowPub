@@ -1,4 +1,5 @@
 .hetu_basecomponent_wrapper{
+    z-index: 0;
     position: relative;
     height:100%;
     padding: 10px;
@@ -156,17 +157,53 @@
                 left: -11px;
                 top:11px;
             }
+
 			.hetu_sidebar_attributes_modal{
 				background-color: rgb(40,40,40);
 				color: #eee;
 				position: absolute;
-				width: 200px;
-				left:-211px;
+				width: 500px;
+				left:-511px;
 				top:-20px;
 				border-radius: 4px;
 				cursor: default;
 				transition: all 1s;
-				height: 200px;
+				height: 300px;
+        .hetu_sidebar_attributes_modal_div{
+            height: 300px;
+            overflow: hidden;
+            .hetu_sidebar_attributes_modal_box{
+                background: rgb(40,40,40);
+                padding: 10px 0;
+                white-space: nowrap;/*文本不会换行，文本会在在同一行上继续*/
+                overflow-y:auto;/*可滑动*/
+                .hetu_sidebar_attributes_modal_left{
+                    width: 44%;
+                    margin-left: 3%;
+                    margin-right: 3%;
+                    height: 280px;
+                    display: inline-block;/*行内块元素*/
+                    overflow: overlay;
+                }
+                .hetu_sidebar_attributes_modal_mid{
+                    width: 44%;
+                    margin-left: 3%;
+                    margin-right: 3%;
+                    height: 280px;
+                    display: inline-block;/*行内块元素*/
+                    overflow: overlay;
+                }
+                .hetu_sidebar_attributes_modal_right{
+                    width: 44%;
+                    margin-left: 3%;
+                    margin-right: 3%;
+                    height: 280px;
+                    display: inline-block;/*行内块元素*/
+                    overflow: overlay;
+                }
+            }
+
+        }
 			}
             .hetu_sidebar_modal{
                 background-color: rgb(40,40,40);
@@ -180,6 +217,19 @@
                 transition: all 1s;
                 height: 200px;
             }
+            .hetu_sidebar_group_modal{
+                background-color: rgb(40,40,40);
+                overflow: auto;
+                color: #eee;
+                position: absolute;
+                width: 200px;
+                left:-211px;
+                top:-20px;
+                border-radius: 4px;
+                cursor: default;
+                transition: all 1s;
+                height: 300px;
+            }
             .hetu_sidebar_modal_close{
                 &:hover{
                     transform: scale(1.2,1.2);
@@ -187,4 +237,12 @@
             }
         }
     }
+}
+
+.ant-list-split .ant-list-item {
+    color: #eee;
+     border-bottom: 0px ;
+}
+.ant-list-sm .ant-list-item {
+    padding: 5px 0px;
 }

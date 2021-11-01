@@ -26,6 +26,9 @@ function Attributes(props) {
       </div>
       {visible && (
         <SidebarModal
+          setTableInputJson={props.setTableInputJson}
+          tableInputJson={props.tableInputJson}
+          column={props.column}
           setColumn={props.setColumn}
           data={props.data}
           setData={props.setData}

@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+
+import classNames from ''
+
 import IconFont from '../../../../../../font';
 import SidebarModal from './sidebarModal';
 
-function Filters(props) {
+function Attributes(props) {
   const [visible, setVisible] = useState(false);
 
   const expandSidebarItem = (e) => {
@@ -17,12 +20,16 @@ function Filters(props) {
 
   return (
     <div className="hetu_sidebar_wrapper">
-      <div className={visible ? 'hetu_sidebar_item active' : 'hetu_sidebar_item'} onClick={expandSidebarItem}>
-        <IconFont type="hetu-shuxing" className="hetu_sidebar_item_icon" />{' '}
-        filter
+      <div className={visible ? "hetu_sidebar_item active" : "hetu_sidebar_item"} onClick={expandSidebarItem}>
+        <IconFont type="hetu-shuxing" className="hetu_sidebar_item_icon" />
+        Group
       </div>
       {visible && (
         <SidebarModal
+          setTableInputJson={props.setTableInputJson}
+          tableInputJson={props.tableInputJson}
+          column={props.column}
+          setColumn={props.setColumn}
           data={props.data}
           setData={props.setData}
           filter={props.filter}
@@ -33,4 +40,4 @@ function Filters(props) {
   );
 }
 
-export default Filters;
+export default Attributes;

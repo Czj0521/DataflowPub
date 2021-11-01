@@ -2,10 +2,12 @@ import IconFont from '../../../../../../font';
 import AdvancedSearchForm from './form';
 
 function SidebarModal(props) {
+  
+  console.log(props)
   return (
     <div className="hetu_sidebar_modal_wrapper">
       <div className="hetu_sidebar_connect" />
-      <div className="hetu_sidebar_attributes_modal">
+      <div className="hetu_sidebar_group_modal">
         <AdvancedSearchForm
           setTableInputJson={props.setTableInputJson}
           tableInputJson={props.tableInputJson}

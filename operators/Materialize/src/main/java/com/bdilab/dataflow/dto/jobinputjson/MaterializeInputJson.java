@@ -17,5 +17,5 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MaterializeInputJson extends AbstractJobInputJson {
-    private MaterializeDescription materializeDescription;
+  private MaterializeDescription materializeDescription;
 }

@@ -5,12 +5,10 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-
 
 /**
  * Materialize Output Json.
-
+ *
  * @author: wh
  * @create: 2021-10-27
  */
@@ -18,6 +16,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MaterializeOutputJson extends AbstractJobOutputJson {
-    private String subTableId;
-    private Map<String, String> metadata;
+  private String subTableId;
+  private Map<String, String> metadata;
 }

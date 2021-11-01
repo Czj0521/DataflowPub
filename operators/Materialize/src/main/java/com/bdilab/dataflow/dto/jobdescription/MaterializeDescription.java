@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * The description field of the Materialize input JSON.
-
+ *
  * @author: wh
  * @create: 2021-10-27
  */
@@ -16,6 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MaterializeDescription {
-    private String materializedType;
-    private JSONObject materializedOperator;
+  private String materializedType;
+  private JSONObject materializedOperator;
 }

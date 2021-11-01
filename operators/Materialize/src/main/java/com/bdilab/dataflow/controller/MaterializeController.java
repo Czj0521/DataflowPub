@@ -8,10 +8,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import javax.annotation.Resource;
 import javax.validation.Valid;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Materialize Operator Controller.
@@ -25,18 +30,18 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "Materialize Operator")
 @RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/job")
 public class MaterializeController {
-    @Resource
-    MaterializeJobService materializeJobService;
+  @Resource
+  MaterializeJobService materializeJobService;
 
-    @PostMapping("/materialize")
-    @ApiOperation(value = "materialize")
-    public ResponseEntity table(@RequestBody MaterializeInputJson materializeInputJson) {
-        return ResponseEntity.ok(materializeJobService.materialize(materializeInputJson));
-    }
+  @PostMapping("/materialize")
+  @ApiOperation(value = "materialize")
+  public ResponseEntity table(@RequestBody MaterializeInputJson materializeInputJson) {
+    return ResponseEntity.ok(materializeJobService.materialize(materializeInputJson));
+  }
 
-    @DeleteMapping("/deleteSubTable")
-    @ApiOperation(value = "deleteSubTable")
-    public ResponseEntity deleteSubTable(@Valid @RequestParam("subTableId") String subTableId) {
-        return ResponseEntity.ok(materializeJobService.deleteSubTable(subTableId));
-    }
+  @DeleteMapping("/deleteSubTable")
+  @ApiOperation(value = "deleteSubTable")
+  public ResponseEntity deleteSubTable(@Valid @RequestParam("subTableId") String subTableId) {
+    return ResponseEntity.ok(materializeJobService.deleteSubTable(subTableId));
+  }
 }

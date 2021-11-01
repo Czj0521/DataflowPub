@@ -18,7 +18,11 @@ import { Join } from './operators'
 >>>>>>> 'feat:join-init'
 =======
 import Filter from './operators/filter';
+<<<<<<< 948ec75892f70d7deeb6b774dac877460f15fc0b
 >>>>>>> feat:Filter 连线改变Filter的源
+=======
+import store from '@/store';
+>>>>>>> feat:Filter 日期选择&接口请求
 
 const { Dnd } = Addon;
 
@@ -30,7 +34,11 @@ function DatasetSide(props) {
   // const [jobId, setJobId] = useState('');
   // const [barData, setBarData] = useState({});
   // const [loading, setLoading] = useState(true);
-
+  const [filterState, filterDIspatch] = store.useModel('filter');
+  console.log('side filterState', filterState);
+  useEffect(() => {
+    filterDIspatch.getAllOperationFn();
+  }, []);
   useEffect(() => {
     console.log('effect执行了');
     const d = new Dnd({
@@ -71,7 +79,7 @@ function DatasetSide(props) {
     const { graph } = props;
     const target = e.currentTarget;
     const type = target.getAttribute('data-type');
-    const dataSource = target.getAttribute('data-dataSource');
+    const dataSource = target.getAttribute('data-datasource');
     const parent = target.getAttribute('parent');
     // console.log(parent)
 <<<<<<< fead2bcf1e00f2c10aa6c59e17a155ee20f74cc5
@@ -301,7 +309,7 @@ function DatasetSide(props) {
             draggable
             onMouseDown={drop}
             data-type="dataset"
-            data-dataSource={'dataflow.airuuid'}
+            data-datasource={'dataflow.airuuid'}
           >
             airuuid.csv
           </span>

@@ -1,10 +1,12 @@
-import { memo, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import FilterForm from './filterForm';
 
 function Filter(props) {
-  console.log('In Filter Component', props);
+  // console.log('In Filter Component', props);
   const { item = {} } = props.node.data;
   const { dataFrame = '' } = item;
+  
+  // 处理过滤结果
   const handleSave = (data) => {
     // 保存数据
     console.log('handleSave', data)

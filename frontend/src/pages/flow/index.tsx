@@ -26,7 +26,7 @@ const fieldType = {
 export default function FlowComponent(props) {
   const [graph, setGraph] = useState(null);
   const [brush, setBrush] = useState(false);
-
+  
   useEffect(() => {
     const g = new Graph({
       container: document.getElementById('hetu_canvas'),

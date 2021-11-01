@@ -1,7 +1,8 @@
 import { useState, useEffect, useReducer } from 'react';
-import { Form, Row, Col, Input, Button ,Select } from 'antd';
+import { Form, Row, Col, Input, Button ,Select, DatePicker } from 'antd';
 import { getTableColumn, getAllOperation, getTable } from '@/api/table';
 import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
+// import NoRememberInput from '../../components/conditionInput';
 import './index.less';
 
 const { Option } = Select;
@@ -14,12 +15,13 @@ const cusDropDownStyle = {
   position: 'relative',
   background: '#f4f5f7',
 };
-const rowData = { filter: 'Where', column: '', condition: '', value: '' };
+const rowData = { filter: 'Where', column: '', colType: '', condition: '', value: '' };
 const initialState = {
-  filterRules: [{ filter: 'Where', column: '', condition: '', value: '', key: 0 }],
+  filterRules: [{ filter: 'Where', column: '', condition: '', value: '', colType: '', key: 0 }],
   uniqueKey: 0,
 };
-const mapTypeToOperateType = { String: 'string', Date: 'date', UInt8: 'numeric', Float64: 'numeric', Int: 'numeric' };
+const mapTypeToOperateType = { String: 'string', Date: 'date', DateTime: 'date', DateTime64: 'date', UInt8: 'numeric', Float64: 'numeric', Int: 'numeric' };
+const NoRememberInput = <Input style={{ color: 'white',background: '#282820',width: '100%',borderColor: '#2e3c51' }} autoComplete="off" size={'small'} />;
 
 function reducer(state, action) {
   const len = state.filterRules.length;
@@ -27,7 +29,6 @@ function reducer(state, action) {
   const { filterRules } = state;
   switch (action.type) {
     case 'deleteRow':
-      console.log('delete', action.index);
       filterRules.splice(action.index, 1);
       return { ...state, filterRules };
     case 'addRow':
@@ -35,6 +36,7 @@ function reducer(state, action) {
         uniqueKey: state.uniqueKey + 1 };
     case 'changeRowData':
       filterRules[action.index][action.name] = action.value;
+      filterRules[action.index].colType = action.colType;
       return { ...state, filterRules };
     default:
       return state;
@@ -55,8 +57,8 @@ function FilterForm({ dataFrame, setData, ...props }) {
     });
     // 拿操作符
     getAllOperation().then((res) => {
-      console.log('res operate', res.payload);
-      setOperations(res.payload);
+      console.log('res operate', res);
+      setOperations(res);
     });
   }, [dataFrame]);
   const onFinish = (values) => {
@@ -66,27 +68,42 @@ function FilterForm({ dataFrame, setData, ...props }) {
     let i = -1;
     let str = '';
     while (filterRules[++i]) {
-      console.log('i', i);
+      console.log('i', i, filterRules[i].colType);
       const { key: uKey } = filterRules[i];
+      let { colType } = filterRules[i]; // 列类型
+      let value = values[`value-${uKey}`];
+      if (/^Date/.test(colType)) {
+        const dateTypeToFormat = { Date: 'yyyy-MM-DD', DateTime: 'yyyy-MM-DD HH:mm:ss', DateTime64: 'yyyy-MM-DD HH:mm:ss.SSS' };
+        value = value.format(dateTypeToFormat[colType]);
+      }
       formData.push({ key: uKey,
         condition: values[`condition-${uKey}`],
         column: values[`column-${uKey}`],
-        value: values[`value-${uKey}`],
+        value,
         filter: values[`filter-${uKey}`] });
-      let colType = columnType[values[`column-${uKey}`]]; // 列类型
       colType = mapTypeToOperateType[colType];
-      const finalCondition = operations[colType][values[`condition-${uKey}`]].replace('&*&', values[`column-${uKey}`]).replace('#$#', values[`value-${uKey}`]);
-      str += `${ i > 0 ? values[`filter-${i}`] : '' } ${finalCondition} `;
+      const finalCondition = operations[colType][values[`condition-${uKey}`]]
+        .replace('&*&', values[`column-${uKey}`]).replace('#$#', value);
+      str += `${ i > 0 ? ` ${ values[`filter-${i}`]}` : '' } ${finalCondition}`;
     }
     console.log('formData', formData, str);
     const tableData = {
       dataSource: dataFrame,
-      filter: str,
+      filter: str.trim(),
       limit: 2000,
+      group: ['string'],
+      jobType: 'table',
       project: ['*'],
     };
+    const requestData = {
+      job: 'start_job',
+      operatorType: 'table',
+      requestId: 'ac6wa2ds6c62',
+      tableDescription: tableData,
+      workspaceId: 'string',
+    };
     // 存储 表单值和
-    getTable(tableData).then((res) => {
+    getTable(requestData).then((res) => {
       setData(res);
       // 待处理
       console.log(res);
@@ -95,6 +112,7 @@ function FilterForm({ dataFrame, setData, ...props }) {
   };
 
   const getOperations = (colName) => {
+    console.log('colName', colName);
     let colType = columnType[colName]; // 列类型
     colType = mapTypeToOperateType[colType]; // 转为操作符里面的类型
     return operations[colType];
@@ -115,7 +133,7 @@ function FilterForm({ dataFrame, setData, ...props }) {
             </Col>
             <Col span={5} key={`filter-${item.key}`}>
               <Form.Item
-                initialValue={i >= 1 ? 'Or' : 'Where'}
+                // initialValue={i >= 1 ? 'Or' : 'Where'}
                 name={`filter-${item.key}`}
               >{
                 i === 1 ? 
@@ -132,7 +150,7 @@ function FilterForm({ dataFrame, setData, ...props }) {
                     }}
                     size={'small'}
                     disabled
-                    // defaultValue={i > 1 ? 'Or' : 'Where'}
+                    defaultValue={i > 1 ? 'Or' : 'Where'}
                   />
               }
               </Form.Item>
@@ -143,7 +161,7 @@ function FilterForm({ dataFrame, setData, ...props }) {
                 rules={rules}
               >
                 <Select
-                  onChange={(val) => dispatch({ type: 'changeRowData', index: i, name: 'column', value: val })}
+                  onChange={(val) => dispatch({ type: 'changeRowData', index: i, name: 'column', value: val, colType: columnType[val] })}
                   // dropdownStyle={cusDropDownStyle}
                   size={'small'}
                 >
@@ -179,7 +197,9 @@ function FilterForm({ dataFrame, setData, ...props }) {
                 name={`value-${item.key}`}
                 rules={rules}
               >
-                <Input style={{ color: 'white',background: '#282820',width: '100%',borderColor: '#2e3c51' }} size={'small'} />
+                {
+                  /^Date/.test(item.colType) ? <DatePicker showTime={item.colType.includes('Time')} /> : NoRememberInput
+                }
               </Form.Item>
             </Col>
           </Row>
@@ -187,7 +207,7 @@ function FilterForm({ dataFrame, setData, ...props }) {
       }
       <Row>
         <PlusOutlined style={{ fontSize: '18px', color: 'white' }} onClick={() => dispatch({ type: 'addRow' })} />
-        <Button type="primary" htmlType="submit" size="small" >
+        <Button type="primary" htmlType="submit" size="small" style={{ marginLeft: '50' }} >
           Save
         </Button>
       </Row>

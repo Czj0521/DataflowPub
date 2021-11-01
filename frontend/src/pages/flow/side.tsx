@@ -11,6 +11,7 @@ import data from './data';
 import BaseComponent from './operators/dataset/baseComponent';
 import Transpose from './operators/transpose';
 import Filter from './operators/filter';
+import store from '@/store';
 
 const { Dnd } = Addon;
 
@@ -22,7 +23,11 @@ function DatasetSide(props) {
   // const [jobId, setJobId] = useState('');
   // const [barData, setBarData] = useState({});
   // const [loading, setLoading] = useState(true);
-
+  const [filterState, filterDIspatch] = store.useModel('filter');
+  console.log('side filterState', filterState);
+  useEffect(() => {
+    filterDIspatch.getAllOperationFn();
+  }, []);
   useEffect(() => {
     console.log('effect执行了');
     const d = new Dnd({
@@ -63,7 +68,7 @@ function DatasetSide(props) {
     const { graph } = props;
     const target = e.currentTarget;
     const type = target.getAttribute('data-type');
-    const dataSource = target.getAttribute('data-dataSource');
+    const dataSource = target.getAttribute('data-datasource');
     const parent = target.getAttribute('parent');
     // console.log(parent)
     console.log('type', type);
@@ -280,7 +285,7 @@ function DatasetSide(props) {
             draggable
             onMouseDown={drop}
             data-type="dataset"
-            data-dataSource={'dataflow.airuuid'}
+            data-datasource={'dataflow.airuuid'}
           >
             airuuid.csv
           </span>

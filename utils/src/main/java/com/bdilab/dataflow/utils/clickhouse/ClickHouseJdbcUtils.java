@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  * ClickHouse Jdbc Utils.
-
+ *
  * @author wh
  * @version 1.0
  * @date 2021/09/13
@@ -18,19 +18,19 @@ import org.springframework.stereotype.Repository;
 @Repository
 @DS("clickhouse")
 public class ClickHouseJdbcUtils {
-    @Resource
-    JdbcTemplate jdbcTemplate;
+  @Resource
+  JdbcTemplate jdbcTemplate;
 
-    public List<Map<String, Object>> queryForList(String sql) {
-        return jdbcTemplate.queryForList(sql);
-    }
+  public List<Map<String, Object>> queryForList(String sql) {
+    return jdbcTemplate.queryForList(sql);
+  }
 
-    public List<String> queryForStrList(String sql) {
-        return jdbcTemplate.queryForList(sql, String.class);
-    }
+  public List<String> queryForStrList(String sql) {
+    return jdbcTemplate.queryForList(sql, String.class);
+  }
 
-    public void execute(String sql) {
-        jdbcTemplate.execute(sql);
-    }
+  public void execute(String sql) {
+    jdbcTemplate.execute(sql);
+  }
 
 }

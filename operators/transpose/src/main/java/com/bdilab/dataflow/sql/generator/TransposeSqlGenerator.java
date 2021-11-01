@@ -3,7 +3,7 @@ package com.bdilab.dataflow.sql.generator;
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
 import com.bdilab.dataflow.operator.dto.jobdescription.SQLGeneratorBase;
 import com.bdilab.dataflow.operator.link.LinkSqlGenerator;
-import com.bdilab.dataflow.utils.SQLParseUtils;
+import com.bdilab.dataflow.utils.SqlParseUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,14 +82,14 @@ public class TransposeSqlGenerator extends SQLGeneratorBase implements LinkSqlGe
    * append group column names.
    */
   private void appendGroupColumns(StringBuilder stringBuilder) {
-    String groupColumn = SQLParseUtils.combineWithSeparator(transposeDescription.getGroupBy(), ",");
+    String groupColumn = SqlParseUtils.combineWithSeparator(transposeDescription.getGroupBy(), ",");
     stringBuilder.append(groupColumn).append(",");
   }
 
 
   @Override
   public String group() {
-    return GROUP_BY + SQLParseUtils.combineWithSeparator(transposeDescription.getGroupBy(), ",");
+    return GROUP_BY + SqlParseUtils.combineWithSeparator(transposeDescription.getGroupBy(), ",");
 
   }
 

@@ -16,32 +16,32 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public abstract class SQLGeneratorBase {
-    private JobDescription jobDescription;
+  private JobDescription jobDescription;
 
-    public String datasource() {
-        // todo Check datasource
-        if (jobDescription.getDataSource() == null) {
-            throw new UncheckException(ExceptionMsgEnum.TABLE_SQL_PARSE_ERROR.getMsg());
-        }
-        return " FROM " + jobDescription.getDataSource();
+  public String datasource() {
+    // todo Check datasource
+    if (jobDescription.getDataSource() == null) {
+      throw new UncheckException(ExceptionMsgEnum.TABLE_SQL_PARSE_ERROR.getMsg());
     }
+    return " FROM " + jobDescription.getDataSource();
+  }
 
-    public String limit() {
-        return jobDescription.getLimit() == null ? " LIMIT 2000" : " LIMIT " + jobDescription.getLimit();
-    }
+  public String limit() {
+    return jobDescription.getLimit() == null ? " LIMIT 2000" : " LIMIT " + jobDescription.getLimit();
+  }
 
-    public String project() {
-        return "";
-    }
+  public String project() {
+    return "";
+  }
 
 
-    public String filter(){
-        return "";
-    }
+  public String filter() {
+    return "";
+  }
 
-    public String group() {
-        return "";
-    }
+  public String group() {
+    return "";
+  }
 
-    public abstract String generate();
+  public abstract String generate();
 }

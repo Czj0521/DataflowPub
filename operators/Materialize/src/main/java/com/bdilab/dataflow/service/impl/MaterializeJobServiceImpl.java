@@ -10,7 +10,7 @@ import com.bdilab.dataflow.dto.jobinputjson.MaterializeInputJson;
 import com.bdilab.dataflow.dto.joboutputjson.MaterializeOutputJson;
 import com.bdilab.dataflow.service.MaterializeJobService;
 import com.bdilab.dataflow.sql.generator.TableSQLGenerator;
-import com.bdilab.dataflow.utils.SQLParseUtils;
+import com.bdilab.dataflow.utils.SqlParseUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import java.nio.charset.Charset;
@@ -69,7 +69,7 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
     }
     StringBuilder sbSql = new StringBuilder();
     String name = com.bdilab.dataflow.common.consts.CommonConstants.DATABASE
-        + "." + SQLParseUtils.getUUID32();
+        + "." + SqlParseUtils.getUUID32();
     sbSql.append("CREATE VIEW ").append(name).append(" AS ")
         .append("(").append(datasourceSql).append(")");
     String sql = new String(sbSql);

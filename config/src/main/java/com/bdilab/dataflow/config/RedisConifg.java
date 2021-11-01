@@ -17,7 +17,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * Redis Conifg.
-
+ *
  * @author wh
  * @date 2021/10/12
  */
@@ -25,47 +25,45 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @EnableCaching
 public class RedisConifg {
 
-    @Bean
-    public RedisSerializer fastJson2JsonRedisSerialize() {
-        return new FastJson2JsonRedisSerialize<Object>(Object.class);
-    }
+  @Bean
+  public RedisSerializer fastJson2JsonRedisSerialize() {
+    return new FastJson2JsonRedisSerialize<Object>(Object.class);
+  }
 
-    /**
-     * redisTemplate.
+  /**
+   * redisTemplate.
+   */
+  @Bean
+  public RedisTemplate<String, Object> redisTemplate(
+      RedisConnectionFactory redisConnectionFactory,
+      RedisSerializer fastJson2JsonRedisSerialize) {
+    RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+    redisTemplate.setConnectionFactory(redisConnectionFactory);
+    redisTemplate.setKeySerializer(new StringRedisSerializer());
+    redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+    redisTemplate.setValueSerializer(fastJson2JsonRedisSerialize);
+    redisTemplate.setHashValueSerializer(fastJson2JsonRedisSerialize);
 
-     */
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(
-            RedisConnectionFactory redisConnectionFactory,
-            RedisSerializer fastJson2JsonRedisSerialize) {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory);
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(fastJson2JsonRedisSerialize);
-        redisTemplate.setHashValueSerializer(fastJson2JsonRedisSerialize);
+    redisTemplate.afterPropertiesSet();
+    return redisTemplate;
+  }
 
-        redisTemplate.afterPropertiesSet();
-        return redisTemplate;
-    }
-
-    /**
-     * cacheManager.
-
-     */
-    @Bean
-    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
-        config = config.entryTtl(Duration.ofMinutes(5))
-                .serializeKeysWith(RedisSerializationContext.SerializationPair
-                        .fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair
-                        .fromSerializer(fastJson2JsonRedisSerialize()))
-                .disableCachingNullValues();
-        return RedisCacheManager
-                .builder(redisConnectionFactory)
-                .cacheDefaults(config)
-                .transactionAware()
-                .build();
-    }
+  /**
+   * cacheManager.
+   */
+  @Bean
+  public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+    RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
+    config = config.entryTtl(Duration.ofMinutes(5))
+        .serializeKeysWith(RedisSerializationContext.SerializationPair
+            .fromSerializer(new StringRedisSerializer()))
+        .serializeValuesWith(RedisSerializationContext.SerializationPair
+            .fromSerializer(fastJson2JsonRedisSerialize()))
+        .disableCachingNullValues();
+    return RedisCacheManager
+        .builder(redisConnectionFactory)
+        .cacheDefaults(config)
+        .transactionAware()
+        .build();
+  }
 }

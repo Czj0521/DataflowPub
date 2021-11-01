@@ -3,7 +3,7 @@ package com.bdilab.dataflow.sql.generator;
 import com.bdilab.dataflow.dto.jobdescription.TableDescription;
 import com.bdilab.dataflow.operator.dto.jobdescription.SQLGeneratorBase;
 import com.bdilab.dataflow.operator.link.LinkSqlGenerator;
-import com.bdilab.dataflow.utils.SQLParseUtils;
+import com.bdilab.dataflow.utils.SqlParseUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
@@ -15,86 +15,87 @@ import java.util.Set;
  * @description: generate SQL
  **/
 public class TableSQLGenerator extends SQLGeneratorBase implements LinkSqlGenerator {
-    private TableDescription tableDescription;
-    String[] project;
-    String[] groups;
-    public TableSQLGenerator(TableDescription tableDescription) {
-        super(tableDescription);
-        this.tableDescription = tableDescription;
+  private TableDescription tableDescription;
+  String[] project;
+  String[] groups;
+
+  public TableSQLGenerator(TableDescription tableDescription) {
+    super(tableDescription);
+    this.tableDescription = tableDescription;
+  }
+
+  @Override
+  public String project() {
+    project = tableDescription.getProject();
+    if (project == null || project.length == 0) {
+      return "SELECT * ";
+    }
+    return "SELECT " + SqlParseUtils.combineWithSeparator(project, ",");
+
+  }
+
+  @Override
+  public String filter() {
+    String filter = tableDescription.getFilter();
+    if (StringUtils.isEmpty(filter)) {
+      return "";
+    }
+    return " WHERE " + filter;
+  }
+
+  @Override
+  public String group() {
+    groups = tableDescription.getGroup();
+    if (groups == null || groups.length == 0) {
+      return "";
+    }
+    return " GROUP BY " + SqlParseUtils.combineWithSeparator(groups, ",");
+  }
+
+
+  @Override
+  public String generate() {
+    return generateDataSourceSql() + super.limit();
+  }
+
+  @Override
+  public String generateDataSourceSql() {
+    String projectStr = project();
+    String groupStr = group();
+
+    // SQL syntax check
+    if (projectStr.contains("*")) {
+      projectStr = "SELECT * ";
+      groupStr = "";
     }
 
-    @Override
-    public String project() {
-        project = tableDescription.getProject();
-        if(project == null || project.length == 0) {
-            return "SELECT * ";
+    if (groups != null && groups.length > 0 && groupStr.length() > 0) {
+      StringBuilder sb = new StringBuilder();
+      // remove attributes that are not in 'groups' but in 'project'
+      Set<String> set = new HashSet<>();
+      for (int i = 0; i < this.groups.length; i++) {
+        set.add(this.groups[i]);
+      }
+      for (int i = 0; i < this.project.length; i++) {
+        if (set.contains(this.project[i]) || this.project[i].contains("(")) {
+          sb.append(this.project[i] + ",");
         }
-        return "SELECT " + SQLParseUtils.combineWithSeparator(project, ",");
-
+      }
+      projectStr = "SELECT " + sb.substring(0, sb.length() - 1);
     }
 
-    @Override
-    public String filter() {
-        String filter = tableDescription.getFilter();
-        if (StringUtils.isEmpty(filter)) {
-            return "";
+    if (groups == null || groups.length == 0) {
+      StringBuilder sb = new StringBuilder();
+      if (projectStr.contains("(")) {
+        for (int i = 0; i < this.project.length; i++) {
+          if (this.project[i].contains("(")) {
+            sb.append(this.project[i] + ",");
+          }
         }
-        return " WHERE " + filter;
+        projectStr = "SELECT " + sb.substring(0, sb.length() - 1);
+      }
     }
 
-    @Override
-    public String group() {
-        groups = tableDescription.getGroup();
-        if (groups == null || groups.length == 0) {
-            return "";
-        }
-        return " GROUP BY " + SQLParseUtils.combineWithSeparator(groups, ",");
-    }
-
-
-    @Override
-    public String generate() {
-        return generateDataSourceSql() + super.limit();
-    }
-
-    @Override
-    public String generateDataSourceSql() {
-        String projectStr = project();
-        String groupStr = group();
-
-        // SQL syntax check
-        if(projectStr.contains("*")) {
-            projectStr = "SELECT * ";
-            groupStr = "";
-        }
-
-        if(groups != null && groups.length > 0 && groupStr.length() > 0) {
-            StringBuilder sb = new StringBuilder();
-            // remove attributes that are not in 'groups' but in 'project'
-            Set<String> set = new HashSet<>();
-            for (int i = 0; i < this.groups.length; i++) {
-                set.add(this.groups[i]);
-            }
-            for (int i = 0; i < this.project.length; i++) {
-                if(set.contains(this.project[i]) || this.project[i].contains("(")) {
-                    sb.append(this.project[i] + ",");
-                }
-            }
-            projectStr = "SELECT " + sb.substring(0, sb.length() - 1);
-        }
-
-        if(groups == null || groups.length == 0) {
-            StringBuilder sb = new StringBuilder();
-            if(projectStr.contains("(")) {
-                for (int i = 0; i < this.project.length; i++) {
-                    if(this.project[i].contains("(")) {
-                        sb.append(this.project[i] + ",");
-                    }
-                }
-                projectStr = "SELECT " + sb.substring(0, sb.length() - 1);
-            }
-        }
-
-        return projectStr + super.datasource() + filter() + groupStr;
-    }
+    return projectStr + super.datasource() + filter() + groupStr;
+  }
 }

@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public abstract class AbstractJobOutputJson {
-    private String jobStatus;
-    private String requestId;
-    private String workspaceId;
+  private String jobStatus;
+  private String requestId;
+  private String workspaceId;
 }

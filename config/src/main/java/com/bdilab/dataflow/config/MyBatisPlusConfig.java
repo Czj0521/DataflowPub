@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * MyBatis Plus Config.
-
+ *
  * @author wh
  * @date 2021/09/10
  */
@@ -19,13 +19,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("com.bdilab.dataflow.mapper")
 public class MyBatisPlusConfig {
 
-    /**
-     * Paging plug-in.
-     */
-    @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
-        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.H2));
-        return interceptor;
-    }
+  /**
+   * Paging plug-in.
+   */
+  @Bean
+  public MybatisPlusInterceptor mybatisPlusInterceptor() {
+    MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+    interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.H2));
+    return interceptor;
+  }
 }

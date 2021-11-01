@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {} from 'antd';
 
-import IconFont from '../../font';
+import IconFont from '@/font';
 import SidebarModal from './sidebarModal';
 
 function LabelComponent(props) {

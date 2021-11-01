@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-
 import IconFont from '../../../../../../font';
 import SidebarModal from './sidebarModal';
 
@@ -18,7 +17,7 @@ function Filters(props) {
 
   return (
     <div className="hetu_sidebar_wrapper">
-      <div className="hetu_sidebar_item" onClick={expandSidebarItem}>
+      <div className={visible ? "hetu_sidebar_item active" : "hetu_sidebar_item"} onClick={expandSidebarItem}>
         <IconFont type="hetu-shuxing" className="hetu_sidebar_item_icon" />{' '}
         filter
       </div>

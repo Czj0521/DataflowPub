@@ -1,4 +1,4 @@
-import IconFont from '../../font';
+import IconFont from '@/font';
 
 function SidebarModal(props) {
   const { HandleForm, column } = props;

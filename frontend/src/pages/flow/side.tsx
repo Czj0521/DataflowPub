@@ -9,7 +9,8 @@ import { getTable, getTableColumn } from '../../api/table';
 import IconFont from '../../font';
 import data from './data';
 import BaseComponent from './operators/dataset/baseComponent';
-import Transpose from './operators/transpose';
+import { Join, Transpose } from './operators';
+
 
 const { Dnd } = Addon;
 
@@ -45,13 +46,13 @@ function DatasetSide(props) {
       case 'Table':
         return <BaseComponent type={type} size={size} />;
       case 'Join':
-        return <BaseComponent type={type} size={size} />;
+        return <Join />;
       case 'Filter':
         return <BaseComponent type={type} size={size} />;
       case 'dataset':
         return <BaseComponent type={type} size={size} />;
       case 'Transpose':
-        return <Transpose type={type} size={size} />;
+        return <Transpose />;
       default:
         return <div />;
     }
@@ -174,7 +175,7 @@ function DatasetSide(props) {
             console.log('表数据：', res1);
             console.log('列数据：', res2);
             const column = [];
-            Object.keys(res2).map((val) => {
+            Object.keys(res2).forEach((val) => {
               column.push({
                 key: val,
                 dataIndex: val,
@@ -303,6 +304,7 @@ function DatasetSide(props) {
                   </div>
                 );
               }
+              return null;
             })}
           </div>
         )}

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import {} from 'antd';
+import { useState } from 'react';
+
+import classNames from ''
 
 import IconFont from '../../../../../../font';
 import SidebarModal from './sidebarModal';
@@ -19,7 +20,7 @@ function Attributes(props) {
 
   return (
     <div className="hetu_sidebar_wrapper">
-      <div className="hetu_sidebar_item2" onClick={expandSidebarItem}>
+      <div className={visible ? "hetu_sidebar_item active" : "hetu_sidebar_item"} onClick={expandSidebarItem}>
         <IconFont type="hetu-shuxing" className="hetu_sidebar_item_icon" />
         Attribute
       </div>

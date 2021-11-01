@@ -2,7 +2,7 @@ import { FC } from 'react';
 import SideItem from '../../../components/SideItem';
 import JoinType from './JoinType';
 
-const SideBar: FC = (props) => {
+const SideBar: FC = () => {
     return <div className="hetu_table_sidebar_wrapper">
         <SideItem name="join type" width={180} height={200}>
             <JoinType />

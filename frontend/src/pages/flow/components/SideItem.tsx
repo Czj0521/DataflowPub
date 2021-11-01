@@ -1,13 +1,13 @@
 import { useState, FC, ReactElement } from 'react';
 import IconFont from '@/font';
 
-interface SideItemProps {
+type SideItemProps = {
     name: string;
     width: number;
     height: number;
     icon?: ReactElement;
-    onExpand?: () => {};
-    onClose?: () => {};
+    onExpand?: () => void;
+    onClose?: () => void;
 }
 
 const SideItem: FC<SideItemProps> = (props) => {

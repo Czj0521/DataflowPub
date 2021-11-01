@@ -22,7 +22,7 @@ function Attributes(props) {
     <div className="hetu_sidebar_wrapper">
       <div className={visible ? "hetu_sidebar_item active" : "hetu_sidebar_item"} onClick={expandSidebarItem}>
         <IconFont type="hetu-shuxing" className="hetu_sidebar_item_icon" />
-        Attribute
+        Group
       </div>
       {visible && (
         <SidebarModal

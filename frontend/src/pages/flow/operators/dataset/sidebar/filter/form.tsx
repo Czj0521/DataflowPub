@@ -20,7 +20,11 @@ const AdvancedSearchForm = (props) => {
       const tempColumn = [];
       Object.keys(res).map((val) => {
         tempColumn.push(val);
+<<<<<<< 1d5cf53513819c9f45a4aa27cd0a1144fdd33c80
         return 1
+=======
+        return 1;
+>>>>>>> feat: table operator功能基本完成，还存在部分bug
       });
       setColumn(tempColumn);
       setColumnType(res);
@@ -254,6 +258,7 @@ const AdvancedSearchForm = (props) => {
       }
     });
     console.log(type);
+<<<<<<< 1d5cf53513819c9f45a4aa27cd0a1144fdd33c80
 <<<<<<< 04814676021c232b1562117e26f2c45e121ff600
     switch (type) {
       case 'String': {
@@ -278,10 +283,19 @@ const AdvancedSearchForm = (props) => {
     else if (type.includes('Date')) {
       operationType = "date";
 >>>>>>> feat: table operator功能基本完成，还存在部分bug
+=======
+    if (type.includes('Int') || type.includes('Float') || type.includes('Nullable')) {
+      operationType = 'numeric';
+    } else if (type.includes('String')) {
+      operationType = 'string';
+    } else if (type.includes('Date')) {
+      operationType = 'date';
+>>>>>>> feat: table operator功能基本完成，还存在部分bug
     }
     // 拿操作符
     getAllOperation().then((res) => {
       const temp = operations;
+<<<<<<< 1d5cf53513819c9f45a4aa27cd0a1144fdd33c80
       console.log(res)
       Object.keys(res).map((val) => {
         if (val == operationType) {
@@ -290,6 +304,14 @@ const AdvancedSearchForm = (props) => {
           temp[i] = res.payload[val];
           // console.log(temp);
 =======
+          temp[i] = res[val];
+          console.log(temp);
+>>>>>>> feat: table operator功能基本完成，还存在部分bug
+=======
+      console.log(res);
+      Object.keys(res).map((val) => {
+        if (val == operationType) {
+          console.log(temp);
           temp[i] = res[val];
           console.log(temp);
 >>>>>>> feat: table operator功能基本完成，还存在部分bug
@@ -305,6 +327,7 @@ const AdvancedSearchForm = (props) => {
     // 记录了所有的数组的操作类型
     console.log('operations', operations);
     const arr = [];
+<<<<<<< 1d5cf53513819c9f45a4aa27cd0a1144fdd33c80
     console.log(operations)
     for (let i = 0; i < count; i++) {
       Object.keys(operations[i]).map((val) => {
@@ -354,6 +377,43 @@ const AdvancedSearchForm = (props) => {
 >>>>>>> feat: table operator功能基本完成，还存在部分bug
         }
         return 1
+=======
+    console.log(operations);
+    for (let i = 0; i < count; i++) {
+      Object.keys(operations[i]).map((val) => {
+        if (values[`condition-${i}`] == val) {
+          if (val == 'contains all') {
+            const containsAllArr = values[`value-${i}`].split('，');
+            // 拼接contains all的字符串
+            let containsAllStr = '';
+            console.log(containsAllArr);
+            arr.push(operations[i][val]);
+            for (let j = 0; j < containsAllArr.length; j++) {
+              if (j < containsAllArr.length - 1) {containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j]) + ' and '};
+              else {containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j])};
+            }
+            arr[i] = containsAllStr;
+          } else if (val == 'contains any') {
+            const containsAllArr = values[`value-${i}`].split('，');
+            // 拼接contains all的字符串
+            let containsAllStr = '';
+            console.log(containsAllArr);
+            arr.push(operations[i][val]);
+            for (let j = 0; j < containsAllArr.length; j++) {
+              if (j < containsAllArr.length - 1) {containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j]) + ' or '};
+              else {containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j])};
+            }
+            arr[i] = containsAllStr;
+          } else {
+            console.log(operations[i][val]);
+            arr.push(operations[i][val]);
+            arr[i] = arr[i].replace('&*&', values[`column-${i}`]);
+            arr[i] = arr[i].replace('#$#', values[`value-${i}`]);
+            console.log(arr);
+          }
+        }
+        return 1;
+>>>>>>> feat: table operator功能基本完成，还存在部分bug
       });
     }
     console.log('arr', arr);
@@ -374,7 +434,11 @@ const AdvancedSearchForm = (props) => {
         project: ['*'],
       },
       workspaceId: 'string',
+<<<<<<< 1d5cf53513819c9f45a4aa27cd0a1144fdd33c80
     }
+=======
+    };
+>>>>>>> feat: table operator功能基本完成，还存在部分bug
     getTable(tableData).then((res) => {
       props.setData(res.outputs);
       console.log(res);

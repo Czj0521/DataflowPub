@@ -1,3 +1,4 @@
+/* eslint-disable @iceworks/best-practices/no-http-url */
 import { api2 } from './ajax';
 
 // 参考之前index.js

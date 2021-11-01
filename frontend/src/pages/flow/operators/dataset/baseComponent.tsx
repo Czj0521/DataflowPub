@@ -133,8 +133,12 @@ function BaseComponent(props) {
 >>>>>>> feat: transpose配置label
   return (
     <div className="hetu_basecomponent_wrapper" draggable>
+<<<<<<< 1d5cf53513819c9f45a4aa27cd0a1144fdd33c80
 <<<<<<< 04814676021c232b1562117e26f2c45e121ff600
       <TableSidebar setColumn={setColumn} dataFrame={props.node.data.item.dataFrame} data={data} setData={setData} filter={filter} />
+=======
+      <TableSidebar tableDescription={props.node.getData().item.option.tableDescription} column={column} setColumn={setColumn} data={data} setData={setData} filter={filter} />
+>>>>>>> feat: table operator功能基本完成，还存在部分bug
 =======
       <TableSidebar tableDescription={props.node.getData().item.option.tableDescription} column={column} setColumn={setColumn} data={data} setData={setData} filter={filter} />
 >>>>>>> feat: table operator功能基本完成，还存在部分bug

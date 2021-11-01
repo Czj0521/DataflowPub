@@ -2,6 +2,7 @@
     position: relative;
     height:100%;
     padding: 10px;
+    z-index: 0;
     .hetu_basecomponent{
         height:100%;
         .ant-table{
@@ -77,6 +78,7 @@
     position: absolute;
     top: 15px;
     left: -130px;
+    z-index: -1;
     .hetu_sidebar_wrapper{
         position: relative;
         .hetu_sidebar_item{
@@ -92,7 +94,7 @@
             transform: translateX(100px);
             transition: all .3s;
             margin-top: 6px;
-            :hover{
+            &:hover{
                 transform: translateX(0);
                 .hetu_sidebar_item_icon{
                     margin-right: 10px;

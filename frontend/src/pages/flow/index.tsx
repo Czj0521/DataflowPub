@@ -1,6 +1,6 @@
 import './index.scss';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import { Col, Row } from 'antd';
@@ -13,7 +13,6 @@ import MyPorts from './components/myPorts';
 import data from './data';
 import DatasetSide from './side';
 
-const { Dnd } = Addon;
 
 const fieldType = {
   Age: 'number',
@@ -39,7 +38,11 @@ export default function FlowComponent(props) {
         enabled: true,
         container: document.getElementById('miniMap'),
       },
-      resizing: true,
+      resizing: {
+        enabled: true,
+        minWidth: 200,
+        minHeight: 200,
+      },
       panning: true,
       mousewheel: {
         enabled: true,
@@ -116,11 +119,11 @@ export default function FlowComponent(props) {
                   select: source.getData().select,
                 },
               } : {
-                [source.id]: {
-                  type: source.getData().type,
-                  select: source.getData().select,
+                  [source.id]: {
+                    type: source.getData().type,
+                    select: source.getData().select,
+                  },
                 },
-              },
             });
           }
           // console.log(target,source)
@@ -256,7 +259,7 @@ export default function FlowComponent(props) {
           select &&
           select.length > 0 &&
           JSON.stringify(args.current.select) !==
-            JSON.stringify(args.previous.select)
+          JSON.stringify(args.previous.select)
         ) {
           console.log(args.current, args.previous);
           children.forEach((item) => {
@@ -270,18 +273,18 @@ export default function FlowComponent(props) {
                   select,
                 },
               } : {
-                [args.cell.id]: {
-                  type: d.type,
-                  select,
+                  [args.cell.id]: {
+                    type: d.type,
+                    select,
+                  },
                 },
-              },
             });
           });
         }
         if (
           args.current.filter &&
           JSON.stringify(args.current.filter) !==
-            JSON.stringify(args.previous.filter)
+          JSON.stringify(args.previous.filter)
         ) {
           childrenFilter(args.current, args.cell);
         }

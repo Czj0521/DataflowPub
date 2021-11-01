@@ -100,40 +100,38 @@ public enum FilterOperatorEnum {
   /**
    * date.
    */
-  //todo Datetime64 can not be used by this!
-  //     It maybe implement with function--toDateTime64( ${yourtime}, 3 ).
   DATE_IS(
       "date",
       "is",
       OperatorConstants.COLUMN_MAGIC_NUMBER
-          + "=toDateTime(" + OperatorConstants.VALUE_MAGIC_NUMBER + ")",
+          + "='" + OperatorConstants.VALUE_MAGIC_NUMBER + "'",
       true),
   DATE_BEFORE(
       "date",
       "before",
       OperatorConstants.COLUMN_MAGIC_NUMBER
-          + "<toDateTime(" + OperatorConstants.VALUE_MAGIC_NUMBER + ")",
+          + "<'" + OperatorConstants.VALUE_MAGIC_NUMBER + "'",
       true),
   DATE_ON_OR_BEFORE(
       "date",
       "on or before",
       OperatorConstants.COLUMN_MAGIC_NUMBER
-          + "<=toDateTime(" + OperatorConstants.VALUE_MAGIC_NUMBER + ")",
+          + "<='" + OperatorConstants.VALUE_MAGIC_NUMBER + "'",
       true),
   DATE_AFTER(
       "date",
       "after",
       OperatorConstants.COLUMN_MAGIC_NUMBER
-          + ">toDateTime(" + OperatorConstants.VALUE_MAGIC_NUMBER + ")",
+          + ">'" + OperatorConstants.VALUE_MAGIC_NUMBER + "'",
       true),
   DATE_ON_OR_AFTER(
       "date",
       "on or after",
       OperatorConstants.COLUMN_MAGIC_NUMBER
-          + ">=toDateTime(" + OperatorConstants.VALUE_MAGIC_NUMBER + ")",
+          + ">='" + OperatorConstants.VALUE_MAGIC_NUMBER + "'",
       true),
   DATE_RANGE(
-      "numeric",
+      "date",
       "range",
       "",
       false),

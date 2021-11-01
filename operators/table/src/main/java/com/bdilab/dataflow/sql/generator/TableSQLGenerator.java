@@ -67,6 +67,7 @@ public class TableSQLGenerator extends SQLGeneratorBase implements LinkSqlGenera
             projectStr = "SELECT * ";
             groupStr = "";
         }
+
         if(groups != null && groups.length > 0 && groupStr.length() > 0) {
             StringBuilder sb = new StringBuilder();
             // remove attributes that are not in 'groups' but in 'project'
@@ -80,6 +81,18 @@ public class TableSQLGenerator extends SQLGeneratorBase implements LinkSqlGenera
                 }
             }
             projectStr = "SELECT " + sb.substring(0, sb.length() - 1);
+        }
+
+        if(groups == null || groups.length == 0) {
+            StringBuilder sb = new StringBuilder();
+            if(projectStr.contains("(")) {
+                for (int i = 0; i < this.project.length; i++) {
+                    if(this.project[i].contains("(")) {
+                        sb.append(this.project[i] + ",");
+                    }
+                }
+                projectStr = "SELECT " + sb.substring(0, sb.length() - 1);
+            }
         }
 
         return projectStr + super.datasource() + filter() + groupStr;

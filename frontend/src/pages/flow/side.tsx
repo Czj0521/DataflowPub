@@ -176,10 +176,18 @@ function DatasetSide(props) {
     // type这里是div的属性，我们要取到属性值data-type判断是哪类operator
     if (type === 'dataset') {
       const tableDescription = {
-        dataSource: 'dataflow.airuuid',
-        limit: 2000,
-        project: ['*'],
-      };
+        job: 'table_start_job',
+        requestId: 'ac6wa2ds6c62',
+        operatorType: 'table',
+        tableDescription: {
+          dataSource: 'airuuid',
+          filter: '',
+          jobType: 'table',
+          limit: 2000,
+          project: ['*'],
+        },
+        workspaceId: 'string',
+      }
       axios
         .all([
           getTable(tableDescription),
@@ -199,8 +207,9 @@ function DatasetSide(props) {
             });
             console.log(column);
             const nodeData = node.getData();
-            nodeData.item.option.data = res1;
+            nodeData.item.option.data = res1.outputs;
             nodeData.item.option.column = column;
+            nodeData.item.option.tableDescription = tableDescription;
             node.setData(nodeData);
           }),
         );

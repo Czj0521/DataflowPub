@@ -11,7 +11,6 @@ import TableSidebar from './tableSidebar';
 function BaseComponent(props) {
   console.log('type',props);
 
-  console.log(props.node.getData().item.option.column);
   const [myChart, setMyChart] = useState(null);
   const [container, setContainer] = useState({});
   const [backgroundColor, setBackgroundColor] = useState('white');
@@ -134,7 +133,11 @@ function BaseComponent(props) {
 >>>>>>> feat: transpose配置label
   return (
     <div className="hetu_basecomponent_wrapper" draggable>
+<<<<<<< 04814676021c232b1562117e26f2c45e121ff600
       <TableSidebar setColumn={setColumn} dataFrame={props.node.data.item.dataFrame} data={data} setData={setData} filter={filter} />
+=======
+      <TableSidebar tableDescription={props.node.getData().item.option.tableDescription} column={column} setColumn={setColumn} data={data} setData={setData} filter={filter} />
+>>>>>>> feat: table operator功能基本完成，还存在部分bug
       <div className="hetu_basecomponent" id={props.node.getData().item.id}>
         {props.type === 'dataset' && (
           <VirtualTable

@@ -20,6 +20,7 @@ const AdvancedSearchForm = (props) => {
       const tempColumn = [];
       Object.keys(res).map((val) => {
         tempColumn.push(val);
+        return 1
       });
       setColumn(tempColumn);
       setColumnType(res);
@@ -44,7 +45,11 @@ const AdvancedSearchForm = (props) => {
               <Form.Item initialValue={'Where'} name={`filter-${i}`}>
                 <Input
                   defaultValue={'Where'}
+<<<<<<< 04814676021c232b1562117e26f2c45e121ff600
                   disabled
+=======
+                  disabled={true}
+>>>>>>> feat: table operator功能基本完成，还存在部分bug
                   style={{
                     color: 'white',
                     background: '#282820',
@@ -249,6 +254,7 @@ const AdvancedSearchForm = (props) => {
       }
     });
     console.log(type);
+<<<<<<< 04814676021c232b1562117e26f2c45e121ff600
     switch (type) {
       case 'String': {
         operationType = 'string';
@@ -262,15 +268,31 @@ const AdvancedSearchForm = (props) => {
         operationType = 'date';
         break;
       }
+=======
+    if (type.includes('Int') || type.includes('Float') || type.includes('Nullable')) {
+      operationType = "numeric";
+    }
+    else if (type.includes('String')) {
+      operationType = "string";
+    }
+    else if (type.includes('Date')) {
+      operationType = "date";
+>>>>>>> feat: table operator功能基本完成，还存在部分bug
     }
     // 拿操作符
     getAllOperation().then((res) => {
       const temp = operations;
-      Object.keys(res.payload).map((val) => {
+      console.log(res)
+      Object.keys(res).map((val) => {
         if (val == operationType) {
           console.log(temp);
+<<<<<<< 04814676021c232b1562117e26f2c45e121ff600
           temp[i] = res.payload[val];
           // console.log(temp);
+=======
+          temp[i] = res[val];
+          console.log(temp);
+>>>>>>> feat: table operator功能基本完成，还存在部分bug
           setOperations(temp);
           setLoading(!loading);
         }
@@ -279,34 +301,60 @@ const AdvancedSearchForm = (props) => {
     });
   };
 
-  const save = () => {
-    // axios({
-    //  method:'GET',
-    //  url:'http://192.168.0.53:8080/api/v1/tablejob/filter?filterString=(%20%5Btime%5D.before(%222014-02-01%22)%20and%20%5Btime%5D.after(%222014-01-01%22)%20and%20%5Bcity%5D.containsAny(%22%E5%8D%97%2C%E9%97%A8%22)%20and%20%5BSO2%5D%20%3E%2010%20)&limit=2000&tableName=air.csv'
-    // }).then(res =>{
-    //  console.log(form.getFieldsValue())
-    //  //console.log(res.data.payload)
-    //  props.setData(res.data.payload)
-    // })
-  };
   const onFinish = (values) => {
     // 记录了所有的数组的操作类型
     console.log('operations', operations);
     const arr = [];
+    console.log(operations)
     for (let i = 0; i < count; i++) {
       Object.keys(operations[i]).map((val) => {
         if (values[`condition-${i}`] == val) {
+<<<<<<< 04814676021c232b1562117e26f2c45e121ff600
           console.log(operations[i][val]);
           arr.push(operations[i][val]);
           arr[i] = arr[i].replace('&*&', values[`column-${i}`]);
           arr[i] = arr[i].replace('#$#', values[`value-${i}`]);
           // console.log(arr);
+=======
+          if (val == 'contains all') {
+            const containsAllArr = values[`value-${i}`].split('，')
+            // 拼接contains all的字符串
+            let containsAllStr = ''
+            console.log(containsAllArr)
+            arr.push(operations[i][val]);
+            for (let j = 0; j < containsAllArr.length; j++) {
+              if (j < containsAllArr.length - 1)
+                containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j]) + ' and '
+              else
+                containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j])
+            }
+            arr[i] = containsAllStr
+          }
+          else if (val == 'contains any') {
+            const containsAllArr = values[`value-${i}`].split('，')
+            //拼接contains all的字符串
+            let containsAllStr = ''
+            console.log(containsAllArr)
+            arr.push(operations[i][val]);
+            for (let j = 0; j < containsAllArr.length; j++) {
+              if (j < containsAllArr.length - 1)
+                containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j]) + ' or '
+              else
+                containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j])
+            }
+            arr[i] = containsAllStr
+          }
+          else {
+            console.log(operations[i][val]);
+            arr.push(operations[i][val]);
+            arr[i] = arr[i].replace("&*&", values[`column-${i}`]);
+            arr[i] = arr[i].replace("#$#", values[`value-${i}`]);
+            console.log(arr);
+          }
+>>>>>>> feat: table operator功能基本完成，还存在部分bug
         }
+        return 1
       });
-      // console.log(values[`filter-${i}`])
-      // console.log(values[`column-${i}`])
-      // console.log(values[`condition-${i}`])
-      // console.log(values[`value-${i}`])
     }
     console.log('arr', arr);
     let str = arr[0];
@@ -315,13 +363,20 @@ const AdvancedSearchForm = (props) => {
     }
     console.log('str', arr, str);
     const tableData = {
-      dataSource: 'dataflow.airuuid',
-      filter: str,
-      limit: 2000,
-      project: ['*'],
-    };
+      job: 'table_start_job',
+      requestId: 'ac6wa2ds6c62',
+      operatorType: 'table',
+      tableDescription: {
+        dataSource: 'airuuid',
+        filter: str,
+        jobType: 'table',
+        limit: 2000,
+        project: ['*'],
+      },
+      workspaceId: 'string',
+    }
     getTable(tableData).then((res) => {
-      props.setData(res);
+      props.setData(res.outputs);
       console.log(res);
     });
     console.log('Received values of form: ', values);
@@ -343,7 +398,7 @@ const AdvancedSearchForm = (props) => {
             textAlign: 'right',
           }}
         >
-          <Button type="primary" htmlType="submit" onClick={save}>
+          <Button type="primary" htmlType="submit" >
             确认
           </Button>
           <Button

@@ -1,7 +1,7 @@
 package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
-import com.bdilab.dataflow.operator.dto.jobdescription.SQLGeneratorBase;
+import com.bdilab.dataflow.operator.dto.jobdescription.SqlGeneratorBase;
 import com.bdilab.dataflow.operator.link.LinkSqlGenerator;
 import com.bdilab.dataflow.utils.SqlParseUtils;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import org.apache.commons.text.StringSubstitutor;
  * @create: 2021-09-23
  * @description:
  **/
-public class TransposeSqlGenerator extends SQLGeneratorBase implements LinkSqlGenerator {
+public class TransposeSqlGenerator extends SqlGeneratorBase implements LinkSqlGenerator {
   private TransposeDescription transposeDescription;
   private List<String> columnValues;
   private static final String GROUP_BY = " GROUP BY ";

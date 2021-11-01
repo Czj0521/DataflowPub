@@ -6,9 +6,9 @@ import java.util.Map;
 
 /**
  * join service.
-
+ *
  * @author wjh
  */
 public interface JoinService {
-    List<Map<String, Object>> join(JoinDescription joinDescription);
+  List<Map<String, Object>> join(JoinDescription joinDescription);
 }

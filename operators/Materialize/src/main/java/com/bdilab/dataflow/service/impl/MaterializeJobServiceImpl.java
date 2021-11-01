@@ -9,7 +9,7 @@ import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
 import com.bdilab.dataflow.dto.jobinputjson.MaterializeInputJson;
 import com.bdilab.dataflow.dto.joboutputjson.MaterializeOutputJson;
 import com.bdilab.dataflow.service.MaterializeJobService;
-import com.bdilab.dataflow.sql.generator.TableSQLGenerator;
+import com.bdilab.dataflow.sql.generator.TableSqlGenerator;
 import com.bdilab.dataflow.utils.SqlParseUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
@@ -52,7 +52,7 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
       case "table":
         TableDescription tableDescription =
             JSON.toJavaObject(materializedOperator, TableDescription.class);
-        datasourceSql = new TableSQLGenerator(tableDescription).generateDataSourceSql();
+        datasourceSql = new TableSqlGenerator(tableDescription).generateDataSourceSql();
         break;
       case "transpose":
         TransposeDescription transposeDescription =
@@ -69,7 +69,7 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
     }
     StringBuilder sbSql = new StringBuilder();
     String name = com.bdilab.dataflow.common.consts.CommonConstants.DATABASE
-        + "." + SqlParseUtils.getUUID32();
+        + "." + SqlParseUtils.getUuid32();
     sbSql.append("CREATE VIEW ").append(name).append(" AS ")
         .append("(").append(datasourceSql).append(")");
     String sql = new String(sbSql);

@@ -8,16 +8,20 @@ import lombok.NoArgsConstructor;
 
 
 /**
+ * SQLGeneratorBase.
+
  * @author: Zunjing Chen
  * @create: 2021-09-18
- * @description:
  **/
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class SQLGeneratorBase {
+public abstract class SqlGeneratorBase {
   private JobDescription jobDescription;
 
+  /**
+   * get datasource sql.
+   */
   public String datasource() {
     // todo Check datasource
     if (jobDescription.getDataSource() == null) {
@@ -27,7 +31,8 @@ public abstract class SQLGeneratorBase {
   }
 
   public String limit() {
-    return jobDescription.getLimit() == null ? " LIMIT 2000" : " LIMIT " + jobDescription.getLimit();
+    return jobDescription.getLimit() == null
+        ? " LIMIT 2000" : " LIMIT " + jobDescription.getLimit();
   }
 
   public String project() {

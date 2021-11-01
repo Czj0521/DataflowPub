@@ -1,25 +1,25 @@
 package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.TableDescription;
-import com.bdilab.dataflow.operator.dto.jobdescription.SQLGeneratorBase;
+import com.bdilab.dataflow.operator.dto.jobdescription.SqlGeneratorBase;
 import com.bdilab.dataflow.operator.link.LinkSqlGenerator;
 import com.bdilab.dataflow.utils.SqlParseUtils;
-import org.springframework.util.StringUtils;
-
 import java.util.HashSet;
 import java.util.Set;
+import org.springframework.util.StringUtils;
 
 /**
+ * generate SQL.
+
  * @author: gluttony team
  * @create: 2021-09-18
- * @description: generate SQL
- **/
-public class TableSQLGenerator extends SQLGeneratorBase implements LinkSqlGenerator {
+ */
+public class TableSqlGenerator extends SqlGeneratorBase implements LinkSqlGenerator {
   private TableDescription tableDescription;
   String[] project;
   String[] groups;
 
-  public TableSQLGenerator(TableDescription tableDescription) {
+  public TableSqlGenerator(TableDescription tableDescription) {
     super(tableDescription);
     this.tableDescription = tableDescription;
   }

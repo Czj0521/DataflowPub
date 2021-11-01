@@ -8,7 +8,7 @@ import com.bdilab.dataflow.mapper.TableStatisticMapper;
 import com.bdilab.dataflow.model.DataSourceStatistic;
 import com.bdilab.dataflow.model.TableStatistic;
 import com.bdilab.dataflow.service.TableJobService;
-import com.bdilab.dataflow.sql.generator.TableSQLGenerator;
+import com.bdilab.dataflow.sql.generator.TableSqlGenerator;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import java.math.BigInteger;
 import java.util.LinkedHashMap;
@@ -104,7 +104,7 @@ public class TableJobServiceImpl implements TableJobService {
    * table operator.
    */
   public List<Map<String, Object>> table(TableDescription tableDescription) {
-    String sql = new TableSQLGenerator(tableDescription).generate();
+    String sql = new TableSqlGenerator(tableDescription).generate();
     log.info("Table Job SQL :" + sql);
     return clickHouseJdbcUtils.queryForList(sql);
   }

@@ -1,15 +1,15 @@
 package com.bdilab.dataflow.dto.joboutputjson;
 
 import com.bdilab.dataflow.operator.dto.joboutputjson.AbstractJobOutputJson;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-
-import java.util.List;
-import java.util.Map;
 
 /**
+ * Table Output Json.
+ *
  * @author: wh
  * @create: 2021-10-27
  */
@@ -17,5 +17,5 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TableOutputJson extends AbstractJobOutputJson {
-    private List<Map<String, Object>> outputs;
+  private List<Map<String, Object>> outputs;
 }

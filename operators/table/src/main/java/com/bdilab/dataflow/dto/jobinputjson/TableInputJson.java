@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * Table InputJson.
+ *
  * @author: wh
  * @create: 2021-10-27
  */
@@ -14,5 +16,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TableInputJson extends AbstractJobInputJson {
-    private TableDescription tableDescription;
+  private TableDescription tableDescription;
 }

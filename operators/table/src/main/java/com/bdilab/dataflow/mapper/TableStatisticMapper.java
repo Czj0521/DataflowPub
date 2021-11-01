@@ -7,18 +7,18 @@ import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 /**
+ * TableStatistic Mapper.
+ *
  * @author wh
  * @version 1.0
  * @date 2021/09/12
  */
 @Repository
 @DS("mysql")
-public  interface TableStatisticMapper extends BaseMapper<TableStatistic> {
-    /**
-     * Query all column names and attributes of the corresponding table
-     * @param tableName
-     * @return
-     */
-    @Select("select column_name_type from table_statistic where table_name = #{tableName}")
-    String getColumnsName(String tableName);
+public interface TableStatisticMapper extends BaseMapper<TableStatistic> {
+  /**
+   * Query all column names and attributes of the corresponding table.
+   */
+  @Select("select column_name_type from table_statistic where table_name = #{tableName}")
+  String getColumnsName(String tableName);
 }

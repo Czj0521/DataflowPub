@@ -15,16 +15,6 @@ import org.springframework.stereotype.Repository;
 
  * @author YuShaochao
  * @create: 2021-10-24
- * @description:
- * "JoinDescription": {
- *       "leftDataSource": "test1",
- *       "rightDataSource": "test2",
- *       "joinType":"innerJoin",
- *       "joinKeys":[{"left":"id","right":"id"},{"left":"id2","right":"id2"}],
- *       "includePrefixes":"false",
- *       "leftPrefix":"left_",
- *       "rightPrefix":"right_"
- *  }
  */
 
 @Data
@@ -33,33 +23,34 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class JoinDescription {
 
-    private String jobType;
-    private String leftDataSource;
-    private String rightDataSource;
-    private String joinType;
-    private JSONObject[] joinKeys;
-    private String includePrefixes;
-    private String leftPrefix;
-    private String rightPrefix;
+  private String jobType;
+  private String leftDataSource;
+  private String rightDataSource;
+  private String joinType;
+  private JSONObject[] joinKeys;
+  private String includePrefixes;
+  private String leftPrefix;
+  private String rightPrefix;
 
-    /** transform json to JoinDescription.
+  /**
+   * transform json to JoinDescription.
+   * Delete leftDataSource and rightDataSource fields for linkage.
 
-     * @param json (json from table)
-     * @return JoinDescription
-     * 联动时删除leftDataSource和rightDataSource字段
-     */
-    public static JoinDescription generateFromJson(JSONObject json) {
-        String jobType = json.getString("jobType");
-        String leftDataSource = json.getString("leftDataSource");
-        String rightDataSource = json.getString("rightDataSource");
-        String joinType = json.getString("joinType");
-        JSONObject[] joinKeys = CommonUtils.jsonArrayToJsonObejct(json.getJSONArray("joinKeys"));
-        String includePrefixes = json.getString("includePrefixes");
-        String leftPrefix = json.getString("leftPrefix");
-        String rightPrefix = json.getString("rightPrefix");
-        return new JoinDescription(jobType, leftDataSource, rightDataSource,
-                joinType, joinKeys, includePrefixes, leftPrefix, rightPrefix);
-    }
+   * @param json (json from table)
+   * @return JoinDescription
+   */
+  public static JoinDescription generateFromJson(JSONObject json) {
+    String jobType = json.getString("jobType");
+    String leftDataSource = json.getString("leftDataSource");
+    String rightDataSource = json.getString("rightDataSource");
+    String joinType = json.getString("joinType");
+    JSONObject[] joinKeys = CommonUtils.jsonArrayToJsonObejct(json.getJSONArray("joinKeys"));
+    String includePrefixes = json.getString("includePrefixes");
+    String leftPrefix = json.getString("leftPrefix");
+    String rightPrefix = json.getString("rightPrefix");
+    return new JoinDescription(jobType, leftDataSource, rightDataSource,
+        joinType, joinKeys, includePrefixes, leftPrefix, rightPrefix);
+  }
 
 }
 

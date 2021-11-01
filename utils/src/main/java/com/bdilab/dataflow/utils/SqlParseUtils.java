@@ -12,7 +12,7 @@ import java.util.UUID;
  **/
 public class SqlParseUtils {
   /**
-   * json String array to list
+   * json String array to list.
    */
   public static List getJsonArrToList(JSONObject json, String filedName, Class clazz) {
     return json.getJSONArray(filedName).toJavaList(clazz);
@@ -20,9 +20,10 @@ public class SqlParseUtils {
 
 
   /**
+   * combine With Separator.
+
    * @param list list
    * @param separator separator
-   * @return
    */
   public static String combineWithSeparator(String[] list, String separator) {
     StringBuilder sb = new StringBuilder();
@@ -34,9 +35,9 @@ public class SqlParseUtils {
   }
 
   /**
-   * Table/view ID
+   * Table/view ID.
    */
-  public static String getUUID32() {
+  public static String getUuid32() {
 
     return UUID.randomUUID().toString().replace("-", "").toLowerCase();
 

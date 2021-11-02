@@ -20,7 +20,11 @@ const AdvancedSearchForm = (props) => {
       const tempColumn = [];
       Object.keys(res).map((val) => {
         tempColumn.push(val);
+<<<<<<< HEAD
         return 1;
+=======
+        return 1
+>>>>>>> c5abe2f6512a25dcdd57fba620e9a3c4582ab89d
       });
       setColumn(tempColumn);
       setColumnType(res);
@@ -45,7 +49,11 @@ const AdvancedSearchForm = (props) => {
               <Form.Item initialValue={'Where'} name={`filter-${i}`}>
                 <Input
                   defaultValue={'Where'}
+<<<<<<< HEAD
                   disabled
+=======
+                  disabled={true}
+>>>>>>> c5abe2f6512a25dcdd57fba620e9a3c4582ab89d
                   style={{
                     color: 'white',
                     background: '#282820',
@@ -251,16 +259,30 @@ const AdvancedSearchForm = (props) => {
     });
     console.log(type);
     if (type.includes('Int') || type.includes('Float') || type.includes('Nullable')) {
+<<<<<<< HEAD
       operationType = 'numeric';
     } else if (type.includes('String')) {
       operationType = 'string';
     } else if (type.includes('Date')) {
       operationType = 'date';
+=======
+      operationType = "numeric";
+    }
+    else if (type.includes('String')) {
+      operationType = "string";
+    }
+    else if (type.includes('Date')) {
+      operationType = "date";
+>>>>>>> c5abe2f6512a25dcdd57fba620e9a3c4582ab89d
     }
     // 拿操作符
     getAllOperation().then((res) => {
       const temp = operations;
+<<<<<<< HEAD
       console.log(res);
+=======
+      console.log(res)
+>>>>>>> c5abe2f6512a25dcdd57fba620e9a3c4582ab89d
       Object.keys(res).map((val) => {
         if (val == operationType) {
           console.log(temp);
@@ -278,11 +300,16 @@ const AdvancedSearchForm = (props) => {
     // 记录了所有的数组的操作类型
     console.log('operations', operations);
     const arr = [];
+<<<<<<< HEAD
     console.log(operations);
+=======
+    console.log(operations)
+>>>>>>> c5abe2f6512a25dcdd57fba620e9a3c4582ab89d
     for (let i = 0; i < count; i++) {
       Object.keys(operations[i]).map((val) => {
         if (values[`condition-${i}`] == val) {
           if (val == 'contains all') {
+<<<<<<< HEAD
             const containsAllArr = values[`value-${i}`].split('，');
             // 拼接contains all的字符串
             let containsAllStr = '';
@@ -313,6 +340,44 @@ const AdvancedSearchForm = (props) => {
           }
         }
         return 1;
+=======
+            const containsAllArr = values[`value-${i}`].split('，')
+            // 拼接contains all的字符串
+            let containsAllStr = ''
+            console.log(containsAllArr)
+            arr.push(operations[i][val]);
+            for (let j = 0; j < containsAllArr.length; j++) {
+              if (j < containsAllArr.length - 1)
+                containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j]) + ' and '
+              else
+                containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j])
+            }
+            arr[i] = containsAllStr
+          }
+          else if (val == 'contains any') {
+            const containsAllArr = values[`value-${i}`].split('，')
+            //拼接contains all的字符串
+            let containsAllStr = ''
+            console.log(containsAllArr)
+            arr.push(operations[i][val]);
+            for (let j = 0; j < containsAllArr.length; j++) {
+              if (j < containsAllArr.length - 1)
+                containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j]) + ' or '
+              else
+                containsAllStr = containsAllStr + arr[i].replace("&*&", values[`column-${i}`]).replace("#$#", containsAllArr[j])
+            }
+            arr[i] = containsAllStr
+          }
+          else {
+            console.log(operations[i][val]);
+            arr.push(operations[i][val]);
+            arr[i] = arr[i].replace("&*&", values[`column-${i}`]);
+            arr[i] = arr[i].replace("#$#", values[`value-${i}`]);
+            console.log(arr);
+          }
+        }
+        return 1
+>>>>>>> c5abe2f6512a25dcdd57fba620e9a3c4582ab89d
       });
     }
     console.log('arr', arr);
@@ -333,7 +398,11 @@ const AdvancedSearchForm = (props) => {
         project: ['*'],
       },
       workspaceId: 'string',
+<<<<<<< HEAD
     };
+=======
+    }
+>>>>>>> c5abe2f6512a25dcdd57fba620e9a3c4582ab89d
     getTable(tableData).then((res) => {
       props.setData(res.outputs);
       console.log(res);

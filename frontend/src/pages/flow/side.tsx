@@ -182,7 +182,7 @@ function DatasetSide(props) {
           project: ['*'],
         },
         workspaceId: 'string',
-      }
+      };
       axios
         .all([
           getTable(tableDescription),

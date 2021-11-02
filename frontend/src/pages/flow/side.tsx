@@ -1,28 +1,16 @@
 import { useEffect, useState } from 'react';
-
 import axios from 'axios';
-
 import { Addon, Markup } from '@antv/x6';
 import { ReactShape } from '@antv/x6-react-shape';
-
 import { getTable, getTableColumn } from '../../api/table';
 import IconFont from '../../font';
 import data from './data';
 import BaseComponent from './operators/dataset/baseComponent';
-<<<<<<< c662a0f836aaad2f6d8ab5d7f17540f91774af9f
 import Transpose from './operators/transpose';
-<<<<<<< 82bd3c705b99334b3b0fa7369cb71182fb3a0925
-=======
 import { Join } from './operators'
-
->>>>>>> 'feat:join-init'
-=======
 import Filter from './operators/filter';
-<<<<<<< 948ec75892f70d7deeb6b774dac877460f15fc0b
->>>>>>> feat:Filter 连线改变Filter的源
-=======
 import store from '@/store';
->>>>>>> feat:Filter 日期选择&接口请求
+
 
 const { Dnd } = Addon;
 
@@ -81,13 +69,7 @@ function DatasetSide(props) {
     const type = target.getAttribute('data-type');
     const dataSource = target.getAttribute('data-datasource');
     const parent = target.getAttribute('parent');
-    // console.log(parent)
-<<<<<<< fead2bcf1e00f2c10aa6c59e17a155ee20f74cc5
-    console.log('type', type);
-    const item = {};
-=======
-    console.log(type);
->>>>>>> feat: transpose配置label
+
     const node = graph.createNode({
       width: 400,
       height: 300,

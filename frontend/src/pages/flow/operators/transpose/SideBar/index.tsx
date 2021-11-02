@@ -8,10 +8,10 @@ const SideBar: FC = (props) => {
   const { column } = props;
   return (
     <div className="hetu_table_sidebar_wrapper">
-      <SideItem name="column" width={180} height={200}>
+      <SideItem name="column" width={200} height={200}>
         <ColumnOrGroupForm column={column} labelName="column" />
       </SideItem>
-      <SideItem name="group by" width={300} height={300}>
+      <SideItem name="group by" width={200} height={300}>
         <ColumnOrGroupForm column={column} labelName="group by" />
       </SideItem>
       <SideItem name="attribute" width={300} height={300}>

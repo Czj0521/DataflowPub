@@ -1,7 +1,6 @@
 package com.bdilab.dataflow.dto.jobdescription;
 
 import com.alibaba.fastjson.JSONObject;
-import jdk.nashorn.internal.runtime.JSONFunctions;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

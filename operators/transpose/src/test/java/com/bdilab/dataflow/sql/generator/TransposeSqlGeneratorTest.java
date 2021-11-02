@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.sql.generator;
 
+import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
 import com.bdilab.dataflow.service.TransposeService;
 import com.bdilab.dataflow.service.impl.TransposeServiceImpl;
@@ -9,8 +10,14 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -22,7 +29,11 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
  * @create: 2021-10-25
  * @description:
  **/
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class TransposeSqlGeneratorTest {
+  @Autowired
+  TransposeService transposeService;
   TransposeSqlGenerator transposeSqlGenerator;
   TransposeDescription transposeDescription;
 
@@ -100,5 +111,21 @@ public class TransposeSqlGeneratorTest {
     transposeSqlGenerator = new TransposeSqlGenerator(transposeDescription, columnValues);
 
     System.out.println(transposeSqlGenerator.generate());
+  }
+  @Test
+  public void testTranspose() {
+    String profilerJson = "{\n"
+      + "    \"dataSource\": \"dataflow.promotion_csv\",\n"
+      + "    \"column\": \"Married\",\n"
+      + "    \"columnIsNumeric\": \"false\",\n"
+      + "    \"groupBy\": [\"EducationLevel\"],\n"
+      + "    \"attributeWithAggregationMap\": {\"Age\": \"avg\"},\n"
+      + "    \"topTransposedValuesNum\": 20,\n"
+      + "    \"jobType\": \"transpose\",\n"
+      + "    \"limit\": 2000,\n"
+      + "}";
+    TransposeDescription transposeDescription
+      = JSONObject.parseObject(profilerJson, TransposeDescription.class);
+    System.out.println(transposeService.transpose(transposeDescription));
   }
 }

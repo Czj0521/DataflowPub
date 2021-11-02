@@ -18,7 +18,7 @@ public enum GroupOperatorEnum {
   MIN(false, "min", "min(" + OperatorConstants.COLUMN_MAGIC_NUMBER + ")"),
   COUNT(false, "count", "count(" + OperatorConstants.COLUMN_MAGIC_NUMBER + ")"),
   DISTINCT_COUNT(false, "distinct count",
-      "uniqExact( " + OperatorConstants.COLUMN_MAGIC_NUMBER + ")"),
+      "uniqExact(" + OperatorConstants.COLUMN_MAGIC_NUMBER + ")"),
   SUM(true, "sum", "sum(" + OperatorConstants.COLUMN_MAGIC_NUMBER + ")"),
   AVERAGE(true, "average", "avg(" + OperatorConstants.COLUMN_MAGIC_NUMBER + ")"),
   STANDARD_DEV(true, "standard dev", "stddevPop(" + OperatorConstants.COLUMN_MAGIC_NUMBER + ")");

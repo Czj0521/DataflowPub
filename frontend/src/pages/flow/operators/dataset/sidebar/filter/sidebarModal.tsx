@@ -1,4 +1,4 @@
-import AdvancedSearchForm from '../../../filter/filterForm';
+import AdvancedSearchForm from '../../../Filter/filterForm';
 import IconFont from '../../../../../../font';
 
 function SidebarModal(props) {

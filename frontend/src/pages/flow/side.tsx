@@ -10,7 +10,7 @@ import IconFont from '../../font';
 import data from './data';
 import BaseComponent from './operators/dataset/baseComponent';
 import Transpose from './operators/transpose';
-import Filter from './operators/filter';
+import Filter from './operators/Filter';
 import store from '@/store';
 
 const { Dnd } = Addon;

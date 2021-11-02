@@ -18,11 +18,8 @@
     <dependencies>
         <dependency>
             <groupId>com.bdilab</groupId>
-            <artifactId>utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.bdilab</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>operator-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

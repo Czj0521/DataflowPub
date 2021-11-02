@@ -6,6 +6,8 @@ import com.bdilab.dataflow.model.DataSourceStatistic;
 import org.springframework.stereotype.Repository;
 
 /**
+ * DataSourceStatistic Mapper.
+
  * @author wh
  * @version 1.0
  * @date 2021/09/16

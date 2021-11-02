@@ -2,30 +2,40 @@ package com.bdilab.dataflow.controller;
 
 import com.bdilab.dataflow.common.consts.WebConstants;
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
-import com.bdilab.dataflow.service.impl.TransposeServiceImpl;
+import com.bdilab.dataflow.service.TransposeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * TransposeController.
+ *
  * @author: Zunjing Chen
- * @create: 2021-09-23
+ * @create: 2021-10-31
  * @description:
  **/
 @Slf4j
 @RestController
+@Api(tags = "Operator")
 @CrossOrigin
-@Api(tags = "transpose控件")
-@RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/job")
+@RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/operator")
 public class TransposeController {
-    @Autowired
-    TransposeServiceImpl transposeService;
-    @PostMapping("/transpose")
-    @ApiOperation(value = "transpose控件")
-    public ResponseEntity transpose(@RequestBody TransposeDescription transposeDescription)  {
-        return ResponseEntity.ok(transposeService.transpose(transposeDescription));
-    }
+  @Autowired
+  TransposeService transposeService;
+
+  @GetMapping("/transpose")
+  @ApiOperation(value = "transpose任务接口，只返回sql")
+  public ResponseEntity filter(@RequestBody @ApiParam(value = "transpose任务描述")
+                                   TransposeDescription description) {
+    return ResponseEntity.ok(transposeService.transpose(description));
+  }
+
 }

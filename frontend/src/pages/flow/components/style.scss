@@ -1,5 +1,4 @@
 .hetu_basecomponent_wrapper{
-<<<<<<< 04814676021c232b1562117e26f2c45e121ff600
     position: relative;
     height:100%;
     padding: 10px;
@@ -175,11 +174,25 @@
                 position: absolute;
                 width: 400px;
                 left:-411px;
-=======
-    z-index: 0;
+                top:-20px;
+                border-radius: 4px;
+                cursor: default;
+                transition: all 1s;
+                height: 200px;
+            }
+            .hetu_sidebar_modal_close{
+                &:hover{
+                    transform: scale(1.2,1.2);
+                }
+            }
+        }
+    }
+}
+
+.hetu_basecomponent_wrapper{
     position: relative;
     height:100%;
-    padding: 10px;
+    // padding: 10px;
     z-index: 0;
     .hetu_basecomponent{
         height:100%;
@@ -261,15 +274,15 @@
         position: relative;
         .hetu_sidebar_item{
             background-color: rgb(40,40,40);
-            width:150px;
+            width:130px;
             height:30px;
             line-height: 30px;
-            border-radius: 10px;
+            border-radius: 10px 0 0 10px;
             color: #eee;
             padding-left: 10px;
             text-align: left;
             cursor: pointer;
-            transform: translateX(100px);
+            transform: translateX(90px);
             transition: all .3s;
             margin-top: 6px;
             &:hover{
@@ -313,7 +326,7 @@
 		// }
         .hetu_sidebar_item_click{
             background-color: rgb(40,40,40);
-            width:150px;
+            width:130px;
             height:30px;
             line-height: 30px;
             border-radius: 10px;
@@ -334,53 +347,17 @@
                 left: -11px;
                 top:11px;
             }
-
 			.hetu_sidebar_attributes_modal{
 				background-color: rgb(40,40,40);
 				color: #eee;
 				position: absolute;
-				width: 500px;
-				left:-511px;
+				width: 200px;
+				left:-211px;
 				top:-20px;
 				border-radius: 4px;
 				cursor: default;
 				transition: all 1s;
-				height: 300px;
-        .hetu_sidebar_attributes_modal_div{
-            height: 300px;
-            overflow: hidden;
-            .hetu_sidebar_attributes_modal_box{
-                background: rgb(40,40,40);
-                padding: 10px 0;
-                white-space: nowrap;/*文本不会换行，文本会在在同一行上继续*/
-                overflow-y:auto;/*可滑动*/
-                .hetu_sidebar_attributes_modal_left{
-                    width: 44%;
-                    margin-left: 3%;
-                    margin-right: 3%;
-                    height: 280px;
-                    display: inline-block;/*行内块元素*/
-                    overflow: overlay;
-                }
-                .hetu_sidebar_attributes_modal_mid{
-                    width: 44%;
-                    margin-left: 3%;
-                    margin-right: 3%;
-                    height: 280px;
-                    display: inline-block;/*行内块元素*/
-                    overflow: overlay;
-                }
-                .hetu_sidebar_attributes_modal_right{
-                    width: 44%;
-                    margin-left: 3%;
-                    margin-right: 3%;
-                    height: 280px;
-                    display: inline-block;/*行内块元素*/
-                    overflow: overlay;
-                }
-            }
-
-        }
+				height: 200px;
 			}
             .hetu_sidebar_modal{
                 background-color: rgb(40,40,40);
@@ -394,21 +371,6 @@
                 transition: all 1s;
                 height: 200px;
             }
-            .hetu_sidebar_group_modal{
-                background-color: rgb(40,40,40);
-                overflow: auto;
-                color: #eee;
-                position: absolute;
-                width: 200px;
-                left:-211px;
->>>>>>> feat: table operator功能基本完成，还存在部分bug
-                top:-20px;
-                border-radius: 4px;
-                cursor: default;
-                transition: all 1s;
-<<<<<<< 04814676021c232b1562117e26f2c45e121ff600
-                height: 200px;
-            }
             .hetu_sidebar_modal_close{
                 &:hover{
                     transform: scale(1.2,1.2);
@@ -416,23 +378,4 @@
             }
         }
     }
-=======
-                height: 300px;
-            }
-            .hetu_sidebar_modal_close{
-                &:hover{
-                    transform: scale(1.2,1.2);
-                }
-            }
-        }
-    }
-}
-
-.ant-list-split .ant-list-item {
-    color: #eee;
-     border-bottom: 0px ;
-}
-.ant-list-sm .ant-list-item {
-    padding: 5px 0px;
->>>>>>> feat: table operator功能基本完成，还存在部分bug
 }

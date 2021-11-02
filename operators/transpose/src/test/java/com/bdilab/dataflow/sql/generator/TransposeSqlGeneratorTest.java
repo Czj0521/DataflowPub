@@ -1,17 +1,15 @@
 package com.bdilab.dataflow.sql.generator;
 
 import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.controller.TransposeController;
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
 import com.bdilab.dataflow.service.TransposeService;
-import com.bdilab.dataflow.service.impl.TransposeServiceImpl;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import java.util.List;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,21 +17,16 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
-
 /**
  * Test TransposeSqlGenerator.
  *
- * @author: Zunjing Chen
+ * @author: Zunjing Chen, Pan Liu
  * @create: 2021-10-25
  * @description:
  **/
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class TransposeSqlGeneratorTest {
-  @Autowired
-  TransposeService transposeService;
   TransposeSqlGenerator transposeSqlGenerator;
   TransposeDescription transposeDescription;
 
@@ -42,11 +35,11 @@ public class TransposeSqlGeneratorTest {
    */
   @Before
   public void init() {
-    transposeDescription = new TransposeDescription("transpose", "promotion_csv", 3000);
+    transposeDescription = new TransposeDescription("transpose", "promotion_csv", 2000);
   }
 
   /**
-   * Test one: column is Numeric.
+   * Test 1: column is Numeric.
    */
   @Test
   public void columnIsNumericTest() {
@@ -63,7 +56,7 @@ public class TransposeSqlGeneratorTest {
   }
 
   /**
-   * Test two: attribute is not Numeric.
+   * Test 2: attribute is not Numeric.
    */
   @Test
   public void attributeIsNotNumericTest() {
@@ -80,10 +73,10 @@ public class TransposeSqlGeneratorTest {
   }
 
   /**
-   * Test three: Longitudinal axis is not unique.
+   * Test 3: Longitudinal axis is not unique.
    */
   @Test
-  public void LongaxisIsNotUniqueTest() {
+  public void longaxisIsNotUniqueTest() {
     transposeDescription.setColumn("Married");
     transposeDescription.setColumnIsNumeric(false);
     transposeDescription.setGroupBy(new String[]{"Married", "EducationLevel"});
@@ -97,7 +90,7 @@ public class TransposeSqlGeneratorTest {
   }
 
   /**
-   * Test four: Same Attribute.
+   * Test 4: Same Attribute.
    */
   @Test
   public void sameAttributeTest() {
@@ -111,21 +104,5 @@ public class TransposeSqlGeneratorTest {
     transposeSqlGenerator = new TransposeSqlGenerator(transposeDescription, columnValues);
 
     System.out.println(transposeSqlGenerator.generate());
-  }
-  @Test
-  public void testTranspose() {
-    String profilerJson = "{\n"
-      + "    \"dataSource\": \"dataflow.promotion_csv\",\n"
-      + "    \"column\": \"Married\",\n"
-      + "    \"columnIsNumeric\": \"false\",\n"
-      + "    \"groupBy\": [\"EducationLevel\"],\n"
-      + "    \"attributeWithAggregationMap\": {\"Age\": \"avg\"},\n"
-      + "    \"topTransposedValuesNum\": 20,\n"
-      + "    \"jobType\": \"transpose\",\n"
-      + "    \"limit\": 2000,\n"
-      + "}";
-    TransposeDescription transposeDescription
-      = JSONObject.parseObject(profilerJson, TransposeDescription.class);
-    System.out.println(transposeService.transpose(transposeDescription));
   }
 }

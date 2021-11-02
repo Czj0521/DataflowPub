@@ -26,10 +26,10 @@ public class TransposeSqlGenerator extends SqlGeneratorBase implements LinkSqlGe
   private static final String COLUMN = "column";
   private static final String COLUMN_NAME = "columnName";
   private static final String COLUMN_VALUE = "columnValue";
-  private static final String STRING_TEMPLATE = "${groupFunction}(${attribute},"
-      + "${column} = '${columnValue}' )  AS `${columnName}` ";
+  private static final String STRING_TEMPLATE = "${groupFunction}(${attribute}, "
+      + "${column} = '${columnValue}')  AS `${columnName}`";
   private static final String NUMERIC_TEMPLATE = "${groupFunction}(${attribute},"
-      + "${column}  = ${columnValue} )  AS `${columnName}` ";
+      + "${column} = ${columnValue})  AS `${columnName}`";
 
   /**
    * TransposeSqlGenerator's constructor.
@@ -71,11 +71,11 @@ public class TransposeSqlGenerator extends SqlGeneratorBase implements LinkSqlGe
         valueMap.put(COLUMN_NAME, columnValue + "_" + entry.getKey() + "_" + entry.getValue());
         valueMap.put(COLUMN_VALUE, columnValue);
         StringSubstitutor sub = new StringSubstitutor(valueMap);
-        stringBuilder.append(sub.replace(template)).append(",");
+        stringBuilder.append(sub.replace(template)).append(", ");
       }
     }
     // delete ,
-    stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+    stringBuilder.deleteCharAt(stringBuilder.length() - 2);
   }
 
   /**
@@ -83,7 +83,7 @@ public class TransposeSqlGenerator extends SqlGeneratorBase implements LinkSqlGe
    */
   private void appendGroupColumns(StringBuilder stringBuilder) {
     String groupColumn = SqlParseUtils.combineWithSeparator(transposeDescription.getGroupBy(), ",");
-    stringBuilder.append(groupColumn).append(",");
+    stringBuilder.append(groupColumn).append(", ");
   }
 
 

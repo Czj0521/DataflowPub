@@ -33,7 +33,7 @@ public class TransposeController {
 
   @GetMapping("/transpose")
   @ApiOperation(value = "transpose任务接口，只返回sql")
-  public ResponseEntity filter(@RequestBody @ApiParam(value = "transpose任务描述")
+  public ResponseEntity transpose(@RequestBody @ApiParam(value = "transpose任务描述")
                                    TransposeDescription description) {
     return ResponseEntity.ok(transposeService.transpose(description));
   }

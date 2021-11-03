@@ -2,10 +2,6 @@ import { useState, useEffect, useReducer } from 'react';
 import { Form, Row, Col, Input, Button ,Select, DatePicker } from 'antd';
 import { getTableColumn, getAllOperation, getTable } from '@/api/table';
 import { PlusOutlined, CloseOutlined } from '@ant-design/icons';
-<<<<<<< HEAD
-=======
-// import NoRememberInput from '../../components/conditionInput';
->>>>>>> 88f9208ca51d7f857d9b712f603ae51521b43a52
 import './index.less';
 
 const { Option } = Select;
@@ -164,13 +160,8 @@ function FilterForm({ dataFrame, setData, ...props }) {
                 rules={rules}
               >
                 <Select
-<<<<<<< HEAD
-                  onChange={(val) => dispatch({ type: 'changeRowData', index: i, name: 'column', value: val })}
-                  dropdownStyle={cusDropDownStyle}
-=======
                   onChange={(val) => dispatch({ type: 'changeRowData', index: i, name: 'column', value: val, colType: columnType[val] })}
                   // dropdownStyle={cusDropDownStyle}
->>>>>>> 88f9208ca51d7f857d9b712f603ae51521b43a52
                   size={'small'}
                 >
                   {

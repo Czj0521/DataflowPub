@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Addon, Markup } from '@antv/x6';
@@ -9,23 +8,6 @@ import data from './data';
 import BaseComponent from './operators/dataset/baseComponent';
 import { Join, Filter, Transpose } from './operators'
 import store from '@/store';
-=======
-import { useEffect, useState } from 'react';
-
-import axios from 'axios';
-
-import { Addon, Markup } from '@antv/x6';
-import { ReactShape } from '@antv/x6-react-shape';
-
-import { getTable, getTableColumn } from '../../api/table';
-import IconFont from '../../font';
-import data from './data';
-import BaseComponent from './operators/dataset/baseComponent';
-import Filter from './operators/Filter';
-import store from '@/store';
-import { Join, Transpose } from './operators';
-
->>>>>>> 88f9208ca51d7f857d9b712f603ae51521b43a52
 
 const { Dnd } = Addon;
 
@@ -71,20 +53,11 @@ function DatasetSide(props) {
       case 'dataset':
         return <BaseComponent type={type} size={size} />;
       case 'Transpose':
-<<<<<<< HEAD
-        return <Transpose type={type} size={size} />;
-=======
         return <Transpose />;
->>>>>>> 88f9208ca51d7f857d9b712f603ae51521b43a52
       default:
         return <div />;
     }
   };
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 88f9208ca51d7f857d9b712f603ae51521b43a52
   const drop = (e) => {
     console.log('drop', e, props);
     const { graph } = props;
@@ -92,13 +65,6 @@ function DatasetSide(props) {
     const type = target.getAttribute('data-type');
     const dataSource = target.getAttribute('data-datasource');
     const parent = target.getAttribute('parent');
-<<<<<<< HEAD
-
-=======
-    // console.log(parent)
-    console.log('type', type);
-    const item = {};
->>>>>>> 88f9208ca51d7f857d9b712f603ae51521b43a52
     const node = graph.createNode({
       width: 400,
       height: 300,
@@ -206,11 +172,7 @@ function DatasetSide(props) {
           project: ['*'],
         },
         workspaceId: 'string',
-<<<<<<< HEAD
-      }
-=======
       };
->>>>>>> 88f9208ca51d7f857d9b712f603ae51521b43a52
       axios
         .all([
           getTable(tableDescription),

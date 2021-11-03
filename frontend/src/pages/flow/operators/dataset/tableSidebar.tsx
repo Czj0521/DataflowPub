@@ -1,21 +1,12 @@
 import { useState } from 'react';
 import Attribute from './sidebar/attributes/attribute';
 import Filters from './sidebar/filter/filters';
-<<<<<<< HEAD
 import Group from './sidebar/group/group'
 
 function TableSidebar(props) {
   // 在这里组织table请求体，发送请求重新渲染图表
   const [tableInputJson, setTableInputJson] = useState(props.tableDescription)
 
-=======
-import Group from './sidebar/group/group';
-
-function TableSidebar(props) {
-  // 在这里组织table请求体，发送请求重新渲染图表
-  const [tableInputJson,setTableInputJson] = useState(props.tableDescription);
-  // console.log(tableInputJson)
->>>>>>> 88f9208ca51d7f857d9b712f603ae51521b43a52
   return (
     <div className="hetu_table_sidebar_wrapper">
       <Filters tableInputJson={tableInputJson} setTableInputJson={setTableInputJson} data={props.data} setData={props.setData} filter={props.filter} />

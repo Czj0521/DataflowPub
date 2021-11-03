@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { FC } from 'react'
 import style from './index.module.scss'
 import SideBar from './SideBar'
@@ -12,18 +11,3 @@ const Join: FC = (props) => {
 }
 
 export default Join;
-=======
-import { FC } from 'react';
-import SideBar from './SideBar';
-
-const Join: FC = (props) => {
-  return (
-    <div className="hetu_basecomponent_wrapper">
-      <SideBar />
-      <div className="wrapper">join</div>
-    </div>
-  );
-};
-
-export default Join;
->>>>>>> 88f9208ca51d7f857d9b712f603ae51521b43a52

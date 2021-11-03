@@ -83,11 +83,13 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
     Map<String, String> metadata = tableMetadataServiceImpl.metadataFromDatasource(name);
     MaterializeOutputJson materializeOutputJson =
         new MaterializeOutputJson();
+    JSONObject outputs = new JSONObject();
+    outputs.put("metadata", metadata);
+    outputs.put("subTableId", name);
+    materializeOutputJson.setOutputs(outputs);
     materializeOutputJson.setJobStatus("JOB_FINISH");
     materializeOutputJson.setRequestId(materializeInputJson.getRequestId());
     materializeOutputJson.setWorkspaceId(materializeInputJson.getWorkspaceId());
-    materializeOutputJson.setMetadata(metadata);
-    materializeOutputJson.setSubTableId(name);
     return materializeOutputJson;
   }
 

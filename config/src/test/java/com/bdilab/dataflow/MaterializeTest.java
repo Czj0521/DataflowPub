@@ -29,12 +29,13 @@ public class MaterializeTest {
   @MethodSource("descriptionProvider")
   public void materializeTable(String materializedType, String materializedOperator) {
     MaterializeDescription materializeDescription = new MaterializeDescription();
+    materializeDescription.setJobType("materialize");
     materializeDescription.setMaterializedType(materializedType);
     materializeDescription.setMaterializedOperator(JSONObject.parseObject(materializedOperator));
     assertDoesNotThrow(() -> {
       MaterializeOutputJson materialize = materializeJobService.materialize(new MaterializeInputJson(materializeDescription));
       System.out.println(materialize);
-      System.out.println(materializeJobService.deleteSubTable(materialize.getSubTableId()));
+      System.out.println(materializeJobService.deleteSubTable(materialize.getOutputs().getString("subTableId")));
 
     });
   }

@@ -1,27 +1,25 @@
 package com.bdilab.dataflow.dto.jobdescription;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Map;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
- * transpose's dto.
+ * transpose dto.
  *
- * @author: Zunjing Chen
- * @create: 2021-09-23
- * @description:
- **/
+ * @author Zunjing Chen
+ * @date 2021-09-23
+ */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @ApiModel(value = "TransposeDescription")
 public class TransposeDescription extends JobDescription {
+
   @NotEmpty
   @ApiModelProperty(value = "横轴", required = true, example = "name")
   private String column;
@@ -38,14 +36,39 @@ public class TransposeDescription extends JobDescription {
   @ApiModelProperty(value = "横轴值最大数量", required = true, example = "20（横轴最多20个值）")
   private int topTransposedValuesNum;
 
+  /**
+   * All args constructor.
+   */
   public TransposeDescription(String jobType, String dataSource,
-                              int limit, int topTransposedValuesNum) {
+      int limit, String column, boolean columnIsNumeric, String[] groupBy,
+      Map<String, String> attributeWithAggregationMap, int topTransposedValuesNum) {
     super(jobType, dataSource, limit);
+    this.column = column;
+    this.columnIsNumeric = columnIsNumeric;
+    this.attributeWithAggregationMap = attributeWithAggregationMap;
+    this.groupBy = groupBy;
     this.topTransposedValuesNum = topTransposedValuesNum;
   }
 
   public TransposeDescription(String jobType, String dataSource, int limit) {
     super(jobType, dataSource, limit);
     topTransposedValuesNum = 20;
+  }
+
+  /**
+   * Generator TransposeDescription from json.
+   */
+  public static TransposeDescription generateFromJson(JSONObject json) {
+    String column = json.getString("column");
+    Boolean columnIsNumeric = json.getBoolean("columnIsNumeric");
+    String[] groupBy = json.getJSONArray("groupBy").toArray(new String[]{});
+    Map<String, String> attributeWithAggregationMap = json
+        .getObject("attributeWithAggregationMap", new TypeReference<Map<String, String>>() {
+        });
+    Integer topTransposedValuesNum = json.getInteger("topTransposedValuesNum");
+    String jobType = json.getString("jobType");
+    Integer limit = json.getInteger("limit");
+    return new TransposeDescription(jobType, "", limit, column, columnIsNumeric, groupBy,
+        attributeWithAggregationMap, topTransposedValuesNum);
   }
 }

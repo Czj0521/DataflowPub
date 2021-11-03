@@ -18,9 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * TransposeController.
  *
- * @author: Zunjing Chen
- * @create: 2021-10-31
- * @description:
+ * @author Zunjing Chen
+ * @2021-10-31
  **/
 @Slf4j
 @RestController

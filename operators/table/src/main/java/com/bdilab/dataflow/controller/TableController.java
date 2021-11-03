@@ -41,7 +41,7 @@ public class TableController {
   @PostMapping("/table")
   @ApiOperation(value = "Table Operator")
   public ResponseEntity table(@RequestBody TableInputJson tableInputJson) {
-    List<Map<String, Object>> table = tableJobService.table(tableInputJson.getTableDescription());
+    List<Map<String, Object>> table = tableJobService.execute(tableInputJson.getTableDescription());
     TableOutputJson tableOutputJson = new TableOutputJson();
     tableOutputJson.setOutputs(table);
     tableOutputJson.setJobStatus("JOB_FINISH");

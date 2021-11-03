@@ -101,15 +101,6 @@ public class TableJobServiceImpl implements TableJobService {
 
 
   /**
-   * table operator.
-   */
-  public List<Map<String, Object>> table(TableDescription tableDescription) {
-    String sql = new TableSqlGenerator(tableDescription).generate();
-    log.info("Table Job SQL :" + sql);
-    return clickHouseJdbcUtils.queryForList(sql);
-  }
-
-  /**
    * Get Table Structure.
    */
   @Override
@@ -117,5 +108,12 @@ public class TableJobServiceImpl implements TableJobService {
     QueryWrapper<DataSourceStatistic> qw = new QueryWrapper<>();
     qw.eq("datasource", tableName);
     return dataSourceStatisticMapper.selectOne(qw);
+  }
+
+  @Override
+  public List<Map<String, Object>> execute(TableDescription jobDescription) {
+    String sql = new TableSqlGenerator(jobDescription).generate();
+    log.info("Table Job SQL :" + sql);
+    return clickHouseJdbcUtils.queryForList(sql);
   }
 }

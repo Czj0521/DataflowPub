@@ -5,6 +5,7 @@ import com.bdilab.dataflow.common.consts.JobTypeConstants;
 import com.bdilab.dataflow.common.exception.UncheckException;
 import com.bdilab.dataflow.dto.jobdescription.TableDescription;
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
+import com.bdilab.dataflow.service.MaterializeJobService;
 import com.bdilab.dataflow.service.TableJobService;
 import com.bdilab.dataflow.service.TransposeService;
 import com.bdilab.dataflow.service.UniformService;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 
 /**
@@ -24,28 +27,50 @@ import org.springframework.stereotype.Service;
 public class UniformServiceImpl implements UniformService {
 
   @Autowired
-  TransposeService transposeService;
+  TransposeServiceImpl transposeServiceImpl;
   @Autowired
   TableJobService tableJobService;
+  @Resource
+  MaterializeJobService materializeJobService;
 
   @Override
   public Object analyze(JSONObject json) {
-    // todo: set the uniform structure for returned data
-    String datasource = generateDataSourceRecursively(json);
-    json.put("datasource", datasource);
-    return executeJob(json);
-  }
-
-  private List<Map<String, Object>> executeJob(JSONObject json) {
-    String jobType = json.getString("jobType");
-    switch (jobType) {
+    Object outputs;
+    String operatorType = json.getString("operatorType");
+    switch (operatorType) {
       //todo: set other case when other operator is done
       case JobTypeConstants.TABLE_JOB:
-        return tableJobService.execute(TableDescription.generateFromJson(json));
+        JSONObject tableDescription = json.getJSONObject("tableDescription");
+        tableDescription.put("datasource", generateDataSourceRecursively(tableDescription));
+        outputs = tableJobService.execute(TableDescription.generateFromJson(tableDescription));
+        break;
+      case JobTypeConstants.MATERIALIZE_JOB:
+        JSONObject materializeDescription = json.getJSONObject("materializedOperator");
+        String subTableSql = generateDataSourceRecursively(
+            materializeDescription.getJSONObject("materializedOperator"));
+        outputs = materializeJobService.materialize(subTableSql);
+        break;
       default:
         throw new UncheckException("Unknown jobType to execute job");
     }
+    JSONObject result = new JSONObject();
+    result.put("jobStatus", "JOB_FINISH");
+    result.put("requestId", json.getString("requestId"));
+    result.put("workspaceId", json.getString("workspaceId"));
+    result.put("outputs", outputs);
+    return result;
   }
+
+  //  private List<Map<String, Object>> executeJob(JSONObject json) {
+  //    String jobType = json.getString("jobType");
+  //    switch (jobType) {
+  //      //todo: set other case when other operator is done
+  //      case JobTypeConstants.TABLE_JOB:
+  //        return tableJobService.execute(TableDescription.generateFromJson(json));
+  //      default:
+  //        throw new UncheckException("Unknown jobType to execute job");
+  //    }
+  //  }
 
   private String generateDataSourceRecursively(JSONObject requestData) {
     String jobType = requestData.getString("jobType");
@@ -62,7 +87,7 @@ public class UniformServiceImpl implements UniformService {
             TransposeDescription.generateFromJson(requestData);
         transposeDescription.setDataSource(datasource);
         // generate sql
-        return transposeService.transpose(transposeDescription);
+        return transposeServiceImpl.generateDataSourceSql(transposeDescription);
       default:
         throw new UncheckException("Unknown jobType to generate datasource");
     }

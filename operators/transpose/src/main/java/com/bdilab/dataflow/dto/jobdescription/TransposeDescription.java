@@ -65,10 +65,12 @@ public class TransposeDescription extends JobDescription {
     Map<String, String> attributeWithAggregationMap = json
         .getObject("attributeWithAggregationMap", new TypeReference<Map<String, String>>() {
         });
-    Integer topTransposedValuesNum = json.getInteger("topTransposedValuesNum");
+    Integer topTransposedValuesNum =
+        json.containsKey("topTransposedValuesNum") ? json.getInteger("topTransposedValuesNum") : 20;
     String jobType = json.getString("jobType");
     Integer limit = json.getInteger("limit");
-    return new TransposeDescription(jobType, "", limit, column, columnIsNumeric, groupBy,
+    String dataSource = json.getString("datasource");
+    return new TransposeDescription(jobType, dataSource, limit, column, columnIsNumeric, groupBy,
         attributeWithAggregationMap, topTransposedValuesNum);
   }
 }

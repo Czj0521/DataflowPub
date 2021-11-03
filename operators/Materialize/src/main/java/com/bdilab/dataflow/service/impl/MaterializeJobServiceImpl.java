@@ -51,12 +51,12 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
     switch (materializeDescription.getMaterializedType()) {
       case "table":
         TableDescription tableDescription =
-            JSON.toJavaObject(materializedOperator, TableDescription.class);
+            TableDescription.generateFromJson(materializedOperator);
         datasourceSql = new TableSqlGenerator(tableDescription).generateDataSourceSql();
         break;
       case "transpose":
         TransposeDescription transposeDescription =
-            JSON.toJavaObject(materializedOperator, TransposeDescription.class);
+            TransposeDescription.generateFromJson(materializedOperator);
         datasourceSql = transposeServiceImpl.generateDataSourceSql(transposeDescription);
         break;
       case "join":
@@ -67,11 +67,23 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
       default:
         throw new RuntimeException("Wrong materialized type!");
     }
+    JSONObject outputs = materialize(datasourceSql);
+    MaterializeOutputJson materializeOutputJson =
+        new MaterializeOutputJson();
+    materializeOutputJson.setOutputs(outputs);
+    materializeOutputJson.setJobStatus("JOB_FINISH");
+    materializeOutputJson.setRequestId(materializeInputJson.getRequestId());
+    materializeOutputJson.setWorkspaceId(materializeInputJson.getWorkspaceId());
+    return materializeOutputJson;
+  }
+
+  @Override
+  public JSONObject materialize(String subTableSql) {
     StringBuilder sbSql = new StringBuilder();
     String name = com.bdilab.dataflow.common.consts.CommonConstants.DATABASE
         + "." + SqlParseUtils.getUuid32();
     sbSql.append("CREATE VIEW ").append(name).append(" AS ")
-        .append("(").append(datasourceSql).append(")");
+        .append("(").append(subTableSql).append(")");
     String sql = new String(sbSql);
     URLEncoder urlEncoder = new URLEncoder();
     sql = urlEncoder.encode(sql, Charset.defaultCharset());
@@ -81,16 +93,10 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
     }
     log.info("Materialize job: {} has been created", name);
     Map<String, String> metadata = tableMetadataServiceImpl.metadataFromDatasource(name);
-    MaterializeOutputJson materializeOutputJson =
-        new MaterializeOutputJson();
     JSONObject outputs = new JSONObject();
     outputs.put("metadata", metadata);
     outputs.put("subTableId", name);
-    materializeOutputJson.setOutputs(outputs);
-    materializeOutputJson.setJobStatus("JOB_FINISH");
-    materializeOutputJson.setRequestId(materializeInputJson.getRequestId());
-    materializeOutputJson.setWorkspaceId(materializeInputJson.getWorkspaceId());
-    return materializeOutputJson;
+    return outputs;
   }
 
   @Override

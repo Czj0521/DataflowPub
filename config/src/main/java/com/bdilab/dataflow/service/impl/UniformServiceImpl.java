@@ -46,7 +46,7 @@ public class UniformServiceImpl implements UniformService {
         outputs = tableJobService.execute(TableDescription.generateFromJson(tableDescription));
         break;
       case JobTypeConstants.MATERIALIZE_JOB:
-        JSONObject materializeDescription = json.getJSONObject("materializedOperator");
+        JSONObject materializeDescription = json.getJSONObject("materializeDescription");
         String subTableSql = generateDataSourceRecursively(
             materializeDescription.getJSONObject("materializedOperator"));
         outputs = materializeJobService.materialize(subTableSql);

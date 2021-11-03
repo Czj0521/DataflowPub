@@ -1,8 +1,18 @@
 import '../../components/style.scss';
+<<<<<<< HEAD
 import { useEffect, useState } from 'react';
 import * as echarts from 'echarts';
 import VirtualTable from '@/components/VirtualTable';
 import IconFont from '@/font';
+=======
+
+import { useEffect, useState } from 'react';
+
+import * as echarts from 'echarts';
+
+import VirtualTable from '../../../../components/VirtualTable';
+import IconFont from '../../../../font';
+>>>>>>> 88f9208ca51d7f857d9b712f603ae51521b43a52
 import TableSidebar from './tableSidebar';
 
 function BaseComponent(props) {
@@ -10,10 +20,17 @@ function BaseComponent(props) {
 
   const [myChart, setMyChart] = useState(null);
   const [container, setContainer] = useState({});
+<<<<<<< HEAD
   const [_, setBackgroundColor] = useState('white');
   const [data, setData] = useState([]);
   const [length, setLength] = useState(0);
   const [filter] = useState([]);
+=======
+  const [backgroundColor, setBackgroundColor] = useState('white');
+  const [data, setData] = useState([]);
+  const [length, setLength] = useState(0);
+  const [filter, setFilter] = useState([]);
+>>>>>>> 88f9208ca51d7f857d9b712f603ae51521b43a52
   const [column, setColumn] = useState([]);
   const { width, height } = props?.node?.size() || {};
   useEffect(() => {
@@ -126,7 +143,11 @@ function BaseComponent(props) {
   
   return (
     <div className="hetu_basecomponent_wrapper" draggable>
+<<<<<<< HEAD
       <TableSidebar setColumn={setColumn} dataFrame={props.node.data.item.dataFrame} data={data} setData={setData} filter={filter} />
+=======
+      <TableSidebar tableDescription={props.node.getData().item.option.tableDescription} column={column} setColumn={setColumn} data={data} setData={setData} filter={filter} />
+>>>>>>> 88f9208ca51d7f857d9b712f603ae51521b43a52
       <div className="hetu_basecomponent" id={props.node.getData().item.id}>
         {props.type === 'dataset' && (
           <VirtualTable

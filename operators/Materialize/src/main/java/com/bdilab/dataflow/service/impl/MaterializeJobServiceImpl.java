@@ -14,6 +14,7 @@ import com.bdilab.dataflow.utils.SqlParseUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -83,11 +84,13 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
     Map<String, String> metadata = tableMetadataServiceImpl.metadataFromDatasource(name);
     MaterializeOutputJson materializeOutputJson =
         new MaterializeOutputJson();
+    JSONObject outputs = new JSONObject();
+    outputs.put("metadata", metadata);
+    outputs.put("subTableId", name);
+    materializeOutputJson.setOutputs(outputs);
     materializeOutputJson.setJobStatus("JOB_FINISH");
     materializeOutputJson.setRequestId(materializeInputJson.getRequestId());
     materializeOutputJson.setWorkspaceId(materializeInputJson.getWorkspaceId());
-    materializeOutputJson.setMetadata(metadata);
-    materializeOutputJson.setSubTableId(name);
     return materializeOutputJson;
   }
 

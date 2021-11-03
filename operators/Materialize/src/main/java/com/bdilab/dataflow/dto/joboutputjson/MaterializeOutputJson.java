@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.dto.joboutputjson;
 
+import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.operator.dto.joboutputjson.AbstractJobOutputJson;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MaterializeOutputJson extends AbstractJobOutputJson {
-  private String subTableId;
-  private Map<String, String> metadata;
+  private JSONObject outputs;
 }

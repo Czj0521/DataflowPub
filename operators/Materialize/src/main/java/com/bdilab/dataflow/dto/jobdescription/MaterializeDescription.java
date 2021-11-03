@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MaterializeDescription {
+  private String jobType;
   private String materializedType;
   private JSONObject materializedOperator;
 }

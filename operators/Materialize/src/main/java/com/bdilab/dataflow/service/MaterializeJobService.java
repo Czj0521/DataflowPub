@@ -27,7 +27,7 @@ public interface MaterializeJobService {
   JSONObject materialize(String subTableSql);
 
   /**
-   * Delete Materializem View.
+   * Delete Materialize View.
    */
   String deleteSubTable(String subTableId);
 

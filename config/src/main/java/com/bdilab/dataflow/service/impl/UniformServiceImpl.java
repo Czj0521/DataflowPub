@@ -3,8 +3,10 @@ package com.bdilab.dataflow.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.consts.JobTypeConstants;
 import com.bdilab.dataflow.common.exception.UncheckException;
+import com.bdilab.dataflow.dto.jobdescription.FilterDescription;
 import com.bdilab.dataflow.dto.jobdescription.TableDescription;
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
+import com.bdilab.dataflow.service.FilterJobService;
 import com.bdilab.dataflow.service.MaterializeJobService;
 import com.bdilab.dataflow.service.TableJobService;
 import com.bdilab.dataflow.service.UniformService;
@@ -30,6 +32,8 @@ public class UniformServiceImpl implements UniformService {
   TableJobService tableJobService;
   @Resource
   MaterializeJobService materializeJobService;
+  @Resource
+  FilterJobService filterJobService;
 
   @Override
   public Object analyze(JSONObject json) {
@@ -80,7 +84,10 @@ public class UniformServiceImpl implements UniformService {
         : generateDataSourceRecursively(requestData.getJSONObject("datasource"));
     switch (jobType) {
       case JobTypeConstants.FILTER_JOB:
-        //todo
+        FilterDescription filterDescription =
+            FilterDescription.generateFromJson(requestData);
+        filterDescription.setDataSource(datasource);
+        return filterJobService.generateDataSourceSql(filterDescription);
       case JobTypeConstants.TABLE_JOB:
         //todo
       case JobTypeConstants.TRANSPOSE_JOB:

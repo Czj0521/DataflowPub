@@ -1,13 +1,12 @@
-import '../../components/style.scss';
+import { FC, useEffect, useState } from 'react';
 
-import { useEffect, useState } from 'react';
-
-import ColumnOrGroupForm from '../../../../components/sidebar/columnOrGroup/columnOrGroup';
-import InputsForm from '../../../../components/sidebar/inputs/inputs';
+import ColumnOrGroupForm from '../../components/sidebar/columnOrGroup/columnOrGroup';
+import InputsForm from '../../components/sidebar/inputs/inputs';
 import Attributes from '../dataset/sidebar/attributes/attribute';
-import LabelComponent from '@/components/sidebar/labelComponent';
+import LabelComponent from '../../components/sidebar/labelComponent';
+import SideBar from './SideBar';
 
-function Transpose(props) {
+const Transpose: FC = (props) => {
   console.log(props);
   const [column, setColumn] = useState([]);
 
@@ -22,17 +21,10 @@ function Transpose(props) {
   
   return (
     <div className="hetu_basecomponent_wrapper" draggable>
-      <div className="operators-container">
-        <div className="operators-display">Transpose</div>
-      </div>
-      <div className="hetu_table_sidebar_wrapper">
-        <LabelComponent HandleForm={ColumnOrGroupForm} column={column} labelName="column" />
-        <LabelComponent HandleForm={ColumnOrGroupForm} column={column} labelName="group by" />
-        <Attributes setColumn={props.setColumn} data={props.data} setData={props.setData} filter={props.filter} />
-        <LabelComponent HandleForm={InputsForm} labelName="inputs" />
-      </div>
+      <SideBar column={column} />
+      <div className="wrapper">Transpose</div>
     </div>
   );
-}
+};
 
 export default Transpose;

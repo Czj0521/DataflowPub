@@ -1,3 +1,4 @@
-import Join from './Join'
+import Join from './Join';
+import Transpose from './transpose';
 
-export { Join }
+export { Join, Transpose };

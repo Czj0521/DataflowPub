@@ -25,7 +25,7 @@
         display: inline-block;
         padding: 0 15px;
         font-size: 14px;
-        width:150px;
+        width:130px;
         height:25px;
         line-height: 25px;
         background-color: #fff;
@@ -69,18 +69,22 @@
     height: calc(100vh);
 }
 
-.operators-container {
+.wrapper{
     display: flex;
+    width: 100%;
     height: 100%;
-    justify-content: center;
     align-items: center;
-    .operators-display {
-        color: #fff;
-        font-size: larger;
-        font-weight: bold;
-    }
+    justify-content: center;
+    color: #eee;
+    font-size: 26px;
+    background-color: rgb(40,40,40);
 }
 
 .labelForm {
     padding: 8px;
+    .ant-col.ant-form-item-label {
+        label {
+            color: white !important;
+        }
+    }
 }

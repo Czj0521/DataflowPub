@@ -1,11 +1,11 @@
-import { Radio, Input, Space } from 'antd';
+import { Radio, Input, Space, Divider } from 'antd';
 import { useEffect, useState } from 'react';
-import './index.scss';
+import style from'./index.module.scss';
 
 const { Search } = Input;
 
 function ColumnOrGroupForm(props) {
-  const { column } = props;
+  const { column, labelName } = props;
   const [radioList, setRadioList] = useState<any>([]);
   const [selected, setSelected] = useState<string | null>(null);
 
@@ -20,14 +20,17 @@ function ColumnOrGroupForm(props) {
 
   return (
     <div className="labelForm">
+      <Divider style={{ color: '#eee', borderColor: '#eee', fontSize: 12 }}>
+        {labelName}
+      </Divider>
       <Search onSearch={onSearch} />
       <Radio.Group style={{ color: '#fff' }} onChange={(e) => setSelected(e.target.value)} value={selected}>
         <Space direction="vertical">
-          {
+          {/* {
             radioList.map((item) => {
               return <Radio value={item.key}>{item.title}</Radio>;
             })
-          }
+          } */}
         </Space>
       </Radio.Group>
     </div>

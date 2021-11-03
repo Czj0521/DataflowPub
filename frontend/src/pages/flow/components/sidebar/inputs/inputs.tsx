@@ -1,11 +1,15 @@
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Divider } from 'antd';
+import { FC } from 'react';
 
-function InputsForm(props) {
+const InputsForm: FC = (props) => {
   const [form] = Form.useForm();
   
   return (
     <div className="labelForm">
-      <Form form={form} name="inputs">
+      <Divider style={{ color: '#eee', borderColor: '#eee', fontSize: 12 }}>
+        inputs
+      </Divider>
+      <Form form={form} name="inputs" layout="vertical" >
         <Form.Item name="values" label="top transpose values">
           <Input />
         </Form.Item>
@@ -15,6 +19,6 @@ function InputsForm(props) {
       </Form>
     </div>
   );
-}
+};
 
 export default InputsForm;

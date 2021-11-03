@@ -1,21 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { WidthProvider, Responsive } from 'react-grid-layout';
-import { Graph, Shape, Addon } from '@antv/x6';
 
-import IconFont from '../../../font';
+import IconFont from '@/font';
 import './style.scss';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 function MyPorts(props) {
-  const [items, setItems] = useState([]);
   const [count, setCount] = useState(0);
 
   /* 在onDrop的地方需要做的内容是：
     1. 拖入数据帧
     2. 根据拖入不同的数据帧确认不同的数据源，再根据操作符类型发送request请求
     3. 拿到请求后渲染节点（目前渲染还需要完善内容）
-	*/
+  */
   const onDrop = (layout, layoutItem, _event) => {
     console.log('myport drop', props.node, props, event.dataTransfer.getData('dragItem'));
 
@@ -28,8 +26,8 @@ function MyPorts(props) {
       ...data.dataset,
       [props.port.id]: [
         {
-          i: `${count }`,
-          id: `${new Date().getTime() }`,
+          i: `${count}`,
+          id: `${new Date().getTime()}`,
           x: layoutItem.x,
           y: layoutItem.y, // puts it at the bottom
           w: 2,
@@ -80,7 +78,7 @@ function MyPorts(props) {
         onDrop={onDrop}
         measureBeforeMount={false}
         style={{ height: '100%' }}
-        // draggableCancel='.noDraggable'
+      // draggableCancel='.noDraggable'
       >
         {props.node.getData().dataset[props.port.id] &&
           props.node

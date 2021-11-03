@@ -1,8 +1,5 @@
 import { useState } from 'react';
-
-import classNames from ''
-
-import IconFont from '../../../../../../font';
+import IconFont from '@/font';
 import SidebarModal from './sidebarModal';
 
 function Attributes(props) {

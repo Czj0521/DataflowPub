@@ -1,11 +1,8 @@
 import '../../components/style.scss';
-
 import { useEffect, useState } from 'react';
-
 import * as echarts from 'echarts';
-
-import VirtualTable from '../../../../components/VirtualTable';
-import IconFont from '../../../../font';
+import VirtualTable from '@/components/VirtualTable';
+import IconFont from '@/font';
 import TableSidebar from './tableSidebar';
 
 function BaseComponent(props) {
@@ -13,10 +10,10 @@ function BaseComponent(props) {
 
   const [myChart, setMyChart] = useState(null);
   const [container, setContainer] = useState({});
-  const [backgroundColor, setBackgroundColor] = useState('white');
+  const [_, setBackgroundColor] = useState('white');
   const [data, setData] = useState([]);
   const [length, setLength] = useState(0);
-  const [filter, setFilter] = useState([]);
+  const [filter] = useState([]);
   const [column, setColumn] = useState([]);
   const { width, height } = props?.node?.size() || {};
   useEffect(() => {
@@ -126,22 +123,10 @@ function BaseComponent(props) {
         );
       });
   };
-<<<<<<< fead2bcf1e00f2c10aa6c59e17a155ee20f74cc5
-  console.log('type', props.type);
-=======
   
->>>>>>> feat: transpose配置label
   return (
     <div className="hetu_basecomponent_wrapper" draggable>
-<<<<<<< 1d5cf53513819c9f45a4aa27cd0a1144fdd33c80
-<<<<<<< 04814676021c232b1562117e26f2c45e121ff600
       <TableSidebar setColumn={setColumn} dataFrame={props.node.data.item.dataFrame} data={data} setData={setData} filter={filter} />
-=======
-      <TableSidebar tableDescription={props.node.getData().item.option.tableDescription} column={column} setColumn={setColumn} data={data} setData={setData} filter={filter} />
->>>>>>> feat: table operator功能基本完成，还存在部分bug
-=======
-      <TableSidebar tableDescription={props.node.getData().item.option.tableDescription} column={column} setColumn={setColumn} data={data} setData={setData} filter={filter} />
->>>>>>> feat: table operator功能基本完成，还存在部分bug
       <div className="hetu_basecomponent" id={props.node.getData().item.id}>
         {props.type === 'dataset' && (
           <VirtualTable
@@ -170,13 +155,6 @@ function BaseComponent(props) {
           style={{ position: 'absolute', right: 15, top: 15, zIndex: 15, color: '#bbb', cursor: 'pointer' }}
         />
       )}
-<<<<<<< 7ff9462e30d12722a64d89abe5f3aa45cc8441c2
-<<<<<<< 01e4cd086270a5ceb36261011fd9f3728335e619
-=======
-
->>>>>>> 'feat:join-init'
-=======
->>>>>>> refactor:SideItem
     </div>
   );
 }

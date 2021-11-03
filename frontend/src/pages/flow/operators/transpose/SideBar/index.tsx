@@ -1,10 +1,14 @@
 import { FC } from 'react';
 import SideItem from '../../../components/SideItem';
 import ColumnOrGroupForm from '../../../components/sidebar/columnOrGroup/columnOrGroup';
-import InputsForm from '@/pages/flow/components/sidebar/inputs/inputs';
+import InputsForm from '../../../components/sidebar/inputs';
 import AdvancedSearchForm from '../../dataset/sidebar/attributes/form';
 
-const SideBar: FC = (props) => {
+type SideProps = {
+  column: Array<any>
+}
+
+const SideBar: FC<SideProps> = (props) => {
   const { column } = props;
   return (
     <div className="hetu_table_sidebar_wrapper">

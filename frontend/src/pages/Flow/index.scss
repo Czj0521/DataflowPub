@@ -1,0 +1,90 @@
+.hetu_analysis{
+    background-color: rgb(244,245,247);
+    .hetu_sideMenu{
+        height: calc(100vh);
+    }
+    .hetu_content{
+        position: relative;
+        .hetu_minimap{
+            position: absolute;
+            top:0;
+            right:0;
+            width:300px;
+            height:200px;
+        }
+    }
+}
+.hetu_side{
+    height:100%;
+    padding: 10px;
+    border-right: 1px solid #ddd;
+    .hetu_side_dataset{
+        display: flex;
+    }
+    .hetu_side_item{
+        display: inline-block;
+        padding: 0 15px;
+        font-size: 14px;
+        width:130px;
+        height:25px;
+        line-height: 25px;
+        background-color: #fff;
+        margin-right: 10px;
+    }
+    .hetu_side_item_logo{
+        display: inline-block;
+    }
+    .hetu_side_item_dropdown{
+        display: inline-block;
+        margin-left: 10px;
+    }
+    .hetu_side_item_attrs{
+        margin-top: 10px;
+        .hetu_side_item_attrwrapper{
+            display: flex;
+            .hetu_side_item_attr{
+                display: flex;
+                margin-left: 30px;
+                height:25px;
+                line-height: 25px;
+                padding: 0 15px;
+                margin-bottom: 10px;
+                background-color: white;
+				
+            }
+			.hetu_side_item_attr_children
+			{
+				 display: flex;
+				  background-color: white;
+				  height:25px;
+				  margin-bottom: 10px;
+				  line-height: 25px;
+				  padding: 0 15px;
+			}
+        }
+    }
+}
+
+.hetu_canvas{
+    height: calc(100vh);
+}
+
+.wrapper{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    color: #eee;
+    font-size: 26px;
+    background-color: rgb(40,40,40);
+}
+
+.labelForm {
+    padding: 8px;
+    .ant-col.ant-form-item-label {
+        label {
+            color: white !important;
+        }
+    }
+}

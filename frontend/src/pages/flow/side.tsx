@@ -1,18 +1,13 @@
-import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { Addon, Markup } from '@antv/x6';
 import { ReactShape } from '@antv/x6-react-shape';
 import { getTable, getTableColumn } from '../../api/table';
-import IconFont from '../../font';
+import IconFont from '@/font';
 import data from './data';
 import BaseComponent from './operators/dataset/baseComponent';
-import Transpose from './operators/transpose';
-import { Join } from './operators'
-import Filter from './operators/filter';
+import { Join, Filter, Transpose } from './operators'
 import store from '@/store';
-import { Join } from './operators';
-
-
 
 const { Dnd } = Addon;
 
@@ -63,7 +58,7 @@ function DatasetSide(props) {
         return <div />;
     }
   };
-  
+
   const drop = (e) => {
     console.log('drop', e, props);
     const { graph } = props;

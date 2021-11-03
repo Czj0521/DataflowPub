@@ -13,4 +13,9 @@ import com.bdilab.dataflow.model.DataSourceStatistic;
 public interface TableJobService extends OperatorService<TableDescription> {
 
   DataSourceStatistic getProfiler(String tableName);
+
+  /**
+   * generate dataSource Sql from table.
+   */
+  String generateDataSourceSql(TableDescription tableDescription);
 }

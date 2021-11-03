@@ -111,6 +111,11 @@ public class TableJobServiceImpl implements TableJobService {
   }
 
   @Override
+  public String generateDataSourceSql(TableDescription tableDescription) {
+    return new TableSqlGenerator(tableDescription).generateDataSourceSql();
+  }
+
+  @Override
   public List<Map<String, Object>> execute(TableDescription jobDescription) {
     String sql = new TableSqlGenerator(jobDescription).generate();
     log.info("Table Job SQL :" + sql);

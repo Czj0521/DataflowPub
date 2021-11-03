@@ -11,6 +11,8 @@ import com.bdilab.dataflow.service.MaterializeJobService;
 import com.bdilab.dataflow.service.TableJobService;
 import com.bdilab.dataflow.service.UniformService;
 import javax.annotation.Resource;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ import org.springframework.stereotype.Service;
  * @author Zunjing Chen
  * @date 2021-11-03
  **/
+
+@Slf4j
 @Service
 public class UniformServiceImpl implements UniformService {
 
@@ -46,7 +50,8 @@ public class UniformServiceImpl implements UniformService {
         String datasource = tableDescription.get("datasource") instanceof String
             ? tableDescription.getString("datasource")
             : generateDataSourceRecursively(tableDescription.getJSONObject("datasource"));
-        tableDescription.put("datasource", datasource);
+        log.info("table datasource : " + datasource);
+        tableDescription.put("datasource", " (" + datasource + ") ");
         outputs = tableJobService.execute(TableDescription.generateFromJson(tableDescription));
         break;
       case JobTypeConstants.MATERIALIZE_JOB:
@@ -82,14 +87,19 @@ public class UniformServiceImpl implements UniformService {
     String datasource = requestData.get("datasource") instanceof String
         ? requestData.getString("datasource")
         : generateDataSourceRecursively(requestData.getJSONObject("datasource"));
+
     switch (jobType) {
       case JobTypeConstants.FILTER_JOB:
         FilterDescription filterDescription =
             FilterDescription.generateFromJson(requestData);
         filterDescription.setDataSource(datasource);
-        return filterJobService.generateDataSourceSql(filterDescription);
+        return " (" + filterJobService.generateDataSourceSql(filterDescription) + ") ";
       case JobTypeConstants.TABLE_JOB:
         //todo
+        TableDescription tableDescription =
+            TableDescription.generateFromJson(requestData);
+        tableDescription.setDataSource(datasource);
+        return " (" + tableJobService.generateDataSourceSql(tableDescription) + ") ";
       case JobTypeConstants.TRANSPOSE_JOB:
         TransposeDescription transposeDescription =
             TransposeDescription.generateFromJson(requestData);

@@ -95,7 +95,6 @@ public class UniformServiceImpl implements UniformService {
         filterDescription.setDataSource(datasource);
         return " (" + filterJobService.generateDataSourceSql(filterDescription) + ") ";
       case JobTypeConstants.TABLE_JOB:
-        //todo
         TableDescription tableDescription =
             TableDescription.generateFromJson(requestData);
         tableDescription.setDataSource(datasource);

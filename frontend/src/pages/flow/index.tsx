@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 
 import { Col, Row } from 'antd';
 
-import { Addon, Graph, Shape } from '@antv/x6';
+import {  Graph, Shape } from '@antv/x6';
 
 import CanvasContent from './canvasContent';
 import barOption from './components/barOption';

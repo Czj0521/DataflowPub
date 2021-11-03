@@ -11,6 +11,7 @@ import com.bdilab.dataflow.service.UniformService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 
 /**
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Zunjing Chen
  * @date 2021-11-03
  **/
+@Service
 public class UniformServiceImpl implements UniformService {
 
   @Autowired

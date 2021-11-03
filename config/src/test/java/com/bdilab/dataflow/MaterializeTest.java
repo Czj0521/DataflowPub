@@ -27,7 +27,7 @@ public class MaterializeTest {
 
   @ParameterizedTest
   @MethodSource("descriptionProvider")
-  public void materializeTable(String materializedType, String materializedOperator) {
+  public void materializeTest(String materializedType, String materializedOperator) {
     MaterializeDescription materializeDescription = new MaterializeDescription();
     materializeDescription.setJobType("materialize");
     materializeDescription.setMaterializedType(materializedType);
@@ -62,6 +62,7 @@ public class MaterializeTest {
                 "      \"attributeWithAggregationMap\":{\n" +
                 "        \"PM2_5\":\"sum\"\n" +
                 "      },\n" +
+                "      \"topTransposedValuesNum\": 20," +
                 "      \"jobType\": \"transpose\",\n" +
                 "      \"datasource\": \"dataflow.airuuid\",\n" +
                 "      \"limit\": 2000\n" +

@@ -7,14 +7,12 @@ import com.bdilab.dataflow.dto.jobdescription.TableDescription;
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
 import com.bdilab.dataflow.service.MaterializeJobService;
 import com.bdilab.dataflow.service.TableJobService;
-import com.bdilab.dataflow.service.TransposeService;
 import com.bdilab.dataflow.service.UniformService;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+
 
 
 /**
@@ -41,7 +39,10 @@ public class UniformServiceImpl implements UniformService {
       //todo: set other case when other operator is done
       case JobTypeConstants.TABLE_JOB:
         JSONObject tableDescription = json.getJSONObject("tableDescription");
-        tableDescription.put("datasource", generateDataSourceRecursively(tableDescription));
+        String datasource = tableDescription.get("datasource") instanceof String
+            ? tableDescription.getString("datasource")
+            : generateDataSourceRecursively(tableDescription.getJSONObject("datasource"));
+        tableDescription.put("datasource", datasource);
         outputs = tableJobService.execute(TableDescription.generateFromJson(tableDescription));
         break;
       case JobTypeConstants.MATERIALIZE_JOB:

@@ -3,6 +3,8 @@ package com.bdilab.dataflow;
 import com.alibaba.fastjson.JSON;
 import com.bdilab.dataflow.dto.jobdescription.TableDescription;
 import com.bdilab.dataflow.service.impl.TableJobServiceImpl;
+import com.bdilab.dataflow.service.impl.TableMetadataServiceImpl;
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import org.json.JSONArray;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,6 +18,7 @@ import springfox.documentation.spring.web.json.Json;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 

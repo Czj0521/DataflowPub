@@ -1,12 +1,18 @@
 package com.bdilab.dataflow.service.impl;
 
+import com.bdilab.dataflow.common.consts.CommonConstants;
+import com.bdilab.dataflow.common.consts.JobTypeConstants;
 import com.bdilab.dataflow.common.consts.OperatorConstants;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.util.URLEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +25,25 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class TableMetadataServiceImpl {
+  @Autowired
+  private ClickHouseJdbcUtils jdbcUtils;
   @Value("${clickhouse.http.url}")
   private String httpPrefix;
 
 
   public Map<String, String> metadataFromDatasource(String datasource) {
     return metadata("SELECT * FROM " + datasource);
+  }
+
+  /**
+   * Get table names.
+   */
+  public List<String> getTableName() {
+    return jdbcUtils.queryForStrList("show tables from "
+      + CommonConstants.DATABASE
+      + " not like '"
+      + JobTypeConstants.MATERIALIZE_JOB
+      + "_%'");
   }
 
   /**

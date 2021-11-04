@@ -35,4 +35,9 @@ public class MetaDataController {
     return ResponseEntity.ok(tableMetadataService.metadataFromDatasource(datasource));
   }
 
+  @GetMapping("/getTables")
+  @ApiOperation(value = "Get all table names")
+  public ResponseEntity getTableName() {
+    return ResponseEntity.ok(tableMetadataService.getTableName());
+  }
 }

@@ -12,6 +12,7 @@ public interface JobTypeConstants {
   String TRANSPOSE_JOB = "transpose";
   String JOIN_JOB = "join";
   String TABLE_JOB = "table";
+  String MATERIALIZE_JOB = "materialize";
 
 
   //wjh

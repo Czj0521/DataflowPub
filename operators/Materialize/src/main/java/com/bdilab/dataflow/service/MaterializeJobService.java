@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.dto.jobinputjson.MaterializeInputJson;
 import com.bdilab.dataflow.dto.joboutputjson.MaterializeOutputJson;
 
@@ -18,7 +19,17 @@ public interface MaterializeJobService {
   MaterializeOutputJson materialize(MaterializeInputJson materializeInputJson);
 
   /**
-   * Delete Materializem View.
+   * Materialize Job for linking.
+   *
+   * @param subTableSql is not null
+   * @return materializeOutputJson
+   */
+  JSONObject materialize(String subTableSql);
+
+  /**
+   * Delete Materialize View.
    */
   String deleteSubTable(String subTableId);
+
+
 }

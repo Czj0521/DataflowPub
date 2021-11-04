@@ -62,7 +62,7 @@ public class MaterializeTest {
                 "      \"attributeWithAggregationMap\":{\n" +
                 "        \"PM2_5\":\"sum\"\n" +
                 "      },\n" +
-                "      \"topTransposedValuesNum\": 20," +
+                "      \"topTransposedValuesNum\": 20,\n" +
                 "      \"jobType\": \"transpose\",\n" +
                 "      \"datasource\": \"dataflow.airuuid\",\n" +
                 "      \"limit\": 2000\n" +

@@ -1,11 +1,10 @@
 package com.bdilab.dataflow.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.consts.WebConstants;
-import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
-import com.bdilab.dataflow.service.TransposeService;
+import com.bdilab.dataflow.service.UniformService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,25 +15,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * TransposeController.
+ * UniformController for all operator interface.
  *
  * @author Zunjing Chen
- * @2021-10-31
- **/
+ * @date  2021-11-03
+ */
 @Slf4j
 @RestController
-@Api(tags = "Operator")
 @CrossOrigin
-@RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/operator")
-public class TransposeController {
+@Api(tags = "Linkage")
+@RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/")
+public class UniformController {
+
   @Autowired
-  TransposeService transposeService;
+  UniformService uniformService;
 
-  @PostMapping("/transpose")
-  @ApiOperation(value = "transpose任务接口，只返回sql")
-  public ResponseEntity transpose(@RequestBody @ApiParam(value = "transpose任务描述")
-                                   TransposeDescription description) {
-    return ResponseEntity.ok(transposeService.transpose(description));
+  @PostMapping("/linkage")
+  @ApiOperation(value = "联动接口")
+  public ResponseEntity linkage(@RequestBody JSONObject requestData) {
+    return ResponseEntity.ok(uniformService.analyze(requestData));
   }
-
 }

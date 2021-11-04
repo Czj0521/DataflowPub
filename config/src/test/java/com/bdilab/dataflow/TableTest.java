@@ -41,7 +41,7 @@ public class TableTest {
     tableDescription.setProject(new String[]{"city"});
 
     long before = System.currentTimeMillis();
-    System.out.println(tableJobService.table(tableDescription));
+    System.out.println(tableJobService.execute(tableDescription));
     long after = System.currentTimeMillis();
 
     System.out.println("Time spent :" + (after - before));
@@ -69,7 +69,7 @@ public class TableTest {
 
     assertDoesNotThrow(() -> {
       System.out.println(JSON.toJSONString(td));
-      System.out.println(tableJobService.table(td));
+      System.out.println(tableJobService.execute(td));
     });
   }
 
@@ -89,7 +89,7 @@ public class TableTest {
 
     assertDoesNotThrow(() -> {
       System.out.println(JSON.toJSONString(td));
-      System.out.println(tableJobService.table(td));
+      System.out.println(tableJobService.execute(td));
     });
   }
 

@@ -27,14 +27,15 @@ public class MaterializeTest {
 
   @ParameterizedTest
   @MethodSource("descriptionProvider")
-  public void materializeTable(String materializedType, String materializedOperator) {
+  public void materializeTest(String materializedType, String materializedOperator) {
     MaterializeDescription materializeDescription = new MaterializeDescription();
+    materializeDescription.setJobType("materialize");
     materializeDescription.setMaterializedType(materializedType);
     materializeDescription.setMaterializedOperator(JSONObject.parseObject(materializedOperator));
     assertDoesNotThrow(() -> {
       MaterializeOutputJson materialize = materializeJobService.materialize(new MaterializeInputJson(materializeDescription));
       System.out.println(materialize);
-      System.out.println(materializeJobService.deleteSubTable(materialize.getSubTableId()));
+      System.out.println(materializeJobService.deleteSubTable(materialize.getOutputs().getString("subTableId")));
 
     });
   }
@@ -61,6 +62,7 @@ public class MaterializeTest {
                 "      \"attributeWithAggregationMap\":{\n" +
                 "        \"PM2_5\":\"sum\"\n" +
                 "      },\n" +
+                "      \"topTransposedValuesNum\": 20," +
                 "      \"jobType\": \"transpose\",\n" +
                 "      \"datasource\": \"dataflow.airuuid\",\n" +
                 "      \"limit\": 2000\n" +

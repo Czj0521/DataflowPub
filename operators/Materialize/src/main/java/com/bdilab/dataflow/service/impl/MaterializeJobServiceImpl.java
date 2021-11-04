@@ -14,6 +14,7 @@ import com.bdilab.dataflow.utils.SqlParseUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;

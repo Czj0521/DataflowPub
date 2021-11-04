@@ -11,7 +11,6 @@ import com.bdilab.dataflow.service.MaterializeJobService;
 import com.bdilab.dataflow.service.TableJobService;
 import com.bdilab.dataflow.service.UniformService;
 import javax.annotation.Resource;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

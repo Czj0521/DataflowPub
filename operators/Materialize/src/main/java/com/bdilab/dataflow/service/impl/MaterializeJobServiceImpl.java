@@ -1,7 +1,8 @@
 package com.bdilab.dataflow.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.common.consts.CommonConstants;
+import com.bdilab.dataflow.common.consts.JobTypeConstants;
 import com.bdilab.dataflow.dto.JoinDescription;
 import com.bdilab.dataflow.dto.jobdescription.MaterializeDescription;
 import com.bdilab.dataflow.dto.jobdescription.TableDescription;
@@ -14,7 +15,6 @@ import com.bdilab.dataflow.utils.SqlParseUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -80,15 +80,17 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
 
   @Override
   public JSONObject materialize(String subTableSql) {
+    StringBuilder sbName = new StringBuilder();
+    sbName.append(CommonConstants.DATABASE).append(".")
+        .append(JobTypeConstants.MATERIALIZE_JOB).append("_").append(SqlParseUtils.getUuid32());
+    String name = new String(sbName);
     StringBuilder sbSql = new StringBuilder();
-    String name = com.bdilab.dataflow.common.consts.CommonConstants.DATABASE
-        + "." + SqlParseUtils.getUuid32();
     sbSql.append("CREATE VIEW ").append(name).append(" AS ")
         .append("(").append(subTableSql).append(")");
     String sql = new String(sbSql);
+    log.info("Materialize Sql: {}", sql);
     URLEncoder urlEncoder = new URLEncoder();
     sql = urlEncoder.encode(sql, Charset.defaultCharset());
-    log.info("Materialize Sql: {}", sql);
     while (ClickHouseHttpUtils.sendPost(httpPrefix + sql).length() > 0) {
       log.info("Error: View name already exists, try again.");
     }

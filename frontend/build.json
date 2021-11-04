@@ -1,0 +1,8 @@
+{
+  "vite": false,
+  "plugins": [
+    [
+      "build-plugin-antd"
+    ]
+  ]
+}

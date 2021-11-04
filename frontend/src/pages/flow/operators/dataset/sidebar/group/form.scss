@@ -1,0 +1,28 @@
+.ant-input-affix-wrapper {
+    position: relative;
+    width: 90%;
+    min-width: 0px;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    line-height: 1.5715;
+    background-color: rgb(255, 255, 255);
+    background-image: none;
+    display: inline-flex;
+    padding: 4px 11px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(217, 217, 217);
+    border-image: initial;
+    border-radius: 2px;
+    transition: all 0.3s ease 0s;
+}
+.ant-input-affix-wrapper-sm {
+    padding: 0px 7px;
+    margin-top: 10px;
+    margin-left: 5%;
+}
+.ant-list-items {
+    padding: 0;
+    list-style: none;
+    margin-left: 10%;
+}

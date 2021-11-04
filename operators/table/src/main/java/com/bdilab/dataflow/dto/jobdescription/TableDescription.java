@@ -39,7 +39,7 @@ public class TableDescription extends JobDescription {
     String[] group = json.getJSONArray("group").toArray(new String[]{});
     String jobType = json.getString("jobType");
     Integer limit = json.getInteger("limit");
-    String dataSource = json.getString("datasource");
+    String dataSource = json.getString("dataSource");
     return new TableDescription(jobType, dataSource, limit, filter, project, group);
   }
 }

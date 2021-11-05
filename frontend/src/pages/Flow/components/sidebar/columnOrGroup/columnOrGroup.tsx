@@ -1,5 +1,6 @@
 import { Radio, Input, Space, Divider } from 'antd';
 import { useEffect, useState } from 'react';
+import style from'./index.module.scss';
 
 const { Search } = Input;
 

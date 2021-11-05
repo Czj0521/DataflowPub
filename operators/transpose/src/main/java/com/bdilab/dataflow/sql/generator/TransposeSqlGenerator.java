@@ -41,7 +41,7 @@ public class TransposeSqlGenerator extends SqlGeneratorBase implements LinkSqlGe
                                List<String> columnValues) {
     super(transposeDescription);
     this.transposeDescription = transposeDescription;
-    this.columnValues = columnValues;
+    this.columnValues = columnValues.size()<=transposeDescription.getTopTransposedValuesNum()?columnValues:columnValues.subList(0,transposeDescription.getTopTransposedValuesNum());
   }
 
   /**

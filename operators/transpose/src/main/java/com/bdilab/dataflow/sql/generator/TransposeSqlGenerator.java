@@ -64,8 +64,13 @@ public class TransposeSqlGenerator extends SqlGeneratorBase implements LinkSqlGe
     for (String columnValue : columnValues) {
       for (Map.Entry<String, String> entry : attributes.entrySet()) {
         Map<String, String> valueMap = new HashMap<>();
-        valueMap.put(GROUP_FUNCTION, entry.getValue() + "If");
-        valueMap.put(ATTRIBUTE, entry.getKey());
+        if(entry.getValue().equals("distinct count")){
+          valueMap.put(GROUP_FUNCTION, "countIf");
+          valueMap.put(ATTRIBUTE, "distinct " + entry.getKey());
+        }else{
+          valueMap.put(GROUP_FUNCTION, entry.getValue() + "If");
+          valueMap.put(ATTRIBUTE, entry.getKey());
+        }
         valueMap.put(COLUMN, transposeDescription.getColumn());
         // columnName = "100KG_avg_age" 180KG means weight
         valueMap.put(COLUMN_NAME, columnValue + "_" + entry.getKey() + "_" + entry.getValue());

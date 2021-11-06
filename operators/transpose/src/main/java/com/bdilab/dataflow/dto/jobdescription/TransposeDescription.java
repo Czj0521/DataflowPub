@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * transpose dto.
@@ -17,6 +18,7 @@ import lombok.Data;
  * @date 2021-09-23
  */
 @Data
+@NoArgsConstructor
 @ApiModel(value = "TransposeDescription")
 public class TransposeDescription extends JobDescription {
 

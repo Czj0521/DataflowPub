@@ -28,12 +28,10 @@ public class JoinServiceImpl implements JoinService {
   TableMetadataServiceImpl tableMetadataService;
 
   @Override
-  public List<Map<String, Object>> join(JoinDescription joinDescription) {
+  public String join(JoinDescription joinDescription) {
     String sql = new JoinSqlGenerator(joinDescription, tableMetadataService).generate();
-    System.out.println(sql);
-    List<Map<String, Object>> result = clickHouseJdbcUtils.queryForList(sql);
-    System.out.println(result);
-    return result;
+    return sql;
+
   }
 
   public String generateDataSourceSql(JoinDescription joinDescription) {

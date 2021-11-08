@@ -10,5 +10,5 @@ import java.util.Map;
  * @author wjh
  */
 public interface JoinService {
-  List<Map<String, Object>> join(JoinDescription joinDescription);
+  String join(JoinDescription joinDescription);
 }

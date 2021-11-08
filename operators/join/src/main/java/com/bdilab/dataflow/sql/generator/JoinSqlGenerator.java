@@ -110,10 +110,6 @@ public class JoinSqlGenerator implements LinkSqlGenerator {
     return new String(onString);
   }
 
-  public String sql() {
-    return project() + datasource() + on();
-  }
-
   /**
    * generate final sql string.
    *
@@ -123,9 +119,8 @@ public class JoinSqlGenerator implements LinkSqlGenerator {
     //String prefix = "CREATE VIEW dataflow." + UUID + " AS ";
     String prefix = "";
     //return prefix+sql()+super.limit();
-    return prefix + sql();
+    return prefix + project() + datasource() + on();
   }
-
 
   @Override
   public String generateDataSourceSql() {

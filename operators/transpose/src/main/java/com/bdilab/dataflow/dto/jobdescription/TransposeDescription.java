@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
  * @date 2021-09-23
  */
 @Data
+@NoArgsConstructor
 @ApiModel(value = "TransposeDescription")
 @NoArgsConstructor
 public class TransposeDescription extends JobDescription {

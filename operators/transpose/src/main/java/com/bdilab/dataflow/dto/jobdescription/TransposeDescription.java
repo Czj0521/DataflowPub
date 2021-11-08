@@ -8,7 +8,9 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.Map;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * transpose dto.
@@ -18,6 +20,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel(value = "TransposeDescription")
+@NoArgsConstructor
 public class TransposeDescription extends JobDescription {
 
   @NotEmpty

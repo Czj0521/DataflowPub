@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @ApiModel(value = "TransposeDescription")
-@NoArgsConstructor
 public class TransposeDescription extends JobDescription {
 
   @NotEmpty

@@ -176,7 +176,7 @@ public class RedisUtils {
    * @param map Corresponding to multiple key values
    * @return True is success, false is failure
    */
-  public boolean hmset(String key, Map<String, Object> map) {
+  public boolean hmset(String key, Map<?, ?> map) {
     redisTemplate.opsForHash().putAll(key, map);
     return true;
   }

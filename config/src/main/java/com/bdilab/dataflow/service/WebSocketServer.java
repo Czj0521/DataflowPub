@@ -1,6 +1,10 @@
 package com.bdilab.dataflow.service;
 
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -9,12 +13,21 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+/**
+ * @author wjh
+ */
 @ServerEndpoint("/webSocket/{sid}")
-@Component
+@Service
 public class WebSocketServer {
 
-  @Resource
-  WebSocketResolveService webSocketResolveService;
+  private static WebSocketResolveService webSocketResolveService;
+
+  @Autowired
+  public void setWebSocketResolveService(WebSocketResolveService webSocketResolveService){
+    WebSocketServer.webSocketResolveService = webSocketResolveService;
+  }
+
+
   //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
   private static AtomicInteger onlineNum = new AtomicInteger();
 
@@ -64,7 +77,6 @@ public class WebSocketServer {
   //收到客户端信息
   @OnMessage
   public void onMessage(String message) throws IOException{
-    message = "客户端：" + message + ",已收到";
     System.out.println(message);
     for (Session session: sessionPools.values()) {
       try {

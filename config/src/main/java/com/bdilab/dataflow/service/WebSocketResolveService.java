@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 /**
  * @author wjh
  */
+
 public interface WebSocketResolveService {
   /**
    *

@@ -61,9 +61,10 @@
             // console.log("您的浏览器支持WebSocket");
             var toUserId = document.getElementById('toUserId').value;
             var contentText = document.getElementById('contentText').value;
-            var msg = '{"toUserId":"'+toUserId+'","contentText":"'+contentText+'"}';
-            console.log(msg);
-            socket.send(msg);
+            //var msg = '{"toUserId":"'+toUserId+'","contentText":"'+contentText+'"}';
+            console.log(contentText);
+            socket.send(contentText);
+
         }
     }
 

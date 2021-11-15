@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Resource;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -11,6 +12,9 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint("/webSocket/{sid}")
 @Component
 public class WebSocketServer {
+
+  @Resource
+  WebSocketResolveService webSocketResolveService;
   //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
   private static AtomicInteger onlineNum = new AtomicInteger();
 
@@ -64,6 +68,7 @@ public class WebSocketServer {
     System.out.println(message);
     for (Session session: sessionPools.values()) {
       try {
+        webSocketResolveService.resolve(message);
         sendMessage(session, message);
       } catch(Exception e){
         e.printStackTrace();

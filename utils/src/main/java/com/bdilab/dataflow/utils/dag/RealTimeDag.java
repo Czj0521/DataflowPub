@@ -100,8 +100,10 @@ public class RealTimeDag {
     redisUtils.del(workspaceId);
   }
 
-  public void updateNode(String workspaceId, String nodeId, DagNode dagNode) {
-    redisUtils.hset(workspaceId, nodeId, dagNode);
+  public void updateNode(String workspaceId, String nodeId, Object nodeDescription) {
+    DagNode node = (DagNode) redisUtils.hget(workspaceId, nodeId);
+    node.setNodeDescription(nodeDescription);
+    redisUtils.hset(workspaceId, nodeId, node);
   }
 
   public DagNode getNode(String workspaceId, String nodeId) {

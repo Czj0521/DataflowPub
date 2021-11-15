@@ -9,6 +9,7 @@ public interface WebSocketResolveService {
   /**
    *
    * @param jsonString
+   *
    */
   void resolve(String jsonString);
 }

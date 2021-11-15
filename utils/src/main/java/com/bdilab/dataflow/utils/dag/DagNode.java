@@ -29,6 +29,11 @@ public class DagNode {
   private List<String> nextNodesId;
 
   /**
+   * The type of operator.
+   */
+  private String nodeType;
+
+  /**
    * The description of the node job.
    */
   private Object nodeDescription;
@@ -41,20 +46,31 @@ public class DagNode {
 
   public DagNode(String nodeId) {
     if (nodeId == null || "".equals(nodeId)) {
-      throw new RuntimeException("NodeId can be empty !");
+      throw new RuntimeException("NodeId can not be empty !");
     }
     this.nodeId = nodeId;
     this.preNodesId = new ArrayList<>();
     this.nextNodesId = new ArrayList<>();
   }
 
-  public DagNode(String nodeId, Object nodeDescription) {
+  public DagNode(String nodeId, String nodeType) {
     if (nodeId == null || "".equals(nodeId)) {
-      throw new RuntimeException("NodeId can be empty !");
+      throw new RuntimeException("NodeId can not be empty !");
     }
     this.nodeId = nodeId;
     this.preNodesId = new ArrayList<>();
     this.nextNodesId = new ArrayList<>();
+    this.nodeType = nodeType;
+  }
+
+  public DagNode(String nodeId, String nodeType, Object nodeDescription) {
+    if (nodeId == null || "".equals(nodeId)) {
+      throw new RuntimeException("NodeId can not be empty !");
+    }
+    this.nodeId = nodeId;
+    this.preNodesId = new ArrayList<>();
+    this.nextNodesId = new ArrayList<>();
+    this.nodeType = nodeType;
     this.nodeDescription = nodeDescription;
   }
 }

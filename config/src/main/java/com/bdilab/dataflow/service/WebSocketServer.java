@@ -31,10 +31,16 @@ public class WebSocketServer {
   }
 
 
-  //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
+  /**
+   * Static variable, used to record the current number of online connections.
+   * It should be designed to be thread safe.
+   */
   private static AtomicInteger onlineNum = new AtomicInteger();
 
-  //concurrent包的线程安全Set，用来存放每个客户端对应的WebSocketServer对象。
+  /**
+   * The thread safe set of the concurrent package is used to store the
+   * websockets object corresponding to each client.
+   */
   private static ConcurrentHashMap<String, Session> sessionPools = new ConcurrentHashMap<>();
 
   /**

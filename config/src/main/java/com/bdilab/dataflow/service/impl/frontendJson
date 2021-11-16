@@ -1,0 +1,70 @@
+//添加节点
+{
+  "job": "start_job",
+  "tableDescription": {
+    "jobType": "table",
+    "dataSource": "airuuid",
+    "filter": "(AQI>30 AND O3 = 0 AND startsWith(city,'新'))",
+    "group": ["city"],
+    "limit": 2000,
+    "project": ["city","count(city)"]
+  },
+  "operatorType": "table",
+  "dagType": "addNode",
+  "operatorId": "wjhtest1",
+  "workspaceId": "stringd12a3d"
+}
+
+//更新节点
+{
+  "job": "start_job",
+  "tableDescription": {
+    "jobType": "table",
+    "dataSource": "airuuid",
+    "filter": "(AQI>30 AND O3 = 0 AND startsWith(city,'新'))",
+    "group": ["city"],
+    "limit": 2000,
+    "project": ["city","count(city)"]
+  },
+  "operatorType": "table",
+  "dagType": "updateNode",
+  "operatorId": "wjhtest1",
+  "workspaceId": "stringd12a3d"
+}
+
+//删除节点
+{
+  "job": "start_job",
+  "dagDescription": {
+    "jobType": "addEdge",
+  },
+  "operatorType": "dag",
+  "dagType": "removeNode",
+  "operatorId": "wjhtest1",
+  "workspaceId": "stringd12a3d"
+}
+//添加边
+{
+  "job": "start_job",
+  "dagDescription": {
+    "jobType": "addEdge",
+    "preNodeId": "wjhtest1",
+    "nextNodeId": "wjhtest2"
+  },
+  "operatorType": "dag",
+  "dagType": "addEdge",
+  "workspaceId": "stringd12a3d"
+}
+
+//删除边
+{
+  "job": "start_job",
+  "dagDescription": {
+    "jobType": "addEdge",
+    "preNodeId": "wjhtest1",
+    "nextNodeId": "wjhtest2"
+  },
+  "operatorType": "dag",
+  "dagType": "removeEdge",
+  "workspaceId": "stringd12a3d"
+}

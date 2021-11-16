@@ -25,24 +25,37 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
     String operatorType = jsonObject.getString("operatorType");
     String dagType = jsonObject.getString("dagType");
     String workspaceId = jsonObject.getString("workspaceId");
-    String operatorId = jsonObject.getString("operatorId");
+    String operatorId = (String) jsonObject.getOrDefault("operatorId","");
     JSONObject desc = jsonObject.getJSONObject(operatorType + "Description");
-
-
-
 
     switch (dagType){
       case "addNode":
         realTimeDag.addNode(workspaceId,new DagNode(operatorId,operatorType,desc));
+        // todo 控制流
         break;
       case "updateNode":
-        realTimeDag.updateNode(operatorId,operatorId,desc);
+        realTimeDag.updateNode(workspaceId,operatorId,desc);
+        // todo 控制流
+        break;
+      case "removeNode":
+        realTimeDag.removeNode(workspaceId,operatorId);
+        // todo 控制流
+        break;
+      case "addEdge":
+        String addPreNodeoId = desc.getString("preNodeId");
+        String addNextNodeId = desc.getString("nextNodeId");
+        realTimeDag.addEdge(workspaceId,addPreNodeoId,addNextNodeId);
+        // todo 控制流
+        break;
+      case "removeEdge":
+        String rmPreNodeoId = desc.getString("preNodeId");
+        String rmNextNodeId = desc.getString("nextNodeId");
+        realTimeDag.removeEdge(workspaceId,rmPreNodeoId,rmNextNodeId);
+        // todo 控制流
         break;
       default:
         throw new RuntimeException("not exist this dagType");
-
     }
-
 
 
   }

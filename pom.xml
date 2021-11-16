@@ -21,6 +21,7 @@
         <module>config</module>
         <module>utils</module>
         <module>operators/scalar</module>
+        <module>operators/profiler</module>
     </modules>
 
     <groupId>com.bdilab</groupId>
@@ -185,11 +186,6 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>${druid-spring-boot-starter.version}</version>
-            </dependency>
-            <!--websocket-->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-websocket</artifactId>
             </dependency>
             <dependency>
                 <groupId>redis.clients</groupId>

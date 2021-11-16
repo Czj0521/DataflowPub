@@ -3,14 +3,11 @@ package com.bdilab.dataflow.service;
 import com.alibaba.fastjson.JSONObject;
 
 /**
+ * WebSocketResolveService interface.
+ *
  * @author wjh
  */
 
 public interface WebSocketResolveService {
-  /**
-   *
-   * @param jsonString
-   *
-   */
   void resolve(String jsonString);
 }

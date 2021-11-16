@@ -1,19 +1,22 @@
 package com.bdilab.dataflow.service;
 
-import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Resource;
-import javax.websocket.*;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 
 /**
+ * WebSocketServer.
+ *
  * @author wjh
  */
 @ServerEndpoint("/webSocket/{sid}")
@@ -23,7 +26,7 @@ public class WebSocketServer {
   private static WebSocketResolveService webSocketResolveService;
 
   @Autowired
-  public void setWebSocketResolveService(WebSocketResolveService webSocketResolveService){
+  public void setWebSocketResolveService(WebSocketResolveService webSocketResolveService) {
     WebSocketServer.webSocketResolveService = webSocketResolveService;
   }
 
@@ -34,28 +37,45 @@ public class WebSocketServer {
   //concurrent包的线程安全Set，用来存放每个客户端对应的WebSocketServer对象。
   private static ConcurrentHashMap<String, Session> sessionPools = new ConcurrentHashMap<>();
 
-  //发送消息
+  /**
+   * send message.
+   *
+   * @param session session
+   * @param message message
+   * @throws IOException IOException
+   */
+
   public void sendMessage(Session session, String message) throws IOException {
-    if(session != null){
+    if (session != null) {
       synchronized (session) {
-//                System.out.println("发送数据：" + message);
         session.getBasicRemote().sendText(message);
       }
     }
   }
-  //给指定用户发送信息
-  public void sendInfo(String userName, String message){
+
+  /**
+   * Send information to the specified user.
+   *
+   * @param userName userName
+   * @param message message
+   */
+  public void sendInfo(String userName, String message) {
     Session session = sessionPools.get(userName);
     try {
       sendMessage(session, message);
-    }catch (Exception e){
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  //建立连接成功调用
+  /**
+   * Call successfully after establishing connection.
+   *
+   * @param session session
+   * @param userName userName
+   */
   @OnOpen
-  public void onOpen(Session session, @PathParam(value = "sid") String userName){
+  public void onOpen(Session session, @PathParam(value = "sid") String userName) {
     sessionPools.put(userName, session);
     addOnlineCount();
     System.out.println(userName + "加入webSocket！当前人数为" + onlineNum);
@@ -66,37 +86,51 @@ public class WebSocketServer {
     }
   }
 
-  //关闭连接时调用
+  /**
+   * Called when the connection is closed.
+   *
+   * @param userName userName
+   */
   @OnClose
-  public void onClose(@PathParam(value = "sid") String userName){
+  public void onClose(@PathParam(value = "sid") String userName) {
     sessionPools.remove(userName);
     subOnlineCount();
     System.out.println(userName + "断开webSocket连接！当前人数为" + onlineNum);
   }
 
-  //收到客户端信息
+  /**
+   * Client information received.
+   *
+   * @param message message
+   * @throws IOException IOException
+   */
   @OnMessage
-  public void onMessage(String message) throws IOException{
+  public void onMessage(String message) throws IOException {
     System.out.println(message);
-    for (Session session: sessionPools.values()) {
+    for (Session session : sessionPools.values()) {
       try {
         webSocketResolveService.resolve(message);
         sendMessage(session, message);
-      } catch(Exception e){
+      } catch (Exception e) {
         e.printStackTrace();
         continue;
       }
     }
   }
 
-  //错误时调用
+  /**
+   * Called on error.
+   *
+   * @param session session
+   * @param throwable throwable
+   */
   @OnError
-  public void onError(Session session, Throwable throwable){
+  public void onError(Session session, Throwable throwable) {
     System.out.println("发生错误");
     throwable.printStackTrace();
   }
 
-  public static void addOnlineCount(){
+  public static void addOnlineCount() {
     onlineNum.incrementAndGet();
   }
 

@@ -37,12 +37,14 @@ public enum DataTypeEnum {
 
   public static final Map<String, String> CLICKHOUSE_COLUMN_DATATYPE_MAP = new HashMap<>();
   public static final Map<String, String> COLUMN_DATATYPE_MAP = new HashMap<>();
-
+  public static final Map<String, String> CLICKHOUSE_DATATYPE_MAP = new HashMap<>();
   static {
     for (DataTypeEnum dataTypeEnum : EnumSet.allOf(DataTypeEnum.class)) {
       CLICKHOUSE_COLUMN_DATATYPE_MAP.put(
           dataTypeEnum.getClickHouseDateType(), dataTypeEnum.getColumnDateType());
       COLUMN_DATATYPE_MAP.put(dataTypeEnum.getColumnDateType(), dataTypeEnum.getDataType());
+      CLICKHOUSE_DATATYPE_MAP.put(
+          dataTypeEnum.getClickHouseDateType(), dataTypeEnum.getDataType());
     }
 
   }

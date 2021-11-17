@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  **/
 @Slf4j
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "*",maxAge = 3600)
 @Api(tags = "SQL Function")
 @RequestMapping(value = WebConstants.BASE_API_PATH + "/operator")
 public class FunctionController {

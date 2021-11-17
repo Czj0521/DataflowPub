@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
  * @author: wh
  * @create: 2021-10-30
  */
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class MaterializeTest {
   @Resource
   MaterializeJobService materializeJobService;

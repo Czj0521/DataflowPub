@@ -28,7 +28,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * @createTime:2021/10/25 12:28
  */
 
-@SpringBootTest
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TableTest {
   @Autowired
   TableJobServiceImpl tableJobService;

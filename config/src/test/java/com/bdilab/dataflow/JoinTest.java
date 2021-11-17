@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class JoinTest {
     @Autowired
     JoinServiceImpl joinService;

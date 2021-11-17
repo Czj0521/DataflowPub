@@ -38,6 +38,7 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         realTimeDag.updateNode(workspaceId, operatorId, desc);
         // todo 控制流
         break;
+
       case "removeNode":
         realTimeDag.removeNode(workspaceId, operatorId);
         // todo 控制流

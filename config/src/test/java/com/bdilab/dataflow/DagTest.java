@@ -19,7 +19,7 @@ import java.util.Map;
  * @author: wh
  * @create: 2021-10-30
  */
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DagTest {
   @Resource
   RedisUtils redisUtils;

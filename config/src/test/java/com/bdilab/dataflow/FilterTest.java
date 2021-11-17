@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  * @author: wh
  * @create: 2021-10-30
  */
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class FilterTest {
   @Test
   public void testFilter() {

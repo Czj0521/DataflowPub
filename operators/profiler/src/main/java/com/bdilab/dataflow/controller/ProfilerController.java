@@ -9,7 +9,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 
 /**
  * Profiler Controller.
@@ -25,13 +30,14 @@ import org.springframework.web.bind.annotation.*;
 public class ProfilerController {
   @Autowired
   ProfilerServiceImpl profilerService;
+
   @PostMapping(value = "/profiler")
   @ApiOperation(value = "operator-profiler")
-  public ResponseEntity Profiler(@RequestBody ProfilerDescription profilerDescription) {
+  public ResponseEntity profiler(@RequestBody ProfilerDescription profilerDescription) {
     return ResponseEntity.ok(profilerService.getProfiler(profilerDescription));
   }
-//  @RequestMapping(value = "/profilerr",method = RequestMethod.GET)
-//  public ResponseEntity Profiler2() {
-//    return ResponseEntity.ok("hahaha");
-//  }
+  //@RequestMapping(value = "/profilerr",method = RequestMethod.GET)
+  //  public ResponseEntity Profiler2() {
+  //    return ResponseEntity.ok("hahaha");
+  //}
 }

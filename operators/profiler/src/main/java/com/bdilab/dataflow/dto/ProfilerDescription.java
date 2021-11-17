@@ -17,13 +17,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProfilerDescription extends JobDescription {
+public class ProfilerDescription {
+  private String jobType;
+  private String dataSource;
   private List<String> profilerColumnList;
 
-  public ProfilerDescription(String jobType, String dataSource, Integer limit,List<String> profilerColumnList) {
-    super(jobType, dataSource, limit);
-    this.profilerColumnList = profilerColumnList;
-  }
+
   /**
    * Generator TransposeDescription from json.
    */
@@ -31,8 +30,7 @@ public class ProfilerDescription extends JobDescription {
     return new ProfilerDescription(
         json.getString("jobType"),
         json.getString("dataSource"),
-        json.getInteger("limit"),
-        (List<String>)json.get("profilerColumnList")
+        (List<String>) json.get("profilerColumnList")
     );
   }
 }

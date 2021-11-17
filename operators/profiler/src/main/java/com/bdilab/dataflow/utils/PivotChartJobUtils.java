@@ -1,45 +1,60 @@
 package com.bdilab.dataflow.utils;
 
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+
 import com.bdilab.dataflow.common.enums.DataTypeEnum;
 import com.bdilab.dataflow.common.pojo.PivotChartAxisCalibration;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.springframework.stereotype.Component;
+
+
 
 /**
- * @author wh
+ * pixochart utils.
+
+ * @author wh,Yushaochao
  * @version 1.0
- * @date 2021/09/16
+ * @date 2021/11/16
  *
  */
 @Component
 public  class PivotChartJobUtils {
-  public  Map<String, Object> getSqlAndCalibration(String dataSource, Map<String, Object> columnInfo) {
+
+  /**
+   * Profiler sql and calibration of a column.
+   *
+   * @return for a column: {"calibration": ,"sql":}
+   */
+  public  Map<String, Object> getSqlAndCalibration(String dataSource,
+                                                   Map<String, Object> columnInfo) {
     String columnName = (String) columnInfo.get("columnName");
-    PivotChartAxisCalibration<Object> pChartAxisCal = getPivotChartAxisParameter(dataSource, columnInfo);
-    String type = pChartAxisCal.getType();
-    List<Object> calibration = pChartAxisCal.getCalibration();
+    PivotChartAxisCalibration<Object> pixoChartAxisCal = getPivotChartAxisParameter(
+        dataSource, columnInfo);
+    String type = pixoChartAxisCal.getType();
+    List<Object> calibration = pixoChartAxisCal.getCalibration();
     List<String> sqlList = new ArrayList<>();
     List<Object> calibrationStandardFormat = new ArrayList<>();
     Map<String, Object> result = new HashMap<>();
     switch (DataTypeEnum.CLICKHOUSE_DATATYPE_MAP.get(type)) {
       case "numeric":
-        double l = Double.parseDouble(String.valueOf(pChartAxisCal.getMin()));
-        double step = Double.parseDouble(String.valueOf(pChartAxisCal.getStep()));
+        double l = Double.parseDouble(String.valueOf(pixoChartAxisCal.getMin()));
+        double step = Double.parseDouble(String.valueOf(pixoChartAxisCal.getStep()));
         double r = l + step;
 
-        for (int i = 0; i < pChartAxisCal.getTicks() - 1; i++, l = r, r += step) {
+        for (int i = 0; i < pixoChartAxisCal.getTicks() - 1; i++, l = r, r += step) {
           StringBuilder nsql = new StringBuilder();
-          nsql.append("( ").append(l).append(" <= ").append(columnName).append(" and ").append(columnName).append(" < ").append(r).append(" )");
+          nsql.append("( ").append(l).append(" <= ").append(columnName)
+              .append(" and ").append(columnName).append(" < ").append(r).append(" )");
           sqlList.add(new String(nsql));
         }
         StringBuilder nsql = new StringBuilder();
-        nsql.append("( ").append(l).append(" <= ").append(columnName).append(" and ").append(columnName).append(" <= ").append(r).append(" )");
+        nsql.append("( ").append(l).append(" <= ").append(columnName)
+            .append(" and ").append(columnName).append(" <= ").append(r).append(" )");
         sqlList.add(new String(nsql));
         for (int i = 1; i < calibration.size(); i++) {
           StringBuilder csf = new StringBuilder();
@@ -68,13 +83,14 @@ public  class PivotChartJobUtils {
           default:
             throw new RuntimeException("Error type!");
         }
-        List<Object> calList = pChartAxisCal.getCalibration();
+        List<Object> calList = pixoChartAxisCal.getCalibration();
         for (int i = 1; i < calList.size() - 1; i++) {
           long dl = Long.parseLong(String.valueOf(calList.get(i - 1)));
           long dr = Long.parseLong(String.valueOf(calList.get(i)));
           StringBuilder dsql = new StringBuilder();
           dsql.append("( '").append(sdf.format(new Date(dl))).append("' <= ").append(columnName)
-              .append(" and ").append(columnName).append(" < '").append(sdf.format(new Date(dr))).append("' )");
+              .append(" and ").append(columnName).append(" < '")
+              .append(sdf.format(new Date(dr))).append("' )");
           sqlList.add(new String(dsql));
 
         }
@@ -83,12 +99,14 @@ public  class PivotChartJobUtils {
         long dr = Long.parseLong(String.valueOf(calList.get(calList.size() - 1)));
         StringBuilder dsql = new StringBuilder();
         dsql.append("( '").append(sdf.format(new Date(dl))).append("' <= ").append(columnName)
-            .append(" and ").append(columnName).append(" < '").append(sdf.format(new Date(dr))).append("' )");
+            .append(" and ").append(columnName).append(" < '")
+            .append(sdf.format(new Date(dr))).append("' )");
         sqlList.add(new String(dsql));
         for (int i = 1; i < calibration.size(); i++) {
           StringBuilder csf = new StringBuilder();
 
-          csf.append(sdf.format(new Date(Long.parseLong(String.valueOf(calibration.get(i - 1)))))).append(" - ")
+          csf.append(sdf.format(new Date(Long.parseLong(String.valueOf(calibration.get(i - 1))))))
+              .append(" - ")
               .append(sdf.format(new Date(Long.parseLong(String.valueOf(calibration.get(i))))));
           calibrationStandardFormat.add(csf);
         }
@@ -104,16 +122,23 @@ public  class PivotChartJobUtils {
     return result;
   }
 
-  public PivotChartAxisCalibration<Object> getPivotChartAxisParameter(String dataSource, Map<String, Object> columnInfo) {
+  /**
+   * Profiler basic info for calibration of a column.
+   *
+   * @return PivotChartAxisCalibration
+   */
+  public PivotChartAxisCalibration<Object> getPivotChartAxisParameter(String dataSource,
+                                                                 Map<String, Object> columnInfo) {
 
     PivotChartAxisCalibration<Object> resAxisCal = new PivotChartAxisCalibration<>();
     String columnType = (String) columnInfo.get("columnType");
 
     switch (DataTypeEnum.CLICKHOUSE_DATATYPE_MAP.get(columnType)) {
       case "numeric":
-        double min = Double.parseDouble((String)columnInfo.get("min"));
-        double max = Double.parseDouble((String)columnInfo.get("max"));
-        PivotChartAxisCalibration<Double> numericAxisCal = AdaptiveAxisCalibrationUtils.getAdaptiveNumericAxisCalibration(min, max, 14);
+        double min = Double.parseDouble((String) columnInfo.get("min"));
+        double max = Double.parseDouble((String) columnInfo.get("max"));
+        PivotChartAxisCalibration<Double> numericAxisCal =
+            AdaptiveAxisCalibrationUtils.getAdaptiveNumericAxisCalibration(min, max, 14);
         resAxisCal = transferToNumericAxisParameter(numericAxisCal, columnType);
         break;
       case "string":
@@ -134,12 +159,13 @@ public  class PivotChartJobUtils {
           default:
             throw new RuntimeException("Error type!");
         }
-        try{
-          Date mind = sdf.parse((String)columnInfo.get("min"));
-          Date maxd = sdf.parse((String)columnInfo.get("max"));
-          PivotChartAxisCalibration<Long> dateAxisCal = AdaptiveAxisCalibrationUtils.getAdaptiveDateAxisCalibration(mind, maxd, columnType);
+        try {
+          Date mind = sdf.parse((String) columnInfo.get("min"));
+          Date maxd = sdf.parse((String) columnInfo.get("max"));
+          PivotChartAxisCalibration<Long> dateAxisCal =
+              AdaptiveAxisCalibrationUtils.getAdaptiveDateAxisCalibration(mind, maxd, columnType);
           resAxisCal = transferToDateAxisParameter(dateAxisCal, columnType);
-        }catch (Exception e){
+        } catch (Exception e) {
           e.printStackTrace();
         }
         break;
@@ -149,69 +175,74 @@ public  class PivotChartJobUtils {
     return resAxisCal;
   }
 
-
-  public PivotChartAxisCalibration<Object> transferToNumericAxisParameter(PivotChartAxisCalibration<Double> axisCal, String columnType) {
+  /**
+   * Profiler calibration of a numic column.
+   *
+   * @return PivotChartAxisCalibration
+   */
+  public PivotChartAxisCalibration<Object> transferToNumericAxisParameter(
+      PivotChartAxisCalibration<Double> axisCal, String columnType) {
     PivotChartAxisCalibration<Object> resAxisCal = new PivotChartAxisCalibration<>();
     switch (DataTypeEnum.CLICKHOUSE_COLUMN_DATATYPE_MAP.get(columnType)) {
       case "Integer":
-        int iMin = axisCal.getMin().intValue();
-        int iMax = axisCal.getMax().intValue();
-        int iStep = axisCal.getStep().intValue();
-        resAxisCal.setMin(iMin);
-        resAxisCal.setMax(iMax);
-        resAxisCal.setStep(iStep);
-        List<Object> iTemp = new ArrayList<>();
-        iTemp.add(iMin);
-        iMin += iStep;
-        for (int i = 0; i < axisCal.getTicks(); i++, iMin += iStep) {
-          iTemp.add(iMin);
+        int intMin = axisCal.getMin().intValue();
+        int intMax = axisCal.getMax().intValue();
+        int intStep = axisCal.getStep().intValue();
+        resAxisCal.setMin(intMin);
+        resAxisCal.setMax(intMax);
+        resAxisCal.setStep(intStep);
+        List<Object> intTemp = new ArrayList<>();
+        intTemp.add(intMin);
+        intMin += intStep;
+        for (int i = 0; i < axisCal.getTicks(); i++, intMin += intStep) {
+          intTemp.add(intMin);
         }
-        resAxisCal.setCalibration(iTemp);
+        resAxisCal.setCalibration(intTemp);
         break;
       case "Long":
-        long lMin = axisCal.getMin().longValue();
-        long lMax = axisCal.getMax().longValue();
-        long lStep = axisCal.getStep().longValue();
-        resAxisCal.setMin(lMin);
-        resAxisCal.setMax(lMax);
-        resAxisCal.setStep(lStep);
-        List<Object> lTemp = new ArrayList<>();
-        lTemp.add(lMin);
-        lMin += lStep;
-        for (int i = 0; i < axisCal.getTicks(); i++, lMin += lStep) {
-          lTemp.add(lMin);
+        long loMin = axisCal.getMin().longValue();
+        long loMax = axisCal.getMax().longValue();
+        long loStep = axisCal.getStep().longValue();
+        resAxisCal.setMin(loMin);
+        resAxisCal.setMax(loMax);
+        resAxisCal.setStep(loStep);
+        List<Object> loTemp = new ArrayList<>();
+        loTemp.add(loMin);
+        loMin += loStep;
+        for (int i = 0; i < axisCal.getTicks(); i++, loMin += loStep) {
+          loTemp.add(loMin);
         }
-        resAxisCal.setCalibration(lTemp);
+        resAxisCal.setCalibration(loTemp);
         break;
       case "Float":
-        float fMin = axisCal.getMin().floatValue();
-        float fMax = axisCal.getMax().floatValue();
-        float fStep = axisCal.getStep().floatValue();
-        resAxisCal.setMin(fMin);
-        resAxisCal.setMax(fMax);
-        resAxisCal.setStep(fStep);
-        List<Object> fTemp = new ArrayList<>();
-        fTemp.add(fMin);
-        fMin += fStep;
-        for (int i = 0; i < axisCal.getTicks(); i++, fMin += fStep) {
-          fTemp.add(fMin);
+        float flMin = axisCal.getMin().floatValue();
+        float flMax = axisCal.getMax().floatValue();
+        float flStep = axisCal.getStep().floatValue();
+        resAxisCal.setMin(flMin);
+        resAxisCal.setMax(flMax);
+        resAxisCal.setStep(flStep);
+        List<Object> flTemp = new ArrayList<>();
+        flTemp.add(flMin);
+        flMin += flStep;
+        for (int i = 0; i < axisCal.getTicks(); i++, flMin += flStep) {
+          flTemp.add(flMin);
         }
-        resAxisCal.setCalibration(fTemp);
+        resAxisCal.setCalibration(flTemp);
         break;
       case "Double":
-        double dMin = axisCal.getMin();
-        double dMax = axisCal.getMax();
-        double dStep = axisCal.getStep();
-        resAxisCal.setMin(dMin);
-        resAxisCal.setMax(dMax);
-        resAxisCal.setStep(dStep);
-        List<Object> dTemp = new ArrayList<>();
-        dTemp.add(dMin);
-        dMin += dStep;
-        for (int i = 0; i < axisCal.getTicks(); i++, dMin += dStep) {
-          dTemp.add(dMin);
+        double douMin = axisCal.getMin();
+        double douMax = axisCal.getMax();
+        double douStep = axisCal.getStep();
+        resAxisCal.setMin(douMin);
+        resAxisCal.setMax(douMax);
+        resAxisCal.setStep(douStep);
+        List<Object> douTemp = new ArrayList<>();
+        douTemp.add(douMin);
+        douMin += douStep;
+        for (int i = 0; i < axisCal.getTicks(); i++, douMin += douStep) {
+          douTemp.add(douMin);
         }
-        resAxisCal.setCalibration(dTemp);
+        resAxisCal.setCalibration(douTemp);
         break;
       default:
         break;
@@ -221,8 +252,13 @@ public  class PivotChartJobUtils {
     return resAxisCal;
   }
 
-  public PivotChartAxisCalibration<Object> transferToDateAxisParameter(PivotChartAxisCalibration<Long> axisCal, String columnType) {
-    PivotChartAxisCalibration<Object> resAxisCal = new PivotChartAxisCalibration<>();
+  /**
+   * Profiler calibration of a date column.
+   *
+   * @return PivotChartAxisCalibration
+   */
+  public PivotChartAxisCalibration<Object> transferToDateAxisParameter(
+      PivotChartAxisCalibration<Long> axisCal, String columnType) {
     Long min = axisCal.getMin();
     Long max = axisCal.getMax();
     Date minDate = new Date(min);
@@ -237,6 +273,7 @@ public  class PivotChartJobUtils {
       minCal.add(axisCal.getStep().intValue(), axisCal.getTicks());
     }
     dateTemp.add(maxCal.getTime().getTime());
+    PivotChartAxisCalibration<Object> resAxisCal = new PivotChartAxisCalibration<>();
     resAxisCal.setCalibration(dateTemp);
     resAxisCal.setMin(min);
     resAxisCal.setMax(max);

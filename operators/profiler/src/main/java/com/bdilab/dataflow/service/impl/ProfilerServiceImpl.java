@@ -160,6 +160,22 @@ public class ProfilerServiceImpl implements ProfilerService {
           topValues.put((String) map.get(columnName), ((BigInteger) map.get("count()")).toString());
         }
         columnInfoList.get(i).put("topValues", topValues);
+
+        String sqlNull = "select * from "
+            + "(select count(*) from " + datasource + " ) a0,"
+            + "(select count(*) from " + datasource + " where " + columnName + " =null) a1,"
+            + "(SELECT count(*) from  (select count(*) from " + datasource + " group by " + columnName + ")) a2";
+        System.out.println(sqlNull);
+        List<Map<String, Object>> maps = clickHouseJdbcUtils.queryForList(sqlNull);
+        Map<String, Object> mapNull = maps.get(0);
+        Long countRow = ((BigInteger) mapNull.get("a0.count()")).longValue();
+        columnInfoList.get(i).put("null",
+            ((BigInteger) mapNull.get("a1.count()")).longValue() / countRow);
+        columnInfoList.get(i).put("unique",
+            ((BigInteger) mapNull.get("a2.count()")).longValue() / countRow);
+        columnInfoList.get(i).put("nullVal", mapNull.get("a1.count()"));
+        columnInfoList.get(i).put("uniqueVal", mapNull.get("a2.count()"));
+
       }
     }
     return columnInfoList;
@@ -181,7 +197,7 @@ public class ProfilerServiceImpl implements ProfilerService {
         String columnName = (String) columnInfo.get("columnName");
         List<Map<String, Object>> maps = clickHouseJdbcUtils.queryForList(
             "select " + columnName + ",count(*) from " + datasource
-                + " group by " + columnName + " order by count() desc");
+                + " group by " + columnName + " order by count() desc limit 12");
         List<String> calibration = new ArrayList<>();
         List<Long> countCalibration = new ArrayList<>();
         //System.out.println(maps);

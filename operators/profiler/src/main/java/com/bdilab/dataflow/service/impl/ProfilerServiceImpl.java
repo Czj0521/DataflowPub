@@ -164,7 +164,8 @@ public class ProfilerServiceImpl implements ProfilerService {
         String sqlNull = "select * from "
             + "(select count(*) from " + datasource + " ) a0,"
             + "(select count(*) from " + datasource + " where " + columnName + " =null) a1,"
-            + "(SELECT count(*) from  (select count(*) from " + datasource + " group by " + columnName + ")) a2";
+            + "(SELECT count(*) from  (select count(*) from " + datasource
+               + " group by " + columnName + ")) a2";
         System.out.println(sqlNull);
         List<Map<String, Object>> maps = clickHouseJdbcUtils.queryForList(sqlNull);
         Map<String, Object> mapNull = maps.get(0);

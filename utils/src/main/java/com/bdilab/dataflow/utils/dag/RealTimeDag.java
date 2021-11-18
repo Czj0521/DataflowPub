@@ -1,6 +1,7 @@
 package com.bdilab.dataflow.utils.dag;
 
 import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.common.consts.CommonConstants;
 import com.bdilab.dataflow.common.enums.OperatorOutputTypeEnum;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseUtils;
 import com.bdilab.dataflow.utils.redis.RedisUtils;
@@ -99,7 +100,7 @@ public class RealTimeDag {
         });
       } else {
         // table
-        String newTableName = "tempInput_" + deletedNodeId;
+        String newTableName = CommonConstants.DATABASE + ".tempInput_" + deletedNodeId;
         clickhouseUtils.copyToTable(deletedNodeId, newTableName);//将表持久化，并改名
         clickhouseUtils.deleteTable(deletedNodeId);
         deletedNode.getNextNodesId().forEach((nodeId) -> {
@@ -138,7 +139,7 @@ public class RealTimeDag {
       nextNode.getFilterId().remove(preNodeId);
     } else {
       //table
-      String newTableName = "tempInput_" + preNodeId;
+      String newTableName = CommonConstants.DATABASE + ".tempInput_" + preNodeId;
       clickhouseUtils.copyToTable(preNodeId, newTableName);
       ((JSONObject) nextNode.getNodeDescription()).put("dataSource", newTableName);
       nextNode.getPreNodesId().remove(preNodeId);

@@ -2,6 +2,7 @@ package com.bdilab.dataflow;
 
 import com.bdilab.dataflow.common.pojo.PivotChartParameterInfo;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseUtils;
 import com.bdilab.dataflow.utils.dag.DagManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.NoRealTimeDag;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +34,8 @@ public class DagTest {
   DagManager dagManager;
   @Resource
   ClickHouseJdbcUtils clickHouseJdbcUtils;
+  @Resource
+  ClickHouseUtils clickHouseUtils;
 
   @Test
   public void testRedisConnect() {
@@ -150,8 +154,16 @@ public class DagTest {
 //        flag = true;
 //      }
 //    }
+//    Long size = clickHouseJdbcUtils.queryForLong("select count(*) from airuuid");
+//
+//    System.out.println(size);
 
-
+//    clickHouseUtils.copyTableToTable("dataflow.TEST_airuuid", "dataflow.test");
+//    List<Map<String, Object>> desc_airuuid = clickHouseJdbcUtils.queryForList("select name from (desc airuuid)");
+//    for (Map<String, Object> stringObjectMap : desc_airuuid) {
+//
+//    }
+//    clickHouseUtils.copyToTable("dataflow.airuuid", "dataflow.TEST_VIEW5");
   }
 
 }

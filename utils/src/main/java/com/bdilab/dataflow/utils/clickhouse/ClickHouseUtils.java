@@ -4,6 +4,7 @@ import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Data table manager for clickhouse in  .
@@ -17,10 +18,26 @@ public class ClickHouseUtils {
   ClickHouseJdbcUtils clickHouseJdbcUtils;
 
   public void copyToTable(String oldTableName, String newTableName) {
+    StringBuilder sql = new StringBuilder();
+    sql.append("CREATE TABLE ").append(newTableName).append(chooseTableEngine(oldTableName))
+        .append(" AS (SELECT * FROM ").append(oldTableName).append(")");
+    clickHouseJdbcUtils.execute(new String(sql));
+  }
+
+  private String chooseTableEngine(String tableName){
     //todo
 //    StringBuilder sql = new StringBuilder();
-//    sql.append("rename table  ").append(oldTableName).append("to ").append(newTableName);
-//    clickHouseJdbcUtils.execute(new String(sql));
+//    sql.append("SELECT count(*) FROM oldTableName");
+//    Long size = clickHouseJdbcUtils.queryForLong(new String(sql));
+//    StringBuilder ans = new StringBuilder();
+//    if(size < 400000){
+//      ans.append("ENGINE=Memory");
+//    } else {
+//      sql = new StringBuilder();
+//      sql.append()
+//      clickHouseJdbcUtils.queryForList();
+//    }
+    return " ENGINE=Memory ";
   }
 
   public void deleteInputTable(String tableName) {

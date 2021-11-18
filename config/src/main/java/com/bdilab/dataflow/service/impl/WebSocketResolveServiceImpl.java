@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.service.WebSocketResolveService;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.RealTimeDag;
+import java.util.List;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 
 /**
  * Websocket parser implementation class.
@@ -19,6 +21,8 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
 
   @Resource
   RealTimeDag realTimeDag;
+  @Resource
+  ScheduleServiceImpl scheduleService;
 
   @Override
   public void resolve(String jsonString) {
@@ -32,28 +36,30 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
     switch (dagType) {
       case "addNode":
         realTimeDag.addNode(workspaceId, new DagNode(operatorId, operatorType, desc));
-        // todo 控制流
+        scheduleService.executeTask(workspaceId, operatorId);
         break;
       case "updateNode":
         realTimeDag.updateNode(workspaceId, operatorId, desc);
-        // todo 控制流
+        scheduleService.executeTask(workspaceId, operatorId);
         break;
-
       case "removeNode":
         realTimeDag.removeNode(workspaceId, operatorId);
-        // todo 控制流
+        List<String> nextNodesId = realTimeDag.getNode(workspaceId, operatorId).getNextNodesId();
+        for (String s : nextNodesId) {
+          scheduleService.executeTask(workspaceId, s);
+        }
         break;
       case "addEdge":
-        String addPreNodeoId = desc.getString("preNodeId");
+        String addPreNodeId = desc.getString("preNodeId");
         String addNextNodeId = desc.getString("nextNodeId");
-        realTimeDag.addEdge(workspaceId, addPreNodeoId, addNextNodeId);
-        // todo 控制流
+        realTimeDag.addEdge(workspaceId, addPreNodeId, addNextNodeId);
+        scheduleService.executeTask(workspaceId, addNextNodeId);
         break;
       case "removeEdge":
-        String rmPreNodeoId = desc.getString("preNodeId");
+        String rmPreNodeId = desc.getString("preNodeId");
         String rmNextNodeId = desc.getString("nextNodeId");
-        realTimeDag.removeEdge(workspaceId, rmPreNodeoId, rmNextNodeId);
-        // todo 控制流
+        realTimeDag.removeEdge(workspaceId, rmPreNodeId, rmNextNodeId);
+        scheduleService.executeTask(workspaceId, rmNextNodeId);
         break;
       default:
         throw new RuntimeException("not exist this dagType");

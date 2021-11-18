@@ -1,6 +1,7 @@
 package com.bdilab.dataflow;
 
 import com.bdilab.dataflow.common.pojo.PivotChartParameterInfo;
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import com.bdilab.dataflow.utils.dag.DagManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.NoRealTimeDag;
@@ -29,6 +30,8 @@ public class DagTest {
   RealTimeDag realTimeDag;
   @Resource
   DagManager dagManager;
+  @Resource
+  ClickHouseJdbcUtils clickHouseJdbcUtils;
 
   @Test
   public void testRedisConnect() {
@@ -130,6 +133,25 @@ public class DagTest {
     if (dagManager.containsWorkspaceId(workspaceId)) {
       throw new RuntimeException("DagTest.testDagManager Error !");
     }
+  }
+  @Test
+  public void clickhouseManager(){
+
+    String sql = "CREATE table TESTVIEW \n" +
+        "ENGINE = MergeTree() \n" +
+        "ORDER BY 三亚_PM2_5_sum\n" +
+        "AS (select * from materialize_e82e5ce9a43a4ef49dd38b3c86cf4db1)";
+    boolean flag = true;
+    while (flag){
+      try {
+        flag = false;
+        clickHouseJdbcUtils.execute(sql);
+      } catch (Exception e){
+        flag = true;
+      }
+    }
+
+
   }
 
 }

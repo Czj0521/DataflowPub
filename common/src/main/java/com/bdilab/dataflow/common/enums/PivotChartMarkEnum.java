@@ -2,7 +2,7 @@ package com.bdilab.dataflow.common.enums;
 
 /**
  * Enumerated classes for PivotChart dashboard types.
-
+ *
  * @author wh
  * @version 1.0
  * @date 2021/09/17

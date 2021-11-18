@@ -1,7 +1,9 @@
 package com.bdilab.dataflow.utils.dag;
 
+import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.common.enums.OperatorOutputTypeEnum;
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseUtils;
 import com.bdilab.dataflow.utils.redis.RedisUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -19,13 +21,10 @@ import java.util.Map;
  */
 @Component
 public class RealTimeDag {
-
   @Resource
   RedisUtils redisUtils;
   @Resource
-  RedisTemplate<String, Object> redisTemplate;
-
-
+  ClickHouseUtils clickhouseUtils;
 
   /**
    * Add a node to the dag.
@@ -50,7 +49,14 @@ public class RealTimeDag {
     DagNode preNode = (DagNode) redisUtils.hget(workspaceId, preNodeId);
     DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
     preNode.getNextNodesId().add(nextNodeId);
-    nextNode.getPreNodesId().add(preNodeId);
+    JSONObject nodeDescription = (JSONObject) nextNode.getNodeDescription();
+    if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
+      nextNode.getFilterId().add(preNodeId);
+    } else {
+      nextNode.getPreNodesId().add(preNodeId);
+      nodeDescription.put("datasource", preNodeId);
+    }
+    nextNode.setNodeDescription(nodeDescription);
     Map<String, Object> map = new HashMap<String, Object>(2) {
       {
         this.put(preNodeId, preNode);
@@ -70,12 +76,24 @@ public class RealTimeDag {
     //todo 设置读写锁
     Map<Object, Object> dagMap = redisUtils.hmget(workspaceId);
     DagNode deletedNode = (DagNode) dagMap.get(deletedNodeId);
+    JSONObject nodeDescription = (JSONObject) deletedNode.getNodeDescription();
+
     deletedNode.getPreNodesId().forEach((nodeId) -> {
       ((DagNode) dagMap.get(nodeId)).getNextNodesId().remove(deletedNodeId);
     });
-    deletedNode.getNextNodesId().forEach((nodeId) -> {
-      ((DagNode) dagMap.get(nodeId)).getPreNodesId().remove(deletedNodeId);
-    });
+    if (deletedNode.getNextNodesId().isEmpty()) {
+      clickhouseUtils.deleteTable(nodeDescription.getString("datasource"));
+    } else {
+      String newTableName = deletedNodeId + "_input";
+      clickhouseUtils.renameTable(nodeDescription.getString("datasource"), newTableName);
+      deletedNode.getNextNodesId().forEach((nodeId) -> {
+        DagNode nextNode = (DagNode) dagMap.get(nodeId);
+        nextNode.getPreNodesId().remove(deletedNodeId);
+        ((JSONObject) nextNode.getNodeDescription()).put("datasource", newTableName);
+        dagMap.put(nodeId, nextNode);
+      });
+    }
+
     dagMap.remove(deletedNodeId);
     redisUtils.del(workspaceId);
     redisUtils.hmset(workspaceId, dagMap);
@@ -87,6 +105,8 @@ public class RealTimeDag {
     DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
     preNode.getNextNodesId().remove(nextNodeId);
     nextNode.getPreNodesId().remove(preNodeId);
+
+
     Map<String, Object> map = new HashMap<String, Object>(2) {
       {
         this.put(preNodeId, preNode);

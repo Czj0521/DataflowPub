@@ -29,6 +29,11 @@ public class DagNode {
   private List<String> nextNodesId;
 
   /**
+   * The node ID that filter this node data source.
+   */
+  private List<String> filterId;
+
+  /**
    * The type of operator.
    */
   private String nodeType;

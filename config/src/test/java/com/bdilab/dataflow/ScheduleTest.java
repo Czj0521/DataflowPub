@@ -45,23 +45,23 @@ public class ScheduleTest {
     }
 
     // add node
-    realTimeDag.addNode(workspaceId, testNodeO);
-    realTimeDag.addNode(workspaceId, testNodeA);
-    realTimeDag.addNode(workspaceId, testNodeB);
-    realTimeDag.addNode(workspaceId, testNodeC);
-    realTimeDag.addNode(workspaceId, testNodeD);
-    realTimeDag.addNode(workspaceId, testNodeE);
+//    realTimeDag.addNode(workspaceId, testNodeO);
+//    realTimeDag.addNode(workspaceId, testNodeA);
+//    realTimeDag.addNode(workspaceId, testNodeB);
+//    realTimeDag.addNode(workspaceId, testNodeC);
+//    realTimeDag.addNode(workspaceId, testNodeD);
+//    realTimeDag.addNode(workspaceId, testNodeE);
 
     // add edge
-    realTimeDag.addEdge(workspaceId, nodeIdO, nodeIdC);
-    realTimeDag.addEdge(workspaceId, nodeIdB, nodeIdD);
-    realTimeDag.addEdge(workspaceId, nodeIdA, nodeIdB);
-    realTimeDag.addEdge(workspaceId, nodeIdA, nodeIdD);
-    realTimeDag.addEdge(workspaceId, nodeIdB, nodeIdC);
-    realTimeDag.addEdge(workspaceId, nodeIdC, nodeIdE);
-    realTimeDag.addEdge(workspaceId, nodeIdD, nodeIdE);
+//    realTimeDag.addEdge(workspaceId, nodeIdO, nodeIdC);
+//    realTimeDag.addEdge(workspaceId, nodeIdB, nodeIdD);
+//    realTimeDag.addEdge(workspaceId, nodeIdA, nodeIdB);
+//    realTimeDag.addEdge(workspaceId, nodeIdA, nodeIdD);
+//    realTimeDag.addEdge(workspaceId, nodeIdB, nodeIdC);
+//    realTimeDag.addEdge(workspaceId, nodeIdC, nodeIdE);
+//    realTimeDag.addEdge(workspaceId, nodeIdD, nodeIdE);
 
-    List<String> sortedList = scheduleService.getSortedList(workspaceId, "a");
-    System.out.println(sortedList);
+//    List<String> sortedList = scheduleService.getSortedList(workspaceId, "a");
+//    System.out.println(sortedList);
   }
 }

@@ -76,18 +76,18 @@ public class DagTest {
     if (dagManager.containsWorkspaceId(workspaceId)) {
       dagManager.deleteDag(workspaceId);
     }
-    noRealTimeDag.loadDagFromRedis(workspaceId);
-    noRealTimeDag.addNode(testNode1);
-    noRealTimeDag.addNode(testNode2);
-    noRealTimeDag.addNode(testNode3);
-    noRealTimeDag.addEdge(nodeId1, nodeId2);
-    noRealTimeDag.addEdge(nodeId2, nodeId3);
-    noRealTimeDag.saveDagToRedis();
+//    noRealTimeDag.loadDagFromRedis(workspaceId);
+//    noRealTimeDag.addNode(testNode1);
+//    noRealTimeDag.addNode(testNode2);
+//    noRealTimeDag.addNode(testNode3);
+//    noRealTimeDag.addEdge(nodeId1, nodeId2);
+//    noRealTimeDag.addEdge(nodeId2, nodeId3);
+//    noRealTimeDag.saveDagToRedis();
 
     noRealTimeDag.loadDagFromRedis(workspaceId);
     noRealTimeDag.addNode(testNode4);
-    noRealTimeDag.addEdge(nodeId2, nodeId4);
-    noRealTimeDag.removeNode(nodeId2);
+//    noRealTimeDag.addEdge(nodeId2, nodeId4);
+//    noRealTimeDag.removeNode(nodeId2);
     noRealTimeDag.saveDagToRedis();
   }
 
@@ -105,22 +105,22 @@ public class DagTest {
     if (dagManager.containsWorkspaceId(workspaceId)) {
       dagManager.deleteDag(workspaceId);
     }
-    realTimeDag.addNode(workspaceId,testNode1);
-    realTimeDag.addNode(workspaceId,testNode2);
-    realTimeDag.addEdge(workspaceId, nodeId1, nodeId2);
-    realTimeDag.addNode(workspaceId,testNode3);
-    realTimeDag.addNode(workspaceId,testNode4);
-    realTimeDag.addEdge(workspaceId, nodeId2, nodeId3);
-    realTimeDag.addEdge(workspaceId, nodeId2, nodeId4);
-    System.out.println(realTimeDag.getNextNodes(workspaceId, nodeId2));
-    System.out.println(realTimeDag.getPreNodes(workspaceId, nodeId2));
-    System.out.println(realTimeDag.getDag(workspaceId));
-    realTimeDag.removeNode(workspaceId, nodeId2);
-    realTimeDag.addEdge(workspaceId, nodeId1, nodeId3);
-    realTimeDag.addEdge(workspaceId, nodeId1, nodeId4);
-    System.out.println(realTimeDag.getDag(workspaceId));
-    realTimeDag.removeEdge(workspaceId, nodeId1, nodeId3);
-    System.out.println(realTimeDag.getDag(workspaceId));
+//    realTimeDag.addNode(workspaceId,testNode1);
+//    realTimeDag.addNode(workspaceId,testNode2);
+//    realTimeDag.addEdge(workspaceId, nodeId1, nodeId2);
+//    realTimeDag.addNode(workspaceId,testNode3);
+//    realTimeDag.addNode(workspaceId,testNode4);
+//    realTimeDag.addEdge(workspaceId, nodeId2, nodeId3);
+//    realTimeDag.addEdge(workspaceId, nodeId2, nodeId4);
+//    System.out.println(realTimeDag.getNextNodes(workspaceId, nodeId2));
+//    System.out.println(realTimeDag.getPreNodes(workspaceId, nodeId2));
+//    System.out.println(realTimeDag.getDag(workspaceId));
+//    realTimeDag.removeNode(workspaceId, nodeId2);
+//    realTimeDag.addEdge(workspaceId, nodeId1, nodeId3);
+//    realTimeDag.addEdge(workspaceId, nodeId1, nodeId4);
+//    System.out.println(realTimeDag.getDag(workspaceId));
+//    realTimeDag.removeEdge(workspaceId, nodeId1, nodeId3);
+//    System.out.println(realTimeDag.getDag(workspaceId));
   }
 
   @Test
@@ -137,19 +137,19 @@ public class DagTest {
   @Test
   public void clickhouseManager(){
 
-    String sql = "CREATE table TESTVIEW \n" +
-        "ENGINE = MergeTree() \n" +
-        "ORDER BY 三亚_PM2_5_sum\n" +
-        "AS (select * from materialize_e82e5ce9a43a4ef49dd38b3c86cf4db1)";
-    boolean flag = true;
-    while (flag){
-      try {
-        flag = false;
-        clickHouseJdbcUtils.execute(sql);
-      } catch (Exception e){
-        flag = true;
-      }
-    }
+//    String sql = "CREATE table TESTVIEW \n" +
+//        "ENGINE = MergeTree() \n" +
+//        "ORDER BY 三亚_PM2_5_sum\n" +
+//        "AS (select * from materialize_e82e5ce9a43a4ef49dd38b3c86cf4db1)";
+//    boolean flag = true;
+//    while (flag){
+//      try {
+//        flag = false;
+//        clickHouseJdbcUtils.execute(sql);
+//      } catch (Exception e){
+//        flag = true;
+//      }
+//    }
 
 
   }

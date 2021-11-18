@@ -16,13 +16,22 @@ public class ClickHouseUtils {
   @Resource
   ClickHouseJdbcUtils clickHouseJdbcUtils;
 
-  public void renameTable(String oldTableName, String newTableName) {
-    StringBuilder sql = new StringBuilder();
-    sql.append("rename table  ").append(oldTableName).append("to ").append(newTableName);
-    clickHouseJdbcUtils.execute(new String(sql));
+  public void copyToTable(String oldTableName, String newTableName) {
+    //todo
+//    StringBuilder sql = new StringBuilder();
+//    sql.append("rename table  ").append(oldTableName).append("to ").append(newTableName);
+//    clickHouseJdbcUtils.execute(new String(sql));
   }
 
-  public void deleteTable(String tableName) {
+  public void deleteInputTable(String tableName) {
+    if (tableName.startsWith("tempInput_")) {
+      StringBuilder sql = new StringBuilder();
+      sql.append("DROP TABLE ").append(tableName);
+      clickHouseJdbcUtils.execute(new String(sql));
+    }
+  }
+
+  public void deleteTable(String tableName){
     StringBuilder sql = new StringBuilder();
     sql.append("DROP TABLE ").append(tableName);
     clickHouseJdbcUtils.execute(new String(sql));

@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Resource;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
  * @author wh
  * @date 2021/11/14
  */
+@Slf4j
 @Component
 public class RealTimeDag {
   @Resource
@@ -49,13 +52,14 @@ public class RealTimeDag {
     DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
     preNode.getNextNodesId().add(nextNodeId);
     JSONObject nodeDescription = (JSONObject) nextNode.getNodeDescription();
+    String deleteTableName = "";
     if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
       //filter连table 或 filter连filter 不更改数据源，会有bug einblick也有bug。
       nextNode.getFilterId().add(preNodeId);
     } else {
       //table连table
       nextNode.getPreNodesId().add(preNodeId);
-      clickhouseUtils.deleteTable(nodeDescription.getString("dataSource"));
+      deleteTableName = nodeDescription.getString("dataSource");
       nodeDescription.put("dataSource", preNodeId);
     }
     nextNode.setNodeDescription(nodeDescription);
@@ -66,6 +70,10 @@ public class RealTimeDag {
       }
     };
     redisUtils.hmset(workspaceId, map);
+
+    if(!"".equals(deleteTableName)){
+      clickhouseUtils.deleteTable(deleteTableName);
+    }
   }
 
   /**
@@ -78,20 +86,13 @@ public class RealTimeDag {
     Map<Object, Object> dagMap = redisUtils.hmget(workspaceId);
     DagNode deletedNode = (DagNode) dagMap.get(deletedNodeId);
     JSONObject nodeDescription = (JSONObject) deletedNode.getNodeDescription();
-
+    String deleteInputTableName = "";
+    String newTableName = "";
     if (deletedNode.getPreNodesId().isEmpty() && deletedNode.getFilterId().isEmpty()) {
       //头节点
-      clickhouseUtils.deleteInputTable(nodeDescription.getString("dataSource"));
+      deleteInputTableName = nodeDescription.getString("dataSource");
     }
-
-    if (deletedNode.getNextNodesId().isEmpty()) {
-      //尾节点
-      if (!OperatorOutputTypeEnum.isFilterOutput(deletedNode.getNodeType())) {
-        //table
-        clickhouseUtils.deleteTable(deletedNodeId);
-      }
-    } else {
-      //除了尾节点节点
+    if (!deletedNode.getNextNodesId().isEmpty()) {
       if (OperatorOutputTypeEnum.isFilterOutput(deletedNode.getNodeType())) {
         // filter 没表，不删除
         deletedNode.getNextNodesId().forEach((nodeId) -> {
@@ -99,15 +100,13 @@ public class RealTimeDag {
         });
       } else {
         // table
-        String newTableName = CommonConstants.DATABASE + ".tempInput_" + deletedNodeId;
-        clickhouseUtils.copyToTable(deletedNodeId, newTableName); //将表持久化，并改名
-        clickhouseUtils.deleteTable(deletedNodeId);
-        deletedNode.getNextNodesId().forEach((nodeId) -> {
+        newTableName = CommonConstants.DATABASE + ".tempInput_" + deletedNodeId;
+        for (String nodeId : deletedNode.getNextNodesId()) {
           DagNode nextNode = (DagNode) dagMap.get(nodeId);
           nextNode.getPreNodesId().remove(deletedNodeId);
           ((JSONObject) nextNode.getNodeDescription()).put("dataSource", newTableName);
           dagMap.put(nodeId, nextNode);
-        });
+        }
       }
     }
     deletedNode.getPreNodesId().forEach((nodeId) -> {
@@ -119,6 +118,17 @@ public class RealTimeDag {
     dagMap.remove(deletedNodeId);
     redisUtils.hdel(workspaceId, deletedNodeId);
     redisUtils.hmset(workspaceId, dagMap);
+
+    if (!"".equals(deleteInputTableName)) {
+      clickhouseUtils.deleteInputTable(deleteInputTableName);
+    }
+    if (!OperatorOutputTypeEnum.isFilterOutput(deletedNode.getNodeType())) {
+      //table
+      clickhouseUtils.deleteTable(deletedNodeId);
+    }
+    if (!"".equals(newTableName)) {
+      clickhouseUtils.copyToTable(deletedNodeId, newTableName);
+    }
   }
 
   /**
@@ -132,14 +142,13 @@ public class RealTimeDag {
     DagNode preNode = (DagNode) redisUtils.hget(workspaceId, preNodeId);
     DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
     preNode.getNextNodesId().remove(nextNodeId);
-
+    String newTableName = "";
     if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
       //filter
       nextNode.getFilterId().remove(preNodeId);
     } else {
       //table
-      String newTableName = CommonConstants.DATABASE + ".tempInput_" + preNodeId;
-      clickhouseUtils.copyToTable(preNodeId, newTableName);
+      newTableName = CommonConstants.DATABASE + ".tempInput_" + preNodeId;
       ((JSONObject) nextNode.getNodeDescription()).put("dataSource", newTableName);
       nextNode.getPreNodesId().remove(preNodeId);
     }
@@ -150,6 +159,11 @@ public class RealTimeDag {
       }
     };
     redisUtils.hmset(workspaceId, map);
+
+    if (!"".equals(newTableName)) {
+      //table
+      clickhouseUtils.copyToTable(preNodeId, newTableName);
+    }
   }
 
   /**
@@ -167,14 +181,15 @@ public class RealTimeDag {
    * @param nodeDescription node description
    */
   public void updateNode(String workspaceId, String nodeId, Object nodeDescription) {
-    String newDataSource = ((JSONObject) nodeDescription).getString("dataSource");
     DagNode node = (DagNode) redisUtils.hget(workspaceId, nodeId);
+    node.setNodeDescription(nodeDescription);
+    redisUtils.hset(workspaceId, nodeId, node);
+
+    String newDataSource = ((JSONObject) nodeDescription).getString("dataSource");
     String oldDataSource = ((JSONObject) node.getNodeDescription()).getString("dataSource");
     if (!newDataSource.equals(oldDataSource)) {
       clickhouseUtils.deleteInputTable(oldDataSource);
     }
-    node.setNodeDescription(nodeDescription);
-    redisUtils.hset(workspaceId, nodeId, node);
   }
 
   /**

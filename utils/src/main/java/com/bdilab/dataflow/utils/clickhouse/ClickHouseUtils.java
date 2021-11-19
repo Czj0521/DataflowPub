@@ -1,10 +1,7 @@
 package com.bdilab.dataflow.utils.clickhouse;
 
-import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
-import org.springframework.stereotype.Component;
-
 import javax.annotation.Resource;
-import java.util.List;
+import org.springframework.stereotype.Component;
 
 /**
  * Data table manager for clickhouse in  .
@@ -17,6 +14,12 @@ public class ClickHouseUtils {
   @Resource
   ClickHouseJdbcUtils clickHouseJdbcUtils;
 
+  /**
+   * Copy view or table to new table.
+   *
+   * @param oldTableName old table or view name
+   * @param newTableName new table or view name
+   */
   public void copyToTable(String oldTableName, String newTableName) {
     StringBuilder sql = new StringBuilder();
     sql.append("CREATE TABLE ").append(newTableName).append(chooseTableEngine(oldTableName))
@@ -24,22 +27,27 @@ public class ClickHouseUtils {
     clickHouseJdbcUtils.execute(new String(sql));
   }
 
-  private String chooseTableEngine(String tableName){
+  private String chooseTableEngine(String tableName) {
+    //    StringBuilder sql = new StringBuilder();
+    //    sql.append("SELECT count(*) FROM oldTableName");
+    //    Long size = clickHouseJdbcUtils.queryForLong(new String(sql));
+    //    StringBuilder ans = new StringBuilder();
+    //    if(size < 400000){
+    //      ans.append("ENGINE=Memory");
+    //    } else {
+    //      sql = new StringBuilder();
+    //      sql.append()
+    //      clickHouseJdbcUtils.queryForList();
+    //    }
     //todo
-//    StringBuilder sql = new StringBuilder();
-//    sql.append("SELECT count(*) FROM oldTableName");
-//    Long size = clickHouseJdbcUtils.queryForLong(new String(sql));
-//    StringBuilder ans = new StringBuilder();
-//    if(size < 400000){
-//      ans.append("ENGINE=Memory");
-//    } else {
-//      sql = new StringBuilder();
-//      sql.append()
-//      clickHouseJdbcUtils.queryForList();
-//    }
     return " ENGINE=Memory ";
   }
 
+  /**
+   * delete table with the prefix of 'tempInput_'.
+   *
+   * @param tableName table name
+   */
   public void deleteInputTable(String tableName) {
     if (tableName.startsWith("tempInput_")) {
       StringBuilder sql = new StringBuilder();
@@ -48,7 +56,12 @@ public class ClickHouseUtils {
     }
   }
 
-  public void deleteTable(String tableName){
+  /**
+   * Delete table or view.
+   *
+   * @param tableName table or view name
+   */
+  public void deleteTable(String tableName) {
     StringBuilder sql = new StringBuilder();
     sql.append("DROP TABLE ").append(tableName);
     clickHouseJdbcUtils.execute(new String(sql));

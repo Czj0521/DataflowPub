@@ -1,12 +1,11 @@
 package com.bdilab.dataflow.utils.dag;
 
 import com.bdilab.dataflow.utils.redis.RedisUtils;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Resource;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
 /**
  * No real time dag for dataflow.
@@ -25,7 +24,11 @@ public class NoRealTimeDag extends Dag {
 
   private String workspaceId;
 
-
+  /**
+   * load dag from redis.
+   *
+   * @param workspaceId workspace ID
+   */
   public void loadDagFromRedis(String workspaceId) {
     this.workspaceId = workspaceId;
     //todo 设置写锁，或乐观锁https://blog.csdn.net/huangjun0210/article/details/84386851
@@ -36,6 +39,9 @@ public class NoRealTimeDag extends Dag {
     }
   }
 
+  /**
+   * save dag to redis.
+   */
   public void saveDagToRedis() {
     Map<String, DagNode> dagMap = super.getDagMap();
     Map<String, Object> redisMap = new HashMap<>(dagMap.size());

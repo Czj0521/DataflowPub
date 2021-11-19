@@ -5,13 +5,12 @@ import com.bdilab.dataflow.common.consts.CommonConstants;
 import com.bdilab.dataflow.common.enums.OperatorOutputTypeEnum;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseUtils;
 import com.bdilab.dataflow.utils.redis.RedisUtils;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Resource;
+import org.springframework.stereotype.Component;
 
 /**
  * Real time dag for dataflow.
@@ -87,13 +86,13 @@ public class RealTimeDag {
 
     if (deletedNode.getNextNodesId().isEmpty()) {
       //尾节点
-      if(!OperatorOutputTypeEnum.isFilterOutput(deletedNode.getNodeType())){
+      if (!OperatorOutputTypeEnum.isFilterOutput(deletedNode.getNodeType())) {
         //table
         clickhouseUtils.deleteTable(deletedNodeId);
       }
     } else {
       //除了尾节点节点
-      if(OperatorOutputTypeEnum.isFilterOutput(deletedNode.getNodeType())){
+      if (OperatorOutputTypeEnum.isFilterOutput(deletedNode.getNodeType())) {
         // filter 没表，不删除
         deletedNode.getNextNodesId().forEach((nodeId) -> {
           ((DagNode) dagMap.get(nodeId)).getFilterId().remove(deletedNodeId);
@@ -101,7 +100,7 @@ public class RealTimeDag {
       } else {
         // table
         String newTableName = CommonConstants.DATABASE + ".tempInput_" + deletedNodeId;
-        clickhouseUtils.copyToTable(deletedNodeId, newTableName);//将表持久化，并改名
+        clickhouseUtils.copyToTable(deletedNodeId, newTableName); //将表持久化，并改名
         clickhouseUtils.deleteTable(deletedNodeId);
         deletedNode.getNextNodesId().forEach((nodeId) -> {
           DagNode nextNode = (DagNode) dagMap.get(nodeId);
@@ -118,7 +117,7 @@ public class RealTimeDag {
       ((DagNode) dagMap.get(nodeId)).getNextNodesId().remove(deletedNodeId);
     });
     dagMap.remove(deletedNodeId);
-    redisUtils.del(workspaceId);
+    redisUtils.hdel(workspaceId, deletedNodeId);
     redisUtils.hmset(workspaceId, dagMap);
   }
 
@@ -134,7 +133,7 @@ public class RealTimeDag {
     DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
     preNode.getNextNodesId().remove(nextNodeId);
 
-    if(OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())){
+    if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
       //filter
       nextNode.getFilterId().remove(preNodeId);
     } else {
@@ -171,7 +170,7 @@ public class RealTimeDag {
     String newDataSource = ((JSONObject) nodeDescription).getString("dataSource");
     DagNode node = (DagNode) redisUtils.hget(workspaceId, nodeId);
     String oldDataSource = ((JSONObject) node.getNodeDescription()).getString("dataSource");
-    if(!newDataSource.equals(oldDataSource)){
+    if (!newDataSource.equals(oldDataSource)) {
       clickhouseUtils.deleteInputTable(oldDataSource);
     }
     node.setNodeDescription(nodeDescription);

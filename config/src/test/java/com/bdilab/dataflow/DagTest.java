@@ -3,10 +3,7 @@ package com.bdilab.dataflow;
 import com.bdilab.dataflow.common.pojo.PivotChartParameterInfo;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseUtils;
-import com.bdilab.dataflow.utils.dag.DagManager;
-import com.bdilab.dataflow.utils.dag.DagNode;
-import com.bdilab.dataflow.utils.dag.NoRealTimeDag;
-import com.bdilab.dataflow.utils.dag.RealTimeDag;
+import com.bdilab.dataflow.utils.dag.*;
 import com.bdilab.dataflow.utils.redis.RedisUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +33,8 @@ public class DagTest {
   ClickHouseJdbcUtils clickHouseJdbcUtils;
   @Resource
   ClickHouseUtils clickHouseUtils;
+  @Resource
+  DagFilterManager dagFilterManager;
 
   @Test
   public void testRedisConnect() {
@@ -141,22 +140,6 @@ public class DagTest {
   @Test
   public void clickhouseManager(){
 
-//    String sql = "CREATE table TESTVIEW \n" +
-//        "ENGINE = MergeTree() \n" +
-//        "ORDER BY 三亚_PM2_5_sum\n" +
-//        "AS (select * from materialize_e82e5ce9a43a4ef49dd38b3c86cf4db1)";
-//    boolean flag = true;
-//    while (flag){
-//      try {
-//        flag = false;
-//        clickHouseJdbcUtils.execute(sql);
-//      } catch (Exception e){
-//        flag = true;
-//      }
-//    }
-//    Long size = clickHouseJdbcUtils.queryForLong("select count(*) from airuuid");
-//
-//    System.out.println(size);
 
 //    clickHouseUtils.copyTableToTable("dataflow.TEST_airuuid", "dataflow.test");
 //    List<Map<String, Object>> desc_airuuid = clickHouseJdbcUtils.queryForList("select name from (desc airuuid)");
@@ -164,6 +147,7 @@ public class DagTest {
 //
 //    }
 //    clickHouseUtils.copyToTable("dataflow.airuuid", "dataflow.TEST_VIEW5");
+    dagFilterManager.deleteFilter("stringd12a3d", "wjhtest1");
   }
 
 }

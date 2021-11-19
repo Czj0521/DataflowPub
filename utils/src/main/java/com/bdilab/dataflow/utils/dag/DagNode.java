@@ -1,9 +1,8 @@
 package com.bdilab.dataflow.utils.dag;
 
-import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
 
 /**
  * The node of dag.
@@ -49,6 +48,11 @@ public class DagNode {
   private DagNode() {
   }
 
+  /**
+   * Constructor.
+   *
+   * @param nodeId node ID
+   */
   public DagNode(String nodeId) {
     if (nodeId == null || "".equals(nodeId)) {
       throw new RuntimeException("NodeId can not be empty !");
@@ -58,6 +62,12 @@ public class DagNode {
     this.nextNodesId = new ArrayList<>();
   }
 
+  /**
+   * Constructor.
+   *
+   * @param nodeId node ID
+   * @param nodeType node type
+   */
   public DagNode(String nodeId, String nodeType) {
     if (nodeId == null || "".equals(nodeId)) {
       throw new RuntimeException("NodeId can not be empty !");
@@ -68,6 +78,13 @@ public class DagNode {
     this.nodeType = nodeType;
   }
 
+  /**
+   * Constructor.
+   *
+   * @param nodeId node ID
+   * @param nodeType node type
+   * @param nodeDescription node description
+   */
   public DagNode(String nodeId, String nodeType, Object nodeDescription) {
     if (nodeId == null || "".equals(nodeId)) {
       throw new RuntimeException("NodeId can not be empty !");

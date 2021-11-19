@@ -1,14 +1,13 @@
 package com.bdilab.dataflow.utils.dag;
 
-import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Data;
 
 /**
- *  Base Dag and for no real time dag;
+ *  Base Dag and for no real time dag.
  *
  * @author wh
  * @date 2021/11/12
@@ -58,7 +57,7 @@ public class Dag {
     checkNode(deletedNodeId);
     DagNode deletedNode = dagMap.get(deletedNodeId);
     deletedNode.getPreNodesId().forEach((nodeId) -> {
-       dagMap.get(nodeId).getNextNodesId().remove(deletedNodeId);
+      dagMap.get(nodeId).getNextNodesId().remove(deletedNodeId);
     });
     deletedNode.getNextNodesId().forEach((nodeId) -> {
       dagMap.get(nodeId).getPreNodesId().remove(deletedNodeId);

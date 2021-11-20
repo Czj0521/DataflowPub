@@ -63,32 +63,32 @@ public enum FilterOperatorEnum {
    */
   NUMERIC_EQUALS(
       "numeric",
-      "equals(==)",
+      "equals",
       OperatorConstants.COLUMN_MAGIC_NUMBER + "=" + OperatorConstants.VALUE_MAGIC_NUMBER,
       true),
   NUMERIC_NOT_EQUALS(
       "numeric",
-      "does not equals(!=)",
+      "does not equals",
       OperatorConstants.COLUMN_MAGIC_NUMBER + "!=" + OperatorConstants.VALUE_MAGIC_NUMBER,
       true),
   NUMERIC_GREATER_THAN(
       "numeric",
-      "greater than(>)",
+      "greater than",
       OperatorConstants.COLUMN_MAGIC_NUMBER + ">" + OperatorConstants.VALUE_MAGIC_NUMBER,
       true),
   NUMERIC_GREATER_THAN_OR_EQUAL_TO(
       "numeric",
-      "greater than or equal to(>=)",
+      "greater than or equal to",
       OperatorConstants.COLUMN_MAGIC_NUMBER + ">=" + OperatorConstants.VALUE_MAGIC_NUMBER,
       true),
   NUMERIC_LESS_THAN(
       "numeric",
-      "less than(<)",
+      "less than",
       OperatorConstants.COLUMN_MAGIC_NUMBER + "<" + OperatorConstants.VALUE_MAGIC_NUMBER,
       true),
   NUMERIC_LESS_THAN_OR_EQUAL_TO(
       "numeric",
-      "less than or equal to(<=)",
+      "less than or equal to",
       OperatorConstants.COLUMN_MAGIC_NUMBER + "<=" + OperatorConstants.VALUE_MAGIC_NUMBER,
       true),
   NUMERIC_RANGE(

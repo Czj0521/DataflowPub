@@ -18,6 +18,7 @@ import org.apache.commons.text.StringSubstitutor;
  * @description:
  **/
 public class TransposeSqlGenerator extends SqlGeneratorBase implements LinkSqlGenerator {
+
   private TransposeDescription transposeDescription;
   private List<String> columnValues;
   private static final String GROUP_BY = " GROUP BY ";
@@ -35,13 +36,15 @@ public class TransposeSqlGenerator extends SqlGeneratorBase implements LinkSqlGe
    * TransposeSqlGenerator's constructor.
    *
    * @param transposeDescription transpose's dto
-   * @param columnValues column value list
+   * @param columnValues         column value list
    */
   public TransposeSqlGenerator(@Valid TransposeDescription transposeDescription,
-                               List<String> columnValues) {
+      List<String> columnValues) {
     super(transposeDescription);
     this.transposeDescription = transposeDescription;
-    this.columnValues = columnValues.size()<=transposeDescription.getTopTransposedValuesNum()?columnValues:columnValues.subList(0,transposeDescription.getTopTransposedValuesNum());
+    this.columnValues =
+        columnValues.size() <= transposeDescription.getTopTransposedValuesNum() ? columnValues
+            : columnValues.subList(0, transposeDescription.getTopTransposedValuesNum());
   }
 
   /**
@@ -64,10 +67,10 @@ public class TransposeSqlGenerator extends SqlGeneratorBase implements LinkSqlGe
     for (String columnValue : columnValues) {
       for (Map.Entry<String, String> entry : attributes.entrySet()) {
         Map<String, String> valueMap = new HashMap<>();
-        if(entry.getValue().equals("distinct count")){
+        if (entry.getValue().equals("distinct count")) {
           valueMap.put(GROUP_FUNCTION, "countIf");
           valueMap.put(ATTRIBUTE, "distinct " + entry.getKey());
-        }else{
+        } else {
           valueMap.put(GROUP_FUNCTION, entry.getValue() + "If");
           valueMap.put(ATTRIBUTE, entry.getKey());
         }

@@ -33,8 +33,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "SQL Function")
 @RequestMapping(value = WebConstants.BASE_API_PATH + "/operator")
 public class FunctionController {
-
   private static final String PARAM_FILTER_PREFIX = "filter.";
+  private static final String PARAM_GROUP_PREFIX = "group.";
+
   @Autowired
   MessageSource messageSource;
 
@@ -85,8 +86,35 @@ public class FunctionController {
     }
     map.put("numeric", numericMap);
     map.put("others", othersMap);
-    ResultMap resultMap = new ResultMap().success().payload(map);
+    ResultMap resultMap = new ResultMap().success().payload(groupI18nTransform(map));
     return ResponseEntity.ok(resultMap);
   }
 
+  /**
+   * Transform the result to with internationalization.
+   */
+  private Map<String, Map<String, String>> groupI18nTransform(
+      Map<String, Map<String, String>> map) {
+    Map<String, String> numericMap = map.get("numeric");
+    Map<String, String> othersMap = map.get("others");
+    Map<String, String> numericMapResult = new HashMap<>();
+    Map<String, String> othersMapResult = new HashMap<>();
+    Map<String, Map<String, String>> result = new HashMap<>();
+    for (Entry<String, String> numEntry : numericMap.entrySet()) {
+      String i18nParamName = PARAM_GROUP_PREFIX + "numeric." + numEntry.getKey().replace(" ", "_");
+      String i18nParamVal = I18nUtils
+          .getMessage(i18nParamName);
+      numericMapResult.put(i18nParamVal, numEntry.getValue());
+    }
+    for (Entry<String, String> othersEntry : othersMap.entrySet()) {
+      String i18nParamName =
+          PARAM_GROUP_PREFIX + "others." + othersEntry.getKey().replace(" ", "_");
+      String i18nParamVal = I18nUtils
+          .getMessage(i18nParamName);
+      othersMapResult.put(i18nParamVal, othersEntry.getValue());
+    }
+    result.put("numeric", numericMapResult);
+    result.put("others", othersMapResult);
+    return result;
+  }
 }

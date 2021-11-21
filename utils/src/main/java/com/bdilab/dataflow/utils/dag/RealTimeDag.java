@@ -122,13 +122,14 @@ public class RealTimeDag {
     if (!"".equals(deleteInputTableName)) {
       clickhouseUtils.deleteInputTable(deleteInputTableName);
     }
+    if (!"".equals(newTableName)) {
+      clickhouseUtils.copyToTable(deletedNodeId, newTableName);
+    }
     if (!OperatorOutputTypeEnum.isFilterOutput(deletedNode.getNodeType())) {
       //table
       clickhouseUtils.deleteTable(deletedNodeId);
     }
-    if (!"".equals(newTableName)) {
-      clickhouseUtils.copyToTable(deletedNodeId, newTableName);
-    }
+
   }
 
   /**

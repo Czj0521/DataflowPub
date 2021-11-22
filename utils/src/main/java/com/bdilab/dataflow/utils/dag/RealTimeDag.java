@@ -1,5 +1,7 @@
 package com.bdilab.dataflow.utils.dag;
 
+import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.common.consts.CommonConstants;
 import com.bdilab.dataflow.common.enums.OperatorOutputTypeEnum;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseUtils;
 import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
@@ -51,6 +53,9 @@ public class RealTimeDag {
     DagNode preNode = (DagNode) redisUtils.hget(workspaceId, preNodeId);
     DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
     preNode.getOutputDataSlots().add(new OutputDataSlot(nextNodeId, slotIndex));
+    JSONObject nodeDescription = (JSONObject) nextNode.getNodeDescription();
+    String deleteInputTableName = "";
+
 
     if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
       //前节点filter
@@ -58,7 +63,10 @@ public class RealTimeDag {
     } else {
       //前节点table
       nextNode.getInputDataSlots()[slotIndex].setPreNodeId(preNodeId);
+      deleteInputTableName = nodeDescription.getString("dataSource");
+      nodeDescription.put("dataSource", CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId);
     }
+    nextNode.setNodeDescription(nodeDescription);
     Map<String, Object> map = new HashMap<String, Object>(2) {
       {
         this.put(preNodeId, preNode);
@@ -66,6 +74,10 @@ public class RealTimeDag {
       }
     };
     redisUtils.hmset(workspaceId, map);
+
+    if(!StringUtils.isEmpty(deleteInputTableName)){
+      clickhouseUtils.deleteInputTable(deleteInputTableName);
+    }
 
 //    DagNode preNode = (DagNode) redisUtils.hget(workspaceId, preNodeId);
 //    DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);

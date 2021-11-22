@@ -26,32 +26,12 @@ public class JoinTest {
     @Autowired
     ClickHouseJdbcUtils clickHouseJdbcUtils;
 
-    @Test
-    public void test1(){
-        System.out.println(joinService.join2sql("{\n" +
-            "  \"job\": \"start_job\",\n" +
-            "  \"JoinDescription\": {\n" +
-            "            \"jobType\":\"join\",\n" +
-            "            \"leftDataSource\": \"test1\",\n" +
-            "            \"rightDataSource\": \"test2\",\n" +
-            "            \"joinType\":\"innerJoin\",\n" +
-            "            \"joinKeys\":[{\"left\":\"id\",\"right\":\"id\"},{\"left\":\"id2\",\"right\":\"id2\"}],\n" +
-            "            \"includePrefixes\":\"false\",\n" +
-            "            \"leftPrefix\":\"left_\",\n" +
-            "            \"rightPrefix\":\"right_\"\n" +
-            "  },\n" +
-            "  \"operatorType\": \"join\",\n" +
-            "  \"dagType\": \"addNode\",\n" +
-            "  \"operatorId\": \"wjhtest3\",\n" +
-            "  \"workspaceId\": \"stringd12a3d\"\n" +
-            "}"));
-    }
-
-
     @ParameterizedTest
     @MethodSource("aggregateProvider")
     public void testJoin(HashMap<String,Object> map) {
         JoinDescription joinDescription = new JoinDescription();
+
+        //git test
         joinDescription.setJobType("join");
         joinDescription.setLeftDataSource((String)map.get("leftDataSource"));
         joinDescription.setRightDataSource((String)map.get("rightDataSource"));

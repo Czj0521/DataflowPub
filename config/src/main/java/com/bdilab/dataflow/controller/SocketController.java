@@ -19,7 +19,7 @@ public class SocketController {
 
   @GetMapping("/webSocket2")
   public ModelAndView socket() {
-    ModelAndView mav = new ModelAndView("/webSocket2");
+    ModelAndView mav = new ModelAndView("webSocket2");
     return mav;
   }
 

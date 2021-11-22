@@ -28,7 +28,7 @@ public class ScheduleTest {
   @Autowired
   ClickHouseJdbcUtils jdbcUtils;
 
-  @Test
+ /* @Test
   void testTopologicalSorting() {
 //    String workspaceId = "testSchedule";
 //    String nodeIdO = "o";
@@ -68,5 +68,5 @@ public class ScheduleTest {
 //    System.out.println(sortedList);
 
     jdbcUtils.queryForStrList("create view new_view as select * from dataflow.data_csv;");
-  }
+  }*/
 }

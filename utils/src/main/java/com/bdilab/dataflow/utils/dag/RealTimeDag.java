@@ -123,11 +123,11 @@ public class RealTimeDag {
       clickhouseUtils.deleteInputTable(deleteInputTableName);
     }
     if (!"".equals(newTableName)) {
-      clickhouseUtils.copyToTable(deletedNodeId, newTableName);
+      clickhouseUtils.copyToTable(CommonConstants.CPL_TEMP_TABLE_PREFIX + deletedNodeId, newTableName);
     }
     if (!OperatorOutputTypeEnum.isFilterOutput(deletedNode.getNodeType())) {
       //table
-      clickhouseUtils.deleteTable(deletedNodeId);
+      clickhouseUtils.deleteTable(CommonConstants.CPL_TEMP_TABLE_PREFIX + deletedNodeId);
     }
 
   }
@@ -163,7 +163,7 @@ public class RealTimeDag {
 
     if (!"".equals(newTableName)) {
       //table
-      clickhouseUtils.copyToTable(preNodeId, newTableName);
+      clickhouseUtils.copyToTable(CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId, newTableName);
     }
   }
 

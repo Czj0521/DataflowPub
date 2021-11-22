@@ -30,7 +30,7 @@ public class DagNode {
   /**
    * The node ID that filter this node data source.
    */
-  private List<String> filterId;
+  private List<String> filterId = new ArrayList<>();
 
   /**
    * The type of operator.

@@ -35,10 +35,11 @@ public class JoinServiceImpl implements JoinService {
     return sql;
   }
 
- /* public String join2sql(String joinJson){
-    JSONObject joinDescription = JSONObject.parseObject(joinJson).getJSONObject("joinDescription");
-    return join(JSON.toJavaObject(joinDescription,JoinDescription.class));
-  }*/
+  public String join2sql(String joinJson){
+    JSONObject joinDescription = JSONObject.parseObject(joinJson).getJSONObject("JoinDescription");
+    JoinDescription joinDescription1 = JSON.toJavaObject(joinDescription, JoinDescription.class);
+    return join(joinDescription1);
+  }
 
   public String generateDataSourceSql(JoinDescription joinDescription) {
     return new JoinSqlGenerator(joinDescription, tableMetadataService).generateDataSourceSql();

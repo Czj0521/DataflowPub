@@ -35,7 +35,7 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
 
     switch (dagType) {
       case "addNode":
-        realTimeDag.addNode(workspaceId, new DagNode(operatorId, operatorType, desc));
+//        realTimeDag.addNode(workspaceId, new DagNode(operatorId, operatorType, 1, desc));//todo
         scheduleService.executeTask(workspaceId, operatorId);
         break;
       case "updateNode":
@@ -44,15 +44,15 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         break;
       case "removeNode":
         realTimeDag.removeNode(workspaceId, operatorId);
-        List<String> nextNodesId = realTimeDag.getNode(workspaceId, operatorId).getNextNodesId();
-        for (String s : nextNodesId) {
-          scheduleService.executeTask(workspaceId, s);
-        }
+//        List<String> nextNodesId = realTimeDag.getNode(workspaceId, operatorId).getNextNodesId();//todo
+//        for (String s : nextNodesId) {
+//          scheduleService.executeTask(workspaceId, s);
+//        }
         break;
       case "addEdge":
         String addPreNodeId = desc.getString("preNodeId");
         String addNextNodeId = desc.getString("nextNodeId");
-        realTimeDag.addEdge(workspaceId, addPreNodeId, addNextNodeId);
+        realTimeDag.addEdge(workspaceId, addPreNodeId, addNextNodeId, 0);//todo
         scheduleService.executeTask(workspaceId, addNextNodeId);
         break;
       case "removeEdge":

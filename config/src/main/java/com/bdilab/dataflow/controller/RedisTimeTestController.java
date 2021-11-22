@@ -2,14 +2,11 @@ package com.bdilab.dataflow.controller;
 
 import com.bdilab.dataflow.common.consts.WebConstants;
 import com.bdilab.dataflow.utils.dag.DagManager;
-import com.bdilab.dataflow.utils.dag.DagNode;
-import com.bdilab.dataflow.utils.dag.NoRealTimeDag;
 import com.bdilab.dataflow.utils.dag.RealTimeDag;
 import com.bdilab.dataflow.utils.redis.RedisUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.List;
-import java.util.Map;
+
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -32,8 +29,6 @@ public class RedisTimeTestController {
   @Resource
   RedisUtils redisUtils;
   @Resource
-  NoRealTimeDag noRealTimeDag;
-  @Resource
   RealTimeDag realTimeDag;
   @Resource
   DagManager dagManager;
@@ -42,10 +37,10 @@ public class RedisTimeTestController {
   String nodeId2 = "testNodeId2";
   String nodeId3 = "testNodeId3";
   String nodeId4 = "testNodeId4";
-  DagNode testNode1 = new DagNode(nodeId1);
-  DagNode testNode2 = new DagNode(nodeId2);
-  DagNode testNode3 = new DagNode(nodeId3);
-  DagNode testNode4 = new DagNode(nodeId4);
+//  DagNode testNode1 = new DagNode(nodeId1);
+//  DagNode testNode2 = new DagNode(nodeId2);
+//  DagNode testNode3 = new DagNode(nodeId3);
+//  DagNode testNode4 = new DagNode(nodeId4);
 
 
   @GetMapping("/testRedisTime")

@@ -24,8 +24,6 @@ public class DagTest {
   @Resource
   RedisUtils redisUtils;
   @Resource
-  NoRealTimeDag noRealTimeDag;
-  @Resource
   RealTimeDag realTimeDag;
   @Resource
   DagManager dagManager;
@@ -72,26 +70,6 @@ public class DagTest {
     String nodeId2 = "testNodeId2";
     String nodeId3 = "testNodeId3";
     String nodeId4 = "testNodeId4";
-    DagNode testNode1 = new DagNode(nodeId1);
-    DagNode testNode2 = new DagNode(nodeId2);
-    DagNode testNode3 = new DagNode(nodeId3);
-    DagNode testNode4 = new DagNode(nodeId4);
-    if (dagManager.containsWorkspaceId(workspaceId)) {
-      dagManager.deleteDag(workspaceId);
-    }
-//    noRealTimeDag.loadDagFromRedis(workspaceId);
-//    noRealTimeDag.addNode(testNode1);
-//    noRealTimeDag.addNode(testNode2);
-//    noRealTimeDag.addNode(testNode3);
-//    noRealTimeDag.addEdge(nodeId1, nodeId2);
-//    noRealTimeDag.addEdge(nodeId2, nodeId3);
-//    noRealTimeDag.saveDagToRedis();
-
-    noRealTimeDag.loadDagFromRedis(workspaceId);
-    noRealTimeDag.addNode(testNode4);
-//    noRealTimeDag.addEdge(nodeId2, nodeId4);
-//    noRealTimeDag.removeNode(nodeId2);
-    noRealTimeDag.saveDagToRedis();
   }
 
   @Test
@@ -101,29 +79,6 @@ public class DagTest {
     String nodeId2 = "testNodeId2";
     String nodeId3 = "testNodeId3";
     String nodeId4 = "testNodeId4";
-    DagNode testNode1 = new DagNode(nodeId1);
-    DagNode testNode2 = new DagNode(nodeId2);
-    DagNode testNode3 = new DagNode(nodeId3);
-    DagNode testNode4 = new DagNode(nodeId4);
-    if (dagManager.containsWorkspaceId(workspaceId)) {
-      dagManager.deleteDag(workspaceId);
-    }
-//    realTimeDag.addNode(workspaceId,testNode1);
-//    realTimeDag.addNode(workspaceId,testNode2);
-//    realTimeDag.addEdge(workspaceId, nodeId1, nodeId2);
-//    realTimeDag.addNode(workspaceId,testNode3);
-//    realTimeDag.addNode(workspaceId,testNode4);
-//    realTimeDag.addEdge(workspaceId, nodeId2, nodeId3);
-//    realTimeDag.addEdge(workspaceId, nodeId2, nodeId4);
-//    System.out.println(realTimeDag.getNextNodes(workspaceId, nodeId2));
-//    System.out.println(realTimeDag.getPreNodes(workspaceId, nodeId2));
-//    System.out.println(realTimeDag.getDag(workspaceId));
-//    realTimeDag.removeNode(workspaceId, nodeId2);
-//    realTimeDag.addEdge(workspaceId, nodeId1, nodeId3);
-//    realTimeDag.addEdge(workspaceId, nodeId1, nodeId4);
-//    System.out.println(realTimeDag.getDag(workspaceId));
-//    realTimeDag.removeEdge(workspaceId, nodeId1, nodeId3);
-//    System.out.println(realTimeDag.getDag(workspaceId));
   }
 
   @Test

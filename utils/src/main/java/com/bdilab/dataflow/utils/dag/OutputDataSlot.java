@@ -5,13 +5,13 @@ import lombok.Data;
 @Data
 public class OutputDataSlot {
   private String nextNodeId;
-  private Integer nextSlotId;
+  private Integer nextSlotIndex;
 
   public OutputDataSlot() {
   }
 
-  public OutputDataSlot(String nextNodeId, Integer nextSlotId) {
+  public OutputDataSlot(String nextNodeId, Integer nextSlotIndex) {
     this.nextNodeId = nextNodeId;
-    this.nextSlotId = nextSlotId;
+    this.nextSlotIndex = nextSlotIndex;
   }
 }

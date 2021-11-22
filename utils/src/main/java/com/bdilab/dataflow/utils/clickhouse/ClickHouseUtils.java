@@ -1,6 +1,8 @@
 package com.bdilab.dataflow.utils.clickhouse;
 
 import javax.annotation.Resource;
+
+import com.bdilab.dataflow.common.consts.CommonConstants;
 import org.springframework.stereotype.Component;
 
 /**
@@ -49,7 +51,7 @@ public class ClickHouseUtils {
    * @param tableName table name
    */
   public void deleteInputTable(String tableName) {
-    if (tableName.startsWith("tempInput_")) {
+    if (tableName.startsWith(CommonConstants.TEMP_INPUT_TABLE_PREFIX)) {
       StringBuilder sql = new StringBuilder();
       sql.append("DROP TABLE ").append(tableName);
       clickHouseJdbcUtils.execute(new String(sql));

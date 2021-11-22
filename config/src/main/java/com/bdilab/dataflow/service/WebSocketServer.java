@@ -51,7 +51,7 @@ public class WebSocketServer {
    * @throws IOException IOException
    */
 
-  public void sendMessage(Session session, String message) throws IOException {
+  public static void sendMessage(Session session, String message) throws IOException {
     if (session != null) {
       synchronized (session) {
         session.getBasicRemote().sendText(message);
@@ -65,7 +65,7 @@ public class WebSocketServer {
    * @param userName userName
    * @param message message
    */
-  public void sendInfo(String userName, String message) {
+  public static void sendInfo(String userName, String message) {
     Session session = sessionPools.get(userName);
     try {
       sendMessage(session, message);

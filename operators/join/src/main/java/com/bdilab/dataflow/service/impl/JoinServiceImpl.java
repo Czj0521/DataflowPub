@@ -1,6 +1,8 @@
 package com.bdilab.dataflow.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.dto.JoinDescription;
 import com.bdilab.dataflow.service.JoinService;
 import com.bdilab.dataflow.sql.generator.JoinSqlGenerator;
@@ -31,8 +33,12 @@ public class JoinServiceImpl implements JoinService {
   public String join(JoinDescription joinDescription) {
     String sql = new JoinSqlGenerator(joinDescription, tableMetadataService).generate();
     return sql;
-
   }
+
+ /* public String join2sql(String joinJson){
+    JSONObject joinDescription = JSONObject.parseObject(joinJson).getJSONObject("joinDescription");
+    return join(JSON.toJavaObject(joinDescription,JoinDescription.class));
+  }*/
 
   public String generateDataSourceSql(JoinDescription joinDescription) {
     return new JoinSqlGenerator(joinDescription, tableMetadataService).generateDataSourceSql();

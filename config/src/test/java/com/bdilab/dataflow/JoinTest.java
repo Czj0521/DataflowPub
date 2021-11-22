@@ -25,6 +25,29 @@ public class JoinTest {
     JoinServiceImpl joinService;
     @Autowired
     ClickHouseJdbcUtils clickHouseJdbcUtils;
+
+    @Test
+    public void test1(){
+        System.out.println(joinService.join2sql("{\n" +
+            "  \"job\": \"start_job\",\n" +
+            "  \"JoinDescription\": {\n" +
+            "            \"jobType\":\"join\",\n" +
+            "            \"leftDataSource\": \"test1\",\n" +
+            "            \"rightDataSource\": \"test2\",\n" +
+            "            \"joinType\":\"innerJoin\",\n" +
+            "            \"joinKeys\":[{\"left\":\"id\",\"right\":\"id\"},{\"left\":\"id2\",\"right\":\"id2\"}],\n" +
+            "            \"includePrefixes\":\"false\",\n" +
+            "            \"leftPrefix\":\"left_\",\n" +
+            "            \"rightPrefix\":\"right_\"\n" +
+            "  },\n" +
+            "  \"operatorType\": \"join\",\n" +
+            "  \"dagType\": \"addNode\",\n" +
+            "  \"operatorId\": \"wjhtest3\",\n" +
+            "  \"workspaceId\": \"stringd12a3d\"\n" +
+            "}"));
+    }
+
+
     @ParameterizedTest
     @MethodSource("aggregateProvider")
     public void testJoin(HashMap<String,Object> map) {

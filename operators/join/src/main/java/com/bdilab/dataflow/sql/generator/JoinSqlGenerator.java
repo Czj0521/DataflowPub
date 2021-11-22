@@ -18,16 +18,16 @@ import java.util.Set;
  */
 
 public class JoinSqlGenerator implements LinkSqlGenerator {
-  //    "JoinDescription": {
-  //        "jobType":"join"
-  //        "leftDataSource": "test1",
-  //        "rightDataSource": "test2",
-  //        "joinType":"innerJoin",
-  //        "joinKeys":[{"left":"id","right":"id"},{"left":"id2","right":"id2"}],
-  //        "includePrefixes":"false",
-  //        "leftPrefix":"left_",
-  //        "rightPrefix":"right_"
-  //    }
+//      "JoinDescription": {
+//          "jobType":"join"
+//          "leftDataSource": "test1",
+//          "rightDataSource": "test2",
+//          "joinType":"innerJoin",
+//          "joinKeys":[{"left":"id","right":"id"},{"left":"id2","right":"id2"}],
+//          "includePrefixes":"false",
+//          "leftPrefix":"left_",
+//          "rightPrefix":"right_"
+//      }
 
   TableMetadataServiceImpl tableMetadataService;
   private JoinDescription joinDescription;

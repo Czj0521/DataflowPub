@@ -1,7 +1,9 @@
 package com.bdilab.dataflow.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.bdilab.dataflow.common.consts.CommonConstants;
 import com.bdilab.dataflow.dto.jobdescription.TableDescription;
 import com.bdilab.dataflow.mapper.DataSourceStatisticMapper;
 import com.bdilab.dataflow.mapper.TableStatisticMapper;
@@ -10,19 +12,20 @@ import com.bdilab.dataflow.model.TableStatistic;
 import com.bdilab.dataflow.service.TableJobService;
 import com.bdilab.dataflow.sql.generator.TableSqlGenerator;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
-import java.math.BigInteger;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Resource;
+import com.bdilab.dataflow.utils.dag.DagNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * TableJobServiceImpl.
-
+ *
  * @author gluttony team
  * @version 1.0
  * @date 2021/09/01
@@ -32,11 +35,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class TableJobServiceImpl implements TableJobService {
   @Autowired
-  ClickHouseJdbcUtils clickHouseJdbcUtils;
+  private ClickHouseJdbcUtils clickHouseJdbcUtils;
   @Autowired
-  TableStatisticMapper tableStatisticMapper;
-  @Resource
-  DataSourceStatisticMapper dataSourceStatisticMapper;
+  private TableStatisticMapper tableStatisticMapper;
+  @Autowired
+  private DataSourceStatisticMapper dataSourceStatisticMapper;
+
 
   /**
    * Save Table Structure.
@@ -48,7 +52,7 @@ public class TableJobServiceImpl implements TableJobService {
     tableStatistic.setTableName(tableName);
 
     List<Map<String, Object>> maps =
-        clickHouseJdbcUtils.queryForList("select count(*) from " + tableName);
+      clickHouseJdbcUtils.queryForList("select count(*) from " + tableName);
     BigInteger count = (BigInteger) maps.get(0).get("count()");
     tableStatistic.setTableCount(count.longValue());
 
@@ -58,22 +62,22 @@ public class TableJobServiceImpl implements TableJobService {
 
 
     List<Map<String, Object>> descibeTableName =
-        clickHouseJdbcUtils.queryForList("describe "
-            + com.bdilab.dataflow.common.consts.CommonConstants.DATABASE + "." + tableName);
+      clickHouseJdbcUtils.queryForList("describe "
+        + com.bdilab.dataflow.common.consts.CommonConstants.DATABASE + "." + tableName);
     for (int i = 0; i < descibeTableName.size(); i++) {
       String name = ((String) descibeTableName.get(i).get("name"));
       String type = ((String) descibeTableName.get(i).get("type"));
       nameAndType.put(name,
-          com.bdilab.dataflow.common.enums.DataTypeEnum.CLICKHOUSE_COLUMN_DATATYPE_MAP.get(type));
+        com.bdilab.dataflow.common.enums.DataTypeEnum.CLICKHOUSE_COLUMN_DATATYPE_MAP.get(type));
       if (!"String".equals(type)) {
         List<Map<String, Object>> maps1 =
-            clickHouseJdbcUtils.queryForList("select min(" + name + ") from " + tableName);
+          clickHouseJdbcUtils.queryForList("select min(" + name + ") from " + tableName);
         for (Map.Entry<String, Object> stringObjectEntry : maps1.get(0).entrySet()) {
           Object value = stringObjectEntry.getValue();
           nameAndMin.put(name, value);
         }
         List<Map<String, Object>> maps2 =
-            clickHouseJdbcUtils.queryForList("select max(" + name + ") from " + tableName);
+          clickHouseJdbcUtils.queryForList("select max(" + name + ") from " + tableName);
         for (Map.Entry<String, Object> stringObjectEntry : maps2.get(0).entrySet()) {
           nameAndMax.put(name, (stringObjectEntry.getValue()));
         }
@@ -119,6 +123,32 @@ public class TableJobServiceImpl implements TableJobService {
   public List<Map<String, Object>> execute(TableDescription jobDescription) {
     String sql = new TableSqlGenerator(jobDescription).generate();
     log.info("Table Job SQL :" + sql);
+    return clickHouseJdbcUtils.queryForList(sql);
+  }
+
+  @Override
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, String filter) {
+    // 读取数据源，并根据filter加入过滤条件
+    JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
+    nodeDescription.put("filter", nodeDescription.getString("filter") + " AND " + filter);
+    TableDescription tableDescription = nodeDescription.toJavaObject(TableDescription.class);
+
+    // 将计算结果保存到ClickHouse
+    String sql = new TableSqlGenerator(tableDescription).generate();
+    String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + dagNode.getNodeId();
+
+    StringBuilder sb = new StringBuilder();
+    String viewSql = sb.append("CREATE VIEW ").append(tableName).append(" AS ")
+      .append("(").append(sql).append(")").toString();
+
+    try {
+      clickHouseJdbcUtils.execute(viewSql);
+    } catch (Exception e) {
+      clickHouseJdbcUtils.execute("drop view " + tableName);
+      clickHouseJdbcUtils.execute(viewSql);
+    }
+
+    // 返回结果
     return clickHouseJdbcUtils.queryForList(sql);
   }
 }

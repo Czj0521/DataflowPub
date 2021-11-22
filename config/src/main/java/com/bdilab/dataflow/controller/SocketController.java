@@ -17,9 +17,9 @@ public class SocketController {
   @Autowired
   private WebSocketServer webSocketServer;
 
-  @GetMapping("/webSocket")
+  @GetMapping("/webSocket2")
   public ModelAndView socket() {
-    ModelAndView mav = new ModelAndView("/webSocket");
+    ModelAndView mav = new ModelAndView("/webSocket2");
     return mav;
   }
 

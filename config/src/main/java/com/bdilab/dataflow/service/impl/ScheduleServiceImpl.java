@@ -1,6 +1,11 @@
 package com.bdilab.dataflow.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.dto.JobOutputJson;
 import com.bdilab.dataflow.service.ScheduleService;
+import com.bdilab.dataflow.service.TableJobService;
+import com.bdilab.dataflow.service.WebSocketServer;
+import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.RealTimeDag;
 
@@ -29,21 +34,67 @@ import org.springframework.util.CollectionUtils;
 public class ScheduleServiceImpl implements ScheduleService {
   @Autowired
   private RealTimeDag realTimeDag;
+  @Autowired
+  private DagFilterManager dagFilterManager;
+  @Autowired
+  private TableJobService tableJobService;
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
     List<String> sortedList = getSortedList(workspaceId, operatorId);
 
     for (String nodeId : sortedList) {
-      // ToDo 按顺序依次调度
+      DagNode node = realTimeDag.getNode(workspaceId, nodeId);
+
+      StringBuffer preFilter = new StringBuffer();
+      List<String> filterIds = node.getFilterId();
+      if (!CollectionUtils.isEmpty(filterIds)) {
+        for (String filterId : filterIds) {
+          preFilter.append(dagFilterManager.getFilter(workspaceId, filterId) + " AND ");
+        }
+      }
+
+      String nodeType = node.getNodeType();
+
+      switch (nodeType) {
+        case "table":
+          List<Map<String, Object>> outputs = tableJobService.saveToClickHouse(node, preFilter + " 1 = 1 ");
+          JobOutputJson outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputs);
+          WebSocketServer.sendMessage(outputJson.toString());
+          break;
+        case "filter":
+          String filter = preFilter.toString() + parseFilterAndPivot(node);
+          dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
+          break;
+        case "join":
+          break;
+        case "profiler":
+          break;
+        case "transpose":
+          break;
+        default:
+          throw new RuntimeException("not exist this operator !");
+      }
     }
   }
+
+  /**
+   * Get filter string
+   *
+   * @param dagNode
+   * @return
+   */
+  private String parseFilterAndPivot(DagNode dagNode) {
+    JSONObject nodeDescription = (JSONObject) JSONObject.toJSON(dagNode.getNodeDescription().toString());
+    return nodeDescription.getString("filter");
+  }
+
 
   /**
    * Gets the traversal order of the graph (topological sorting).
    *
    * @param workspaceId workspace id
-   * @param operatorId operator id
+   * @param operatorId  operator id
    */
   public List<String> getSortedList(String workspaceId, String operatorId) {
     List<String> result = new ArrayList<>();

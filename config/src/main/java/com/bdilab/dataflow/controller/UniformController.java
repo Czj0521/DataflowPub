@@ -3,6 +3,7 @@ package com.bdilab.dataflow.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.consts.WebConstants;
 import com.bdilab.dataflow.service.UniformService;
+import com.bdilab.dataflow.service.WebSocketResolveService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +30,18 @@ public class UniformController {
 
   @Autowired
   UniformService uniformService;
+  @Autowired
+  WebSocketResolveService socketResolveService;
+
+//  @PostMapping("/linkage")
+//  @ApiOperation(value = "联动接口")
+//  public ResponseEntity linkage(@RequestBody JSONObject requestData) {
+//    return ResponseEntity.ok(uniformService.analyze(requestData));
+//  }
 
   @PostMapping("/linkage")
   @ApiOperation(value = "联动接口")
-  public ResponseEntity linkage(@RequestBody JSONObject requestData) {
-    return ResponseEntity.ok(uniformService.analyze(requestData));
+  public void linkage(@RequestBody JSONObject requestData) {
+    socketResolveService.resolve(requestData.toJSONString());
   }
 }

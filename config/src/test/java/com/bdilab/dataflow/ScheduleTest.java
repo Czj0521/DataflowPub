@@ -1,6 +1,7 @@
 package com.bdilab.dataflow;
 
 import com.bdilab.dataflow.service.ScheduleService;
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import com.bdilab.dataflow.utils.dag.DagManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.RealTimeDag;
@@ -24,25 +25,27 @@ public class ScheduleTest {
   DagManager dagManager;
   @Autowired
   ScheduleService scheduleService;
+  @Autowired
+  ClickHouseJdbcUtils jdbcUtils;
 
   @Test
   void testTopologicalSorting() {
-    String workspaceId = "testSchedule";
-    String nodeIdO = "o";
-    String nodeIdA = "a";
-    String nodeIdB = "b";
-    String nodeIdC = "c";
-    String nodeIdD = "d";
-    String nodeIdE = "e";
-    DagNode testNodeO = new DagNode(nodeIdO);
-    DagNode testNodeA = new DagNode(nodeIdA);
-    DagNode testNodeB = new DagNode(nodeIdB);
-    DagNode testNodeC = new DagNode(nodeIdC);
-    DagNode testNodeD = new DagNode(nodeIdD);
-    DagNode testNodeE = new DagNode(nodeIdE);
-    if (dagManager.containsWorkspaceId(workspaceId)) {
-      dagManager.deleteDag(workspaceId);
-    }
+//    String workspaceId = "testSchedule";
+//    String nodeIdO = "o";
+//    String nodeIdA = "a";
+//    String nodeIdB = "b";
+//    String nodeIdC = "c";
+//    String nodeIdD = "d";
+//    String nodeIdE = "e";
+//    DagNode testNodeO = new DagNode(nodeIdO);
+//    DagNode testNodeA = new DagNode(nodeIdA);
+//    DagNode testNodeB = new DagNode(nodeIdB);
+//    DagNode testNodeC = new DagNode(nodeIdC);
+//    DagNode testNodeD = new DagNode(nodeIdD);
+//    DagNode testNodeE = new DagNode(nodeIdE);
+//    if (dagManager.containsWorkspaceId(workspaceId)) {
+//      dagManager.deleteDag(workspaceId);
+//    }
 
     // add node
 //    realTimeDag.addNode(workspaceId, testNodeO);
@@ -63,5 +66,7 @@ public class ScheduleTest {
 
 //    List<String> sortedList = scheduleService.getSortedList(workspaceId, "a");
 //    System.out.println(sortedList);
+
+    jdbcUtils.queryForStrList("create view new_view as select * from dataflow.data_csv;");
   }
 }

@@ -2,6 +2,7 @@ package com.bdilab.dataflow.service;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -19,129 +20,58 @@ import org.springframework.stereotype.Service;
  *
  * @author wjh
  */
-@ServerEndpoint("/webSocket/{sid}")
+@ServerEndpoint("/webSocket2")
 @Service
 public class WebSocketServer {
 
-  private static WebSocketResolveService webSocketResolveService;
-
-  @Autowired
-  public void setWebSocketResolveService(WebSocketResolveService webSocketResolveService) {
-    WebSocketServer.webSocketResolveService = webSocketResolveService;
-  }
-
+  //private static final AtomicInteger OnlineCount = new AtomicInteger(0);
+  // concurrent包的线程安全Set，用来存放每个客户端对应的Session对象。
+  private static CopyOnWriteArraySet<Session> sessionSet = new CopyOnWriteArraySet<>();
 
   /**
-   * Static variable, used to record the current number of online connections.
-   * It should be designed to be thread safe.
-   */
-  private static AtomicInteger onlineNum = new AtomicInteger();
-
-  /**
-   * The thread safe set of the concurrent package is used to store the
-   * websockets object corresponding to each client.
-   */
-  private static ConcurrentHashMap<String, Session> sessionPools = new ConcurrentHashMap<>();
-
-  /**
-   * send message.
-   *
-   * @param session session
-   * @param message message
-   * @throws IOException IOException
-   */
-
-  public static void sendMessage(Session session, String message) throws IOException {
-    if (session != null) {
-      synchronized (session) {
-        session.getBasicRemote().sendText(message);
-      }
-    }
-  }
-
-  /**
-   * Send information to the specified user.
-   *
-   * @param userName userName
-   * @param message message
-   */
-  public static void sendInfo(String userName, String message) {
-    Session session = sessionPools.get(userName);
-    try {
-      sendMessage(session, message);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   * Call successfully after establishing connection.
-   *
-   * @param session session
-   * @param userName userName
+   * 建立连接调用的方法
    */
   @OnOpen
-  public void onOpen(Session session, @PathParam(value = "sid") String userName) {
-    sessionPools.put(userName, session);
-    addOnlineCount();
-    System.out.println(userName + "加入webSocket！当前人数为" + onlineNum);
+  public void onOpen(Session session) {
+    sessionSet.add(session);
+  }
+
+  /**
+   * 连接关闭调用的方法
+   */
+  @OnClose
+  public void onClose(Session session) {
+    sessionSet.remove(session);
+  }
+
+  /**
+   * 收到客户端消息后调用的方法
+   * @param message
+   * @param session
+   */
+  @OnMessage
+  public void onMessage(String message, Session session) {
+    System.out.println("message :" + message);
+  }
+
+  /**
+   * 出现错误调用的方法
+   * @param session
+   * @param error
+   */
+  @OnError
+  public void onError(Session session, Throwable error) {
+    error.printStackTrace();
+  }
+
+  public static void sendMessage(String message) {
     try {
-      sendMessage(session, "欢迎" + userName + "加入连接！");
+      for (Session session : sessionSet) {
+        session.getBasicRemote().sendText(String.format("%s (From Server，Session ID=%s)",message, session.getId()));
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-  /**
-   * Called when the connection is closed.
-   *
-   * @param userName userName
-   */
-  @OnClose
-  public void onClose(@PathParam(value = "sid") String userName) {
-    sessionPools.remove(userName);
-    subOnlineCount();
-    System.out.println(userName + "断开webSocket连接！当前人数为" + onlineNum);
-  }
-
-  /**
-   * Client information received.
-   *
-   * @param message message
-   * @throws IOException IOException
-   */
-  @OnMessage
-  public void onMessage(String message) throws IOException {
-    System.out.println(message);
-    for (Session session : sessionPools.values()) {
-      try {
-        webSocketResolveService.resolve(message);
-        sendMessage(session, message);
-      } catch (Exception e) {
-        e.printStackTrace();
-        continue;
-      }
-    }
-  }
-
-  /**
-   * Called on error.
-   *
-   * @param session session
-   * @param throwable throwable
-   */
-  @OnError
-  public void onError(Session session, Throwable throwable) {
-    System.out.println("发生错误");
-    throwable.printStackTrace();
-  }
-
-  public static void addOnlineCount() {
-    onlineNum.incrementAndGet();
-  }
-
-  public static void subOnlineCount() {
-    onlineNum.decrementAndGet();
   }
 
 }

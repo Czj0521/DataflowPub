@@ -49,4 +49,12 @@ public class CommonConstants {
    * Clickhouse database.
    */
   public static final String DATABASE = "dataflow";
+
+  /**
+   * Clickhouse table prefix。
+   */
+  public static final String TEMP_TABLE_PREFIX = "temp_";
+  public static final String TEMP_INPUT_TABLE_PREFIX = "temp_input_";
+  public static final String CPL_TEMP_TABLE_PREFIX = CommonConstants.DATABASE + "." + CommonConstants.TEMP_TABLE_PREFIX;
+  public static final String CPL_TEMP_INPUT_TABLE_PREFIX = CommonConstants.DATABASE + "." + CommonConstants.TEMP_INPUT_TABLE_PREFIX;
 }

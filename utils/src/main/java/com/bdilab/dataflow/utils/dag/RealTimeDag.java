@@ -52,15 +52,15 @@ public class RealTimeDag {
     DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
     preNode.getNextNodesId().add(nextNodeId);
     JSONObject nodeDescription = (JSONObject) nextNode.getNodeDescription();
-    String deleteTableName = "";
+    String deleteInputTableName = "";
     if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
       //filter连table 或 filter连filter 不更改数据源，会有bug einblick也有bug。
       nextNode.getFilterId().add(preNodeId);
     } else {
       //table连table
       nextNode.getPreNodesId().add(preNodeId);
-      deleteTableName = nodeDescription.getString("dataSource");
-      nodeDescription.put("dataSource", preNodeId);
+      deleteInputTableName = nodeDescription.getString("dataSource");
+      nodeDescription.put("dataSource", CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId);
     }
     nextNode.setNodeDescription(nodeDescription);
     Map<String, Object> map = new HashMap<String, Object>(2) {
@@ -71,8 +71,8 @@ public class RealTimeDag {
     };
     redisUtils.hmset(workspaceId, map);
 
-    if(!"".equals(deleteTableName)){
-      clickhouseUtils.deleteTable(deleteTableName);
+    if(!"".equals(deleteInputTableName)){
+      clickhouseUtils.deleteInputTable(deleteInputTableName);
     }
   }
 
@@ -100,7 +100,7 @@ public class RealTimeDag {
         });
       } else {
         // table
-        newTableName = CommonConstants.DATABASE + ".tempInput_" + deletedNodeId;
+        newTableName =  CommonConstants.CPL_TEMP_INPUT_TABLE_PREFIX + deletedNodeId;
         for (String nodeId : deletedNode.getNextNodesId()) {
           DagNode nextNode = (DagNode) dagMap.get(nodeId);
           nextNode.getPreNodesId().remove(deletedNodeId);
@@ -149,7 +149,7 @@ public class RealTimeDag {
       nextNode.getFilterId().remove(preNodeId);
     } else {
       //table
-      newTableName = CommonConstants.DATABASE + ".tempInput_" + preNodeId;
+      newTableName = CommonConstants.CPL_TEMP_INPUT_TABLE_PREFIX + preNodeId;
       ((JSONObject) nextNode.getNodeDescription()).put("dataSource", newTableName);
       nextNode.getPreNodesId().remove(preNodeId);
     }

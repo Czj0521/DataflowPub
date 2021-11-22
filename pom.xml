@@ -22,6 +22,7 @@
         <module>utils</module>
         <module>operators/scalar</module>
         <module>operators/profiler</module>
+        <module>operators/pivot-chart</module>
     </modules>
 
     <groupId>com.bdilab</groupId>
@@ -168,6 +169,11 @@
             <dependency>
                 <groupId>com.bdilab</groupId>
                 <artifactId>operator-transpose</artifactId>
+                <version>${dataflow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bdilab</groupId>
+                <artifactId>operator-pivot-chart</artifactId>
                 <version>${dataflow.version}</version>
             </dependency>
             <dependency>

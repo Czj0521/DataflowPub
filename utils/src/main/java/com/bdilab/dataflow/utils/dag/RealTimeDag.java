@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.utils.dag;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.consts.CommonConstants;
 import com.bdilab.dataflow.common.enums.OperatorOutputTypeEnum;
@@ -53,18 +54,28 @@ public class RealTimeDag {
     DagNode preNode = (DagNode) redisUtils.hget(workspaceId, preNodeId);
     DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
     preNode.getOutputDataSlots().add(new OutputDataSlot(nextNodeId, slotIndex));
-//    JSONObject nodeDescription = (JSONObject) nextNode.getNodeDescription();
-//    String deleteInputTableName = "";
+    JSONObject nodeDescription = (JSONObject) nextNode.getNodeDescription();
+    String deleteInputTableName = "";
     if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
-      //前节点filter
+      //维护数据槽
       nextNode.getInputDataSlots()[slotIndex].getFilterId().add(preNodeId);
     } else {
-      //前节点table
+      //获取数据源
+      JSONArray dataSource = nodeDescription.getJSONArray("dataSource");
+
+      //维护description中datasource字段
+      dataSource.set(slotIndex,CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId);
+      nodeDescription.put("dataSource",dataSource);
+
+      //维护数据槽
       nextNode.getInputDataSlots()[slotIndex].setPreNodeId(preNodeId);
-//      deleteInputTableName = nodeDescription.getString("dataSource");
-//      nodeDescription.put("dataSource", CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId);
+      nextNode.getInputDataSlots()[slotIndex].setDataSource(CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId);
+      //连线后要先删除之前操作符的数据源，下面找到要删除的数据库表名
+      deleteInputTableName = dataSource.getString(slotIndex);
+
+
     }
-//    nextNode.setNodeDescription(nodeDescription);
+    nextNode.setNodeDescription(nodeDescription);
     Map<String, Object> map = new HashMap<String, Object>(2) {
       {
         this.put(preNodeId, preNode);
@@ -72,10 +83,10 @@ public class RealTimeDag {
       }
     };
     redisUtils.hmset(workspaceId, map);
-
-//    if(!StringUtils.isEmpty(deleteInputTableName)){
-//      clickhouseUtils.deleteInputTable(deleteInputTableName);
-//    }
+    //进行实际的删除操作
+    if(!StringUtils.isEmpty(deleteInputTableName)){
+      clickhouseUtils.deleteInputTable(deleteInputTableName);
+    }
 
 //    DagNode preNode = (DagNode) redisUtils.hget(workspaceId, preNodeId);
 //    DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);

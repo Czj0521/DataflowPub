@@ -15,12 +15,15 @@
   "workspaceId": "stringd12a3d"
 }
 
+
+
 {
   "job": "start_job",
   "JoinDescription": {
             "jobType":"join",
-            "leftDataSource": "test1",
-            "rightDataSource": "test2",
+            "dataSource": ["test1","test2"]
+            //"leftDataSource": "test1",
+            //"rightDataSource": "test2",
             "joinType":"innerJoin",
             "joinKeys":[{"left":"id","right":"id"},{"left":"id2","right":"id2"}],
             "includePrefixes":"false",

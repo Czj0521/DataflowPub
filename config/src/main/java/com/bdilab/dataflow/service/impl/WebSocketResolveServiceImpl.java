@@ -6,6 +6,8 @@ import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.RealTimeDag;
 import java.util.List;
 import javax.annotation.Resource;
+
+import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +34,14 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
     String workspaceId = jsonObject.getString("workspaceId");
     String operatorId = (String) jsonObject.getOrDefault("operatorId", "");
     JSONObject desc = jsonObject.getJSONObject(operatorType + "Description");
+    String[] dataSources = desc.getJSONArray("dataSource").toArray(new String[]{});
+
+    DagNodeInputDto dagNodeInputDto = new DagNodeInputDto(operatorId,dataSources,operatorType,desc);
+
 
     switch (dagType) {
       case "addNode":
+        realTimeDag.addNode(workspaceId,dagNodeInputDto);
 //        realTimeDag.addNode(workspaceId, new DagNode(operatorId, operatorType, 1, desc));//todo
         scheduleService.executeTask(workspaceId, operatorId);
         break;

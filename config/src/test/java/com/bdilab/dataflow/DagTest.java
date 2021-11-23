@@ -4,6 +4,7 @@ import com.bdilab.dataflow.common.pojo.PivotChartParameterInfo;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseUtils;
 import com.bdilab.dataflow.utils.dag.*;
+import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
 import com.bdilab.dataflow.utils.redis.RedisUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -64,21 +65,34 @@ public class DagTest {
   }
 
   @Test
-  public void testNoRealTimeDag(){
-    String workspaceId = "testWorkspaceId";
-    String nodeId1 = "testNodeId1";
-    String nodeId2 = "testNodeId2";
-    String nodeId3 = "testNodeId3";
-    String nodeId4 = "testNodeId4";
-  }
-
-  @Test
   public void testRealTimeDag(){
     String workspaceId = "testWorkspaceId";
-    String nodeId1 = "testNodeId1";
-    String nodeId2 = "testNodeId2";
-    String nodeId3 = "testNodeId3";
-    String nodeId4 = "testNodeId4";
+    String nodeId1 = "testId1";
+    String nodeId2 = "testId2";
+    String nodeId3 = "testId3";
+    String nodeId4 = "testId4";
+    String nodeId5 = "testId5";
+    String nodeId6 = "testId6";
+    DagNodeInputDto dagNodeInputDto1 = new DagNodeInputDto(nodeId1, new String[]{"d1"}, "table", null);
+    DagNodeInputDto dagNodeInputDto2 = new DagNodeInputDto(nodeId2, new String[]{"d2"}, "table", null);
+    DagNodeInputDto dagNodeInputDto3 = new DagNodeInputDto(nodeId3, new String[]{"d3"}, "table", null);
+    DagNodeInputDto dagNodeInputDto4 = new DagNodeInputDto(nodeId4, new String[]{"d4"}, "filter", null);
+    DagNodeInputDto dagNodeInputDto5 = new DagNodeInputDto(nodeId5, new String[]{"d5"}, "filter", null);
+    DagNodeInputDto dagNodeInputDto6 = new DagNodeInputDto(nodeId6, new String[2], "join", null);
+    realTimeDag.clearDag(workspaceId);
+    realTimeDag.addNode(workspaceId, dagNodeInputDto1);
+    realTimeDag.addNode(workspaceId, dagNodeInputDto2);
+    realTimeDag.addNode(workspaceId, dagNodeInputDto3);
+    realTimeDag.addNode(workspaceId, dagNodeInputDto4);
+    realTimeDag.addNode(workspaceId, dagNodeInputDto5);
+    realTimeDag.addNode(workspaceId, dagNodeInputDto6);
+    realTimeDag.addEdge(workspaceId, nodeId1, nodeId6, 0);
+    realTimeDag.addEdge(workspaceId, nodeId2, nodeId6, 1);
+    realTimeDag.addEdge(workspaceId, nodeId4, nodeId6, 0);
+    realTimeDag.addEdge(workspaceId, nodeId5, nodeId6, 1);
+    realTimeDag.addEdge(workspaceId, nodeId6, nodeId3, 0);
+    realTimeDag.removeEdge(workspaceId, nodeId4, nodeId6, 0);
+    realTimeDag.removeNode(workspaceId, nodeId6);
   }
 
   @Test

@@ -53,20 +53,18 @@ public class RealTimeDag {
     DagNode preNode = (DagNode) redisUtils.hget(workspaceId, preNodeId);
     DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
     preNode.getOutputDataSlots().add(new OutputDataSlot(nextNodeId, slotIndex));
-    JSONObject nodeDescription = (JSONObject) nextNode.getNodeDescription();
-    String deleteInputTableName = "";
-
-
+//    JSONObject nodeDescription = (JSONObject) nextNode.getNodeDescription();
+//    String deleteInputTableName = "";
     if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
       //前节点filter
       nextNode.getInputDataSlots()[slotIndex].getFilterId().add(preNodeId);
     } else {
       //前节点table
       nextNode.getInputDataSlots()[slotIndex].setPreNodeId(preNodeId);
-      deleteInputTableName = nodeDescription.getString("dataSource");
-      nodeDescription.put("dataSource", CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId);
+//      deleteInputTableName = nodeDescription.getString("dataSource");
+//      nodeDescription.put("dataSource", CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId);
     }
-    nextNode.setNodeDescription(nodeDescription);
+//    nextNode.setNodeDescription(nodeDescription);
     Map<String, Object> map = new HashMap<String, Object>(2) {
       {
         this.put(preNodeId, preNode);
@@ -75,9 +73,9 @@ public class RealTimeDag {
     };
     redisUtils.hmset(workspaceId, map);
 
-    if(!StringUtils.isEmpty(deleteInputTableName)){
-      clickhouseUtils.deleteInputTable(deleteInputTableName);
-    }
+//    if(!StringUtils.isEmpty(deleteInputTableName)){
+//      clickhouseUtils.deleteInputTable(deleteInputTableName);
+//    }
 
 //    DagNode preNode = (DagNode) redisUtils.hget(workspaceId, preNodeId);
 //    DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
@@ -146,7 +144,9 @@ public class RealTimeDag {
         //todo 表维护
       }
     }
-
+    dagMap.remove(deletedNodeId);
+    redisUtils.hdel(workspaceId, deletedNodeId);
+    redisUtils.hmset(workspaceId, dagMap);
 
 
 

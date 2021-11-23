@@ -61,9 +61,7 @@ public class DagNode {
     String[] dataSources = dagNodeInputDto.getDataSources();
     this.inputDataSlots = new InputDataSlot[dataSources.length];
     for (int i = 0; i < dataSources.length; i++) {
-      if(!StringUtils.isEmpty(dataSources[i])){
-        this.inputDataSlots[i] = new InputDataSlot(dataSources[i]);
-      }
+      this.inputDataSlots[i] = new InputDataSlot(dataSources[i]);
     }
     this.outputDataSlots = new ArrayList<>();
     this.nodeType = dagNodeInputDto.getNodeType();

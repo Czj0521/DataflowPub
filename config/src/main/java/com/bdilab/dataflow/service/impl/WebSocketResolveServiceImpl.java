@@ -58,7 +58,7 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
       case "removeEdge":
         String rmPreNodeId = desc.getString("preNodeId");
         String rmNextNodeId = desc.getString("nextNodeId");
-        realTimeDag.removeEdge(workspaceId, rmPreNodeId, rmNextNodeId);
+//        realTimeDag.removeEdge(workspaceId, rmPreNodeId, rmNextNodeId);//todo
         scheduleService.executeTask(workspaceId, rmNextNodeId);
         break;
       default:

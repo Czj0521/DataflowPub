@@ -71,7 +71,8 @@
   "dagDescription": {
     "jobType": "addEdge",
     "preNodeId": "wjhtest1",
-    "nextNodeId": "wjhtest3"
+    "nextNodeId": "wjhtest3",
+    "slotIndex": "0"
   },
   "operatorType": "dag",
   "dagType": "addEdge",
@@ -84,7 +85,8 @@
   "dagDescription": {
     "jobType": "addEdge",
     "preNodeId": "wjhtest1",
-    "nextNodeId": "wjhtest2"
+    "nextNodeId": "wjhtest2",
+    "slotIndex": "0"
   },
   "operatorType": "dag",
   "dagType": "removeEdge",

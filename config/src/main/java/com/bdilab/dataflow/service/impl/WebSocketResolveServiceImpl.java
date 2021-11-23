@@ -36,13 +36,13 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
     JSONObject desc = jsonObject.getJSONObject(operatorType + "Description");
     String[] dataSources = desc.getJSONArray("dataSource").toArray(new String[]{});
 
+
     DagNodeInputDto dagNodeInputDto = new DagNodeInputDto(operatorId,dataSources,operatorType,desc);
 
 
     switch (dagType) {
       case "addNode":
         realTimeDag.addNode(workspaceId,dagNodeInputDto);
-//        realTimeDag.addNode(workspaceId, new DagNode(operatorId, operatorType, 1, desc));//todo
         scheduleService.executeTask(workspaceId, operatorId);
         break;
       case "updateNode":
@@ -59,13 +59,15 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
       case "addEdge":
         String addPreNodeId = desc.getString("preNodeId");
         String addNextNodeId = desc.getString("nextNodeId");
-        realTimeDag.addEdge(workspaceId, addPreNodeId, addNextNodeId, 0);//todo
+        String addSlotIndex = desc.getString("slotIndex");
+        realTimeDag.addEdge(workspaceId, addPreNodeId, addNextNodeId, Integer.valueOf(addSlotIndex));
         scheduleService.executeTask(workspaceId, addNextNodeId);
         break;
       case "removeEdge":
         String rmPreNodeId = desc.getString("preNodeId");
         String rmNextNodeId = desc.getString("nextNodeId");
-//        realTimeDag.removeEdge(workspaceId, rmPreNodeId, rmNextNodeId);//todo
+        String rmSlotIndex = desc.getString("slotIndex");
+        realTimeDag.removeEdge(workspaceId,rmPreNodeId,rmNextNodeId,Integer.valueOf(rmSlotIndex));
         scheduleService.executeTask(workspaceId, rmNextNodeId);
         break;
       default:

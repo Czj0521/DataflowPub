@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.util.LinkedHashMap;
@@ -130,7 +131,13 @@ public class TableJobServiceImpl implements TableJobService {
   public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, String filter) {
     // 读取数据源，并根据filter加入过滤条件
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
-    nodeDescription.put("filter", nodeDescription.getString("filter") + " AND " + filter);
+    String filter1 = nodeDescription.getString("filter");
+    if (!StringUtils.isEmpty(filter1)) {
+      nodeDescription.put("filter", filter1 + " AND " + filter);
+    } else {
+      nodeDescription.put("filter", filter);
+    }
+
     TableDescription tableDescription = nodeDescription.toJavaObject(TableDescription.class);
 
     // 将计算结果保存到ClickHouse
@@ -140,6 +147,7 @@ public class TableJobServiceImpl implements TableJobService {
     StringBuilder sb = new StringBuilder();
     String viewSql = sb.append("CREATE VIEW ").append(tableName).append(" AS ")
       .append("(").append(sql).append(")").toString();
+    log.info(viewSql);
 
     try {
       clickHouseJdbcUtils.execute(viewSql);

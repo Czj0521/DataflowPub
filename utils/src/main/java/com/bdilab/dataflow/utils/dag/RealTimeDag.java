@@ -62,6 +62,7 @@ public class RealTimeDag {
       deleteInputTableName = nodeDescription.getString("dataSource");
       nodeDescription.put("dataSource", CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId);
     }
+
     nextNode.setNodeDescription(nodeDescription);
     Map<String, Object> map = new HashMap<String, Object>(2) {
       {

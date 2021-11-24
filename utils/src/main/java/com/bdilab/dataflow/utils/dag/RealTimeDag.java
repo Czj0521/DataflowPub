@@ -85,33 +85,6 @@ public class RealTimeDag {
     if(!StringUtils.isEmpty(deleteInputTableName)){
       clickhouseUtils.deleteInputTable(deleteInputTableName);
     }
-
-//    DagNode preNode = (DagNode) redisUtils.hget(workspaceId, preNodeId);
-//    DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
-//    preNode.getNextNodesId().add(nextNodeId);
-//    JSONObject nodeDescription = (JSONObject) nextNode.getNodeDescription();
-//    String deleteInputTableName = "";
-//    if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
-//      //filter连table 或 filter连filter 不更改数据源，会有bug einblick也有bug。
-//      nextNode.getFilterId().add(preNodeId);
-//    } else {
-//      //table连table
-//      nextNode.getPreNodesId().add(preNodeId);
-//      deleteInputTableName = nodeDescription.getString("dataSource");
-//      nodeDescription.put("dataSource", CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId);
-//    }
-//    nextNode.setNodeDescription(nodeDescription);
-//    Map<String, Object> map = new HashMap<String, Object>(2) {
-//      {
-//        this.put(preNodeId, preNode);
-//        this.put(nextNodeId, nextNode);
-//      }
-//    };
-//    redisUtils.hmset(workspaceId, map);
-//
-//    if(!"".equals(deleteInputTableName)){
-//      clickhouseUtils.deleteInputTable(deleteInputTableName);
-//    }
   }
 
   /**
@@ -147,7 +120,6 @@ public class RealTimeDag {
         //删除后节点的filter信息
         DagNode nextNode = (DagNode) dagMap.get(outputDataSlot.getNextNodeId());
         nextNode.getInputDataSlots()[outputDataSlot.getNextSlotIndex()].getFilterId().remove(deletedNodeId);
-        //todo 表维护
       }
     } else {
       //本节点为table
@@ -165,12 +137,14 @@ public class RealTimeDag {
         nextNodeDescription.put("dataSource", dataSource);
       }
     }
-    if (isHeadNode(deletedNode.getInputDataSlots())) {
-      //头节点
-      for (Object dataSource : nodeDescription.getJSONArray("dataSource")) {
-        deleteInputTableName.add((String) dataSource);
+
+    //删除输入
+    for (InputDataSlot inputDataSlot : deletedNode.getInputDataSlots()) {
+      if(StringUtils.isEmpty(inputDataSlot.getPreNodeId())){
+        deleteInputTableName.add(inputDataSlot.getDataSource());
       }
     }
+
     dagMap.remove(deletedNodeId);
     redisUtils.hdel(workspaceId, deletedNodeId);
     redisUtils.hmset(workspaceId, dagMap);
@@ -207,9 +181,12 @@ public class RealTimeDag {
       //table边
       nextNode.getInputDataSlots()[slotIndex].setPreNodeId(null);
       newTableName = CommonConstants.CPL_TEMP_INPUT_TABLE_PREFIX + preNodeId;
+      InputDataSlot inputSlot = nextNode.getInputDataSlots()[slotIndex];
+      inputSlot.setPreNodeId(null);
+      inputSlot.setDataSource(newTableName);
       JSONObject nextNodeDescription = (JSONObject) nextNode.getNodeDescription();
       JSONArray dataSource = nextNodeDescription.getJSONArray("dataSource");
-      dataSource.set(slotIndex, "");
+      dataSource.set(slotIndex, newTableName);
       nextNodeDescription.put("dataSource", dataSource);
     }
     Map<String, Object> map = new HashMap<String, Object>(2) {
@@ -241,9 +218,9 @@ public class RealTimeDag {
    */
   public void updateNode(String workspaceId, String nodeId, Object nodeDescription) {
     DagNode node = (DagNode) redisUtils.hget(workspaceId, nodeId);
-    node.setNodeDescription(nodeDescription);
     JSONArray newDataSources = ((JSONObject) nodeDescription).getJSONArray("dataSource");
     JSONArray oldDataSources = ((JSONObject) node.getNodeDescription()).getJSONArray("dataSource");
+    node.setNodeDescription(nodeDescription);
     if(newDataSources.size()  != oldDataSources.size()){
       throw new RuntimeException("Input [dataSource] size error !");
     }

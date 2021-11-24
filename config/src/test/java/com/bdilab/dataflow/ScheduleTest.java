@@ -67,6 +67,8 @@ public class ScheduleTest {
 //    List<String> sortedList = scheduleService.getSortedList(workspaceId, "a");
 //    System.out.println(sortedList);
 
+//    jdbcUtils.queryForStrList("create view new_view as select * from dataflow.data_csv;");
+  }
     jdbcUtils.queryForStrList("create view new_view as select * from dataflow.data_csv;");
   }*/
 }

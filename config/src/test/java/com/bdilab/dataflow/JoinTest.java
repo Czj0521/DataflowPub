@@ -26,6 +26,7 @@ public class JoinTest {
     @Autowired
     ClickHouseJdbcUtils clickHouseJdbcUtils;
 
+
     @ParameterizedTest
     @MethodSource("aggregateProvider")
     public void testJoin(HashMap<String,Object> map) {

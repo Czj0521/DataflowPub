@@ -11,6 +11,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,20 +25,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class WebSocketServer {
 
-  //private static final AtomicInteger OnlineCount = new AtomicInteger(0);
-  // concurrent包的线程安全Set，用来存放每个客户端对应的Session对象。
+  // private static final AtomicInteger OnlineCount = new AtomicInteger(0);
   private static CopyOnWriteArraySet<Session> sessionSet = new CopyOnWriteArraySet<>();
 
   /**
-   * 建立连接调用的方法
+   * Connection establishment.
+   *
+   * @param session The current session.
    */
   @OnOpen
   public void onOpen(Session session) {
+    session.setMaxIdleTimeout(360000);
     sessionSet.add(session);
   }
 
   /**
-   * 连接关闭调用的方法
+   * Close connection.
+   *
+   * @param session The current session.
    */
   @OnClose
   public void onClose(Session session) {
@@ -45,9 +50,10 @@ public class WebSocketServer {
   }
 
   /**
-   * 收到客户端消息后调用的方法
-   * @param message
-   * @param session
+   * Receive messages.
+   *
+   * @param message The message to receive.
+   * @param session The current session.
    */
   @OnMessage
   public void onMessage(String message, Session session) {
@@ -55,20 +61,40 @@ public class WebSocketServer {
   }
 
   /**
-   * 出现错误调用的方法
-   * @param session
-   * @param error
+   * Error occurred.
+   *
+   * @param session The current session.
+   * @param error The error.
    */
   @OnError
   public void onError(Session session, Throwable error) {
     error.printStackTrace();
   }
 
+  /**
+   * Send to all sessions.
+   *
+   * @param message The message to send.
+   */
   public static void sendMessage(String message) {
     try {
       for (Session session : sessionSet) {
-        session.getBasicRemote().sendText(String.format("%s (From Server，Session ID=%s)",message, session.getId()));
+        session.getBasicRemote().sendText(String.format("%s", message));
       }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Send to one session.
+   *
+   * @param message The message to send.
+   * @param session The session to send.
+   */
+  public static void sendMessageP2P(String message, Session session) {
+    try {
+      session.getBasicRemote().sendText(String.format("%s", message));
     } catch (IOException e) {
       e.printStackTrace();
     }

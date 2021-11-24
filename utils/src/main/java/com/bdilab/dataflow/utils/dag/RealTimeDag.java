@@ -198,7 +198,7 @@ public class RealTimeDag {
     redisUtils.hmset(workspaceId, map);
 
     if (!StringUtils.isEmpty(newTableName)) {
-      clickhouseUtils.copyToTable(preNodeId, newTableName);
+      clickhouseUtils.copyToTable(CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId, newTableName);
     }
   }
 

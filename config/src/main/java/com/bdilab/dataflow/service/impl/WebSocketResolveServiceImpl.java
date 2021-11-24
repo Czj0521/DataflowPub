@@ -43,8 +43,8 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         scheduleService.executeTask(workspaceId, operatorId);
         break;
       case "removeNode":
-        realTimeDag.removeNode(workspaceId, operatorId);
         List<String> nextNodesId = realTimeDag.getNode(workspaceId, operatorId).getNextNodesId();
+        realTimeDag.removeNode(workspaceId, operatorId);
         for (String s : nextNodesId) {
           scheduleService.executeTask(workspaceId, s);
         }

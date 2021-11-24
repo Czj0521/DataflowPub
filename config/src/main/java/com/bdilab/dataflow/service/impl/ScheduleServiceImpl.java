@@ -61,7 +61,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         case "table":
           List<Map<String, Object>> outputs = tableJobService.saveToClickHouse(node, preFilter + " 1 = 1 ");
           JobOutputJson outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputs);
-          WebSocketServer.sendMessage(outputJson.toString());
+          WebSocketServer.sendMessage(JSONObject.toJSONString(outputJson));
           break;
         case "filter":
           String filter = preFilter.toString() + parseFilterAndPivot(node);

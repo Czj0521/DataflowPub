@@ -67,7 +67,7 @@ public class WebSocketServer {
   public static void sendMessage(String message) {
     try {
       for (Session session : sessionSet) {
-        session.getBasicRemote().sendText(String.format("%s (From Server，Session ID=%s)",message, session.getId()));
+        session.getBasicRemote().sendText(String.format("%s",message, session.getId()));
       }
     } catch (IOException e) {
       e.printStackTrace();

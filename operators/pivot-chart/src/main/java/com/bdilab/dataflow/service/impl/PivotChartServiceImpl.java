@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,41 +41,11 @@ public class PivotChartServiceImpl implements PivotChartService {
 
         List<Object> results = new ArrayList<>();
         for (Menu menu : description.getMenus()) {
-            StringBuilder sb = new StringBuilder();
-            if (!StringUtils.isEmpty(menu.getAggregation()) && !menu.getAggregation().equalsIgnoreCase(Communal.NONE)) {
-                switch (menu.getAggregation()) {
-                    case AggregationConstants.COUNT:
-                        sb.append(menu.getAttribute()).append(Communal.UNDER_CROSS).append(AggregationConstants.COUNT);
-                        break;
-                    case AggregationConstants.DISTINCT_COUNT:
-                        sb.append(menu.getAttribute()).append(Communal.UNDER_CROSS).append(AggregationConstants.DISTINCT).append(Communal.UNDER_CROSS).append(AggregationConstants.COUNT);
-                        break;
-                    case AggregationConstants.AVERAGE:
-                        sb.append(menu.getAttribute()).append(Communal.UNDER_CROSS).append(AggregationConstants.AVERAGE);
-                        break;
-                    case AggregationConstants.SUM:
-                        sb.append(menu.getAttribute()).append(Communal.UNDER_CROSS).append(AggregationConstants.SUM);
-                        break;
-                    case AggregationConstants.MIN:
-                        sb.append(menu.getAttribute()).append(Communal.UNDER_CROSS).append(AggregationConstants.MIN);
-                        break;
-                    case AggregationConstants.MAX:
-                        sb.append(menu.getAttribute()).append(Communal.UNDER_CROSS).append(AggregationConstants.MAX);
-                        break;
-                    case AggregationConstants.STANDARD_DEV:
-                        sb.append(menu.getAttribute()).append(Communal.UNDER_CROSS).append(AggregationConstants.STD);
-                        break;
-                    default:
-                        throw new IllegalStateException("Unexpected value: " + menu.getAggregation() + menu.getMenu());
-                }
-            } else if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equalsIgnoreCase("none")) {
-                sb.append(menu.getAttribute()).append(Communal.UNDER_CROSS).append(BinningConstants.BIN);
-            } else {
-                sb.append(menu.getAttribute());
-            }
-
-            String menuSb = SQLConstants.SELECT + sb + Communal.BLANK + SQLConstants.FROM +
+            // reuse the getAttributeRenaming() method
+            String menuSb = SQLConstants.SELECT + menu.getAttributeRenaming() + Communal.BLANK + SQLConstants.FROM +
                     SQLConstants.LEFT_BRACKET + SQL + SQLConstants.RIGHT_BRACKET;
+
+            log.info(MessageFormat.format("[Menu StringBuilder SQL]: {0}", menuSb));
             List<String> list = clickHouseJdbcUtils.queryForStrList(menuSb);
             RespObj respObj = new RespObj();
             if (!StringUtils.isEmpty(menu.getSort()) && !menu.getSort().equalsIgnoreCase(Communal.NONE)) {
@@ -84,21 +55,21 @@ public class PivotChartServiceImpl implements PivotChartService {
                     distinctSetAsc.addAll(list);
                     respObj.setDistinctValues(distinctSetAsc);
                 } else {
-                    //菜单distinct值降序排列
+                    // 菜单distinct值降序排列
                     Set<String> distinctSetDesc = new TreeSet<>(new ComparatorDesc());
                     distinctSetDesc.addAll(list);
                     respObj.setDistinctValues(distinctSetDesc);
                 }
             } else {
-                //菜单distinct值自然排列（默认就是升序）
+                // 菜单distinct值自然排列（默认就是升序）
                 Set<String> distinctSet = new TreeSet<>(list);
                 respObj.setDistinctValues(distinctSet);
             }
 
             respObj.setMenu(menu.getMenu());
-            respObj.setName(sb.toString());
+            respObj.setName(menu.getAttributeRenaming());
 
-            if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equalsIgnoreCase(Communal.NONE)) {
+            if (menu.hasBinning()) {
                 respObj.setValues(list.stream().map(item -> menu.getAttribute() + Communal.BLANK + Communal.STARTS_WITH +
                         Communal.BLANK + item).collect(Collectors.toList()));
             } else {

@@ -87,7 +87,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
         if (StringUtils.isEmpty(extractSegment(attributeAndBinningSet)) && StringUtils.isEmpty(extractSegment(aggregationSet))) {
             throw new RuntimeException("please choose at least one attribute");
         } else {
-            // TODO 分组和排序
+
             if (!StringUtils.isEmpty(extractSegment(attributeAndBinningSet))) {
                 SQL = SQL + extractSegment(attributeAndBinningSet);
             }

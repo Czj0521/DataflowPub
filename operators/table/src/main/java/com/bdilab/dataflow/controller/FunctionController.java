@@ -58,7 +58,7 @@ public class FunctionController {
       String type = entry1.getKey();
       Map<String, String> value = entry1.getValue();
       for (Entry<String, String> entry2 : value.entrySet()) {
-        String key = entry1.getKey().replace(" ", "_");
+        String key = entry2.getKey().replace(" ", "_");
         String i18nParamName = PARAM_FILTER_PREFIX + type + "." + key;
         String i18nParamVal = I18nUtils
             .getMessage(i18nParamName);

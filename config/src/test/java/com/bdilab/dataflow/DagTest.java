@@ -81,12 +81,12 @@ public class DagTest {
     String nd4 = "{\"dataSource\":[\"d4\"]}";
     String nd5 = "{\"dataSource\":[\"d5\"]}";
     String nd6 = "{\"dataSource\":[\"\",\"\"]}";
-    DagNodeInputDto dagNodeInputDto1 = new DagNodeInputDto(nodeId1, new String[]{"d1"}, "table", JSONObject.parseObject(nd1));
-    DagNodeInputDto dagNodeInputDto2 = new DagNodeInputDto(nodeId2, new String[]{"d2"}, "table", JSONObject.parseObject(nd2));
-    DagNodeInputDto dagNodeInputDto3 = new DagNodeInputDto(nodeId3, new String[]{"d3"}, "table", JSONObject.parseObject(nd3));
-    DagNodeInputDto dagNodeInputDto4 = new DagNodeInputDto(nodeId4, new String[]{"d4"}, "filter", JSONObject.parseObject(nd4));
-    DagNodeInputDto dagNodeInputDto5 = new DagNodeInputDto(nodeId5, new String[]{"d5"}, "filter", JSONObject.parseObject(nd5));
-    DagNodeInputDto dagNodeInputDto6 = new DagNodeInputDto(nodeId6, new String[]{"",""}, "join", JSONObject.parseObject(nd6));
+    DagNodeInputDto dagNodeInputDto1 = new DagNodeInputDto(nodeId1, "table", JSONObject.parseObject(nd1));
+    DagNodeInputDto dagNodeInputDto2 = new DagNodeInputDto(nodeId2, "table", JSONObject.parseObject(nd2));
+    DagNodeInputDto dagNodeInputDto3 = new DagNodeInputDto(nodeId3, "table", JSONObject.parseObject(nd3));
+    DagNodeInputDto dagNodeInputDto4 = new DagNodeInputDto(nodeId4, "filter", JSONObject.parseObject(nd4));
+    DagNodeInputDto dagNodeInputDto5 = new DagNodeInputDto(nodeId5, "filter", JSONObject.parseObject(nd5));
+    DagNodeInputDto dagNodeInputDto6 = new DagNodeInputDto(nodeId6, "join", JSONObject.parseObject(nd6));
     realTimeDag.clearDag(workspaceId);
     realTimeDag.addNode(workspaceId, dagNodeInputDto1);
     realTimeDag.addNode(workspaceId, dagNodeInputDto2);
@@ -99,10 +99,10 @@ public class DagTest {
     realTimeDag.addEdge(workspaceId, nodeId4, nodeId6, 0);
     realTimeDag.addEdge(workspaceId, nodeId5, nodeId6, 1);
     realTimeDag.addEdge(workspaceId, nodeId6, nodeId3, 0);
-    realTimeDag.removeEdge(workspaceId, nodeId4, nodeId6, 0);
-    realTimeDag.removeEdge(workspaceId, nodeId1, nodeId6, 0);
-    realTimeDag.removeNode(workspaceId, nodeId6);
-    realTimeDag.updateNode(workspaceId, nodeId3, JSONObject.parseObject("{\"dataSource\":[\"new_d3\"]}"));
+//    realTimeDag.removeEdge(workspaceId, nodeId4, nodeId6, 0);
+//    realTimeDag.removeEdge(workspaceId, nodeId1, nodeId6, 0);
+//    realTimeDag.removeNode(workspaceId, nodeId6);
+//    realTimeDag.updateNode(workspaceId, nodeId3, JSONObject.parseObject("{\"dataSource\":[\"new_d3\"]}"));
   }
 
   @Test

@@ -3,6 +3,9 @@ package com.bdilab.dataflow.utils.dag;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
 import lombok.Data;
 import org.springframework.util.StringUtils;
@@ -58,10 +61,10 @@ public class DagNode {
 
   public DagNode(DagNodeInputDto dagNodeInputDto){
     this.nodeId = dagNodeInputDto.getNodeId();
-    String[] dataSources = dagNodeInputDto.getDataSources();
-    this.inputDataSlots = new InputDataSlot[dataSources.length];
-    for (int i = 0; i < dataSources.length; i++) {
-      this.inputDataSlots[i] = new InputDataSlot(dataSources[i]);
+    JSONArray dataSources = ((JSONObject) dagNodeInputDto.getNodeDescription()).getJSONArray("dataSource");
+    this.inputDataSlots = new InputDataSlot[dataSources.size()];
+    for (int i = 0; i < dataSources.size(); i++) {
+      this.inputDataSlots[i] = new InputDataSlot(dataSources.getString(i));
     }
     this.outputDataSlots = new ArrayList<>();
     this.nodeType = dagNodeInputDto.getNodeType();

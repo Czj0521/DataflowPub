@@ -39,8 +39,7 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
 
     switch (dagType) {
       case "addNode":
-        String[] dataSources = desc.getJSONArray("dataSource").toArray(new String[]{});
-        DagNodeInputDto dagNodeInputDto = new DagNodeInputDto(operatorId,dataSources,operatorType,desc);
+        DagNodeInputDto dagNodeInputDto = new DagNodeInputDto(operatorId,operatorType,desc);
         realTimeDag.addNode(workspaceId,dagNodeInputDto);
         //scheduleService.executeTask(workspaceId, operatorId);
         break;

@@ -8,6 +8,7 @@ import com.bdilab.dataflow.service.TableJobService;
 import com.bdilab.dataflow.service.WebSocketServer;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
+import com.bdilab.dataflow.utils.dag.InputDataSlot;
 import com.bdilab.dataflow.utils.dag.RealTimeDag;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -31,6 +33,7 @@ import org.springframework.util.CollectionUtils;
  * @createTime: 2021/11/16 16:15
  */
 
+@Slf4j
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
   @Autowired
@@ -42,41 +45,56 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
-//    List<String> sortedList = getSortedList(workspaceId, operatorId);
-//
-//    for (String nodeId : sortedList) {
-//      DagNode node = realTimeDag.getNode(workspaceId, nodeId);
-//
-//      StringBuffer preFilter = new StringBuffer();
-//      List<String> filterIds = node.getFilterId();//todo
-//      if (!CollectionUtils.isEmpty(filterIds)) {
-//        for (String filterId : filterIds) {
-//          preFilter.append(dagFilterManager.getFilter(workspaceId, filterId) + " AND ");
-//        }
-//      }
-//
-//      String nodeType = node.getNodeType();
-//
-//      switch (nodeType) {
-//        case "table":
-//          List<Map<String, Object>> outputs = tableJobService.saveToClickHouse(node, preFilter + " 1 = 1 ");
-//          JobOutputJson outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputs);
-//          WebSocketServer.sendMessage(outputJson.toString());
-//          break;
-//        case "filter":
-//          String filter = preFilter.toString() + parseFilterAndPivot(node);
-//          dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
-//          break;
-//        case "join":
-//          break;
-//        case "profiler":
-//          break;
-//        case "transpose":
-//          break;
-//        default:
-//          throw new RuntimeException("not exist this operator !");
-//      }
-//    }
+    List<String> sortedList = getSortedList(workspaceId, operatorId);
+
+    for (String nodeId : sortedList) {
+      DagNode node = realTimeDag.getNode(workspaceId, nodeId);
+
+      Map<Integer, StringBuffer> preFilterMap = new HashMap<>();
+
+      // 获取当前结点每个数据源对应的前驱filter id 列表
+      Map<Integer, List<String>> filterIdsMap = new HashMap<>();
+      InputDataSlot[] inputDataSlots = node.getInputDataSlots();
+      for (int i = 0; i < inputDataSlots.length; i++) {
+        preFilterMap.put(i, new StringBuffer());
+        filterIdsMap.put(i, inputDataSlots[i].getFilterId());
+      }
+
+      for (Integer slotNum : filterIdsMap.keySet()) {
+        if (!CollectionUtils.isEmpty(filterIdsMap.get(slotNum))) {
+          for (String filterId : filterIdsMap.get(slotNum)) {
+            preFilterMap.get(slotNum).append(dagFilterManager.getFilter(workspaceId, filterId) + " AND ");
+          }
+        }
+      }
+
+      for (Integer slotNum : preFilterMap.keySet()) {
+        preFilterMap.get(slotNum).append(" 1 = 1 ");
+      }
+
+      String nodeType = node.getNodeType();
+
+      switch (nodeType) {
+        case "table":
+          List<Map<String, Object>> outputs = tableJobService.saveToClickHouse(node, preFilterMap.get(0).toString());
+          JobOutputJson outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputs);
+          WebSocketServer.sendMessage(outputJson.toString());
+          break;
+        case "filter":
+          String filter = preFilterMap.get(0).toString() + parseFilterAndPivot(node);
+          log.info("The current filter :" + filter);
+          dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
+          break;
+        case "join":
+          break;
+        case "profiler":
+          break;
+        case "transpose":
+          break;
+        default:
+          throw new RuntimeException("not exist this operator !");
+      }
+    }
   }
 
   /**

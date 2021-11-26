@@ -3,6 +3,9 @@ package com.bdilab.dataflow.utils.dag;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
 import lombok.Data;
 import org.springframework.util.StringUtils;
@@ -43,28 +46,47 @@ public class DagNode {
   private DagNode() {
   }
 
-//  /**
-//   * Constructor.
-//   *
-//   * @param nodeId node ID
-//   * @param nodeType node type
-//   */
-//  public DagNode(String nodeId, String nodeType, Object nodeDescription, Integer slotSize) {
-//    this.nodeId = nodeId;
-//    this.nodeDataSlots = new NodeDataSlot[slotSize];
-//    this.nodeType = nodeType;
-//    this.nodeDescription = nodeDescription;
-//  }
-
   public DagNode(DagNodeInputDto dagNodeInputDto){
     this.nodeId = dagNodeInputDto.getNodeId();
-    String[] dataSources = dagNodeInputDto.getDataSources();
-    this.inputDataSlots = new InputDataSlot[dataSources.length];
-    for (int i = 0; i < dataSources.length; i++) {
-      this.inputDataSlots[i] = new InputDataSlot(dataSources[i]);
+    JSONArray dataSources = ((JSONObject) dagNodeInputDto.getNodeDescription()).getJSONArray("dataSource");
+    this.inputDataSlots = new InputDataSlot[dataSources.size()];
+    for (int i = 0; i < dataSources.size(); i++) {
+      this.inputDataSlots[i] = new InputDataSlot(dataSources.getString(i));
     }
     this.outputDataSlots = new ArrayList<>();
     this.nodeType = dagNodeInputDto.getNodeType();
     this.nodeDescription = dagNodeInputDto.getNodeDescription();
+  }
+
+  public Integer getInputSlotSize() {
+    return this.inputDataSlots.length;
+  }
+
+  public String getPreNodeId(int slotIndex) {
+    return this.inputDataSlots[slotIndex].getPreNodeId();
+  }
+
+  void setPreNodeId(int slotIndex, String preNodeId) {
+    this.inputDataSlots[slotIndex].setPreNodeId(preNodeId);
+  }
+
+  public List<String> getFilterId(int slotIndex) {
+    return this.inputDataSlots[slotIndex].getFilterId();
+  }
+
+  public String getDataSource(int slotIndex) {
+    return this.inputDataSlots[slotIndex].getDataSource();
+  }
+
+  void setDataSource(int slotIndex, String dataSource) {
+    this.inputDataSlots[slotIndex].setDataSource(dataSource);
+  }
+
+  public List<String> getAllDataSources() {
+    List<String> dataSources = new ArrayList<>();
+    for (InputDataSlot inputDataSlot : this.inputDataSlots) {
+      dataSources.add(inputDataSlot.getDataSource());
+    }
+    return dataSources;
   }
 }

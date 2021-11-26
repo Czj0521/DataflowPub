@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DagNodeInputDto {
   private String nodeId;
-  private String[] dataSources;
   private String nodeType;
   private Object nodeDescription;
 }

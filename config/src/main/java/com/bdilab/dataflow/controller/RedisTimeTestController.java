@@ -71,12 +71,12 @@ public class RedisTimeTestController {
     String nd4 = "{\"dataSource\":[\"d4\"]}";
     String nd5 = "{\"dataSource\":[\"d5\"]}";
     String nd6 = "{\"dataSource\":[\"\",\"\"]}";
-    DagNodeInputDto dagNodeInputDto1 = new DagNodeInputDto(nodeId1, new String[]{"d1"}, "table", JSONObject.parseObject(nd1));
-    DagNodeInputDto dagNodeInputDto2 = new DagNodeInputDto(nodeId2, new String[]{"d2"}, "table", JSONObject.parseObject(nd2));
-    DagNodeInputDto dagNodeInputDto3 = new DagNodeInputDto(nodeId3, new String[]{"d3"}, "table", JSONObject.parseObject(nd3));
-    DagNodeInputDto dagNodeInputDto4 = new DagNodeInputDto(nodeId4, new String[]{"d4"}, "filter", JSONObject.parseObject(nd4));
-    DagNodeInputDto dagNodeInputDto5 = new DagNodeInputDto(nodeId5, new String[]{"d5"}, "filter", JSONObject.parseObject(nd5));
-    DagNodeInputDto dagNodeInputDto6 = new DagNodeInputDto(nodeId6, new String[]{"",""}, "join", JSONObject.parseObject(nd6));
+    DagNodeInputDto dagNodeInputDto1 = new DagNodeInputDto(nodeId1, "table", JSONObject.parseObject(nd1));
+    DagNodeInputDto dagNodeInputDto2 = new DagNodeInputDto(nodeId2, "table", JSONObject.parseObject(nd2));
+    DagNodeInputDto dagNodeInputDto3 = new DagNodeInputDto(nodeId3, "table", JSONObject.parseObject(nd3));
+    DagNodeInputDto dagNodeInputDto4 = new DagNodeInputDto(nodeId4, "filter", JSONObject.parseObject(nd4));
+    DagNodeInputDto dagNodeInputDto5 = new DagNodeInputDto(nodeId5, "filter", JSONObject.parseObject(nd5));
+    DagNodeInputDto dagNodeInputDto6 = new DagNodeInputDto(nodeId6, "join", JSONObject.parseObject(nd6));
     long s, e;
     realTimeDag.clearDag(workspaceId);
     System.out.println("------------------------------------------------------------------------");

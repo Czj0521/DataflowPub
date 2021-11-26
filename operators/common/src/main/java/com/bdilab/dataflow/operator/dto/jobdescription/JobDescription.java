@@ -21,7 +21,7 @@ public abstract class JobDescription {
   @ApiModelProperty(value = "任务类型", required = true, example = "table")
   String jobType;
   @ApiModelProperty(value = "数据源", required = true, example = "data.csv or sql")
-  String dataSource;
+  String[] dataSource;
   @ApiModelProperty(value = "返回数据最大数目", required = true, example = "2000")
   Integer limit;
 }

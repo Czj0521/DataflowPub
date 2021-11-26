@@ -36,7 +36,7 @@ public class ScalarControllerTest {
   @Test
   public void testController() {
     ScalarDescription scalarDescription = new ScalarDescription();
-    scalarDescription.setDataSource("dataflow.airuuid");
+    scalarDescription.setDataSource(new String[]{"dataflow.airuuid"});
     scalarDescription.setJobType("scalar");
     scalarDescription.setLimit(-1);
     scalarDescription.setTarget("AQI");

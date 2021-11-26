@@ -27,9 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Linkage")
 @RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/")
 public class UniformController {
-
-  @Autowired
-  UniformService uniformService;
   @Autowired
   WebSocketResolveService socketResolveService;
 

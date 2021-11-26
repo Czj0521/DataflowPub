@@ -24,7 +24,7 @@ public class TableDescription extends JobDescription {
    */
   public TableDescription(String jobType, String dataSource, Integer limit, String filter,
       String[] project, String[] group) {
-    super(jobType, dataSource, limit);
+    super(jobType, new String[]{dataSource}, limit);
     this.filter = filter;
     this.project = project;
     this.group = group;

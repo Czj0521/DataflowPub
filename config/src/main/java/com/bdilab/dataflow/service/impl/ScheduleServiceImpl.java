@@ -73,15 +73,14 @@ public class ScheduleServiceImpl implements ScheduleService {
       }
 
       String nodeType = node.getNodeType();
-
+      JobOutputJson outputJson = null;
       switch (nodeType) {
         case "table":
-          List<Map<String, Object>> outputs = tableJobService.saveToClickHouse(node, preFilterMap.get(0).toString());
-          JobOutputJson outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputs);
-          WebSocketServer.sendMessage(outputJson.toString());
+          List<Map<String, Object>> outputs = tableJobService.saveToClickHouse(node, preFilterMap);
+          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputs);
           break;
         case "filter":
-          String filter = preFilterMap.get(0).toString() + parseFilterAndPivot(node);
+          String filter = preFilterMap.get(0).toString() + " AND "+ parseFilterAndPivot(node);
           log.info("The current filter :" + filter);
           dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
           break;
@@ -93,6 +92,10 @@ public class ScheduleServiceImpl implements ScheduleService {
           break;
         default:
           throw new RuntimeException("not exist this operator !");
+      }
+
+      if(null != outputJson) {
+        WebSocketServer.sendMessage(outputJson.toString());
       }
     }
   }

@@ -38,7 +38,7 @@ public class FilterSqlGenerator extends SqlGeneratorBase {
 
   @Override
   public String generate() {
-    return project() + super.datasource() + filter();
+    return project() + super.datasource(0) + filter();
   }
 
   public String generateDataSourceSql() {

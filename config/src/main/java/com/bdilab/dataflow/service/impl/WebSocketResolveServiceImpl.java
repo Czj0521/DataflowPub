@@ -42,32 +42,33 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         String[] dataSources = desc.getJSONArray("dataSource").toArray(new String[]{});
         DagNodeInputDto dagNodeInputDto = new DagNodeInputDto(operatorId,dataSources,operatorType,desc);
         realTimeDag.addNode(workspaceId,dagNodeInputDto);
-        //scheduleService.executeTask(workspaceId, operatorId);
+        scheduleService.executeTask(workspaceId, operatorId);
         break;
       case "updateNode":
         realTimeDag.updateNode(workspaceId, operatorId, desc);
-        //scheduleService.executeTask(workspaceId, operatorId);
+        scheduleService.executeTask(workspaceId, operatorId);
         break;
       case "removeNode":
+        List<DagNode> nextNodes = realTimeDag.getNextNodes(workspaceId, operatorId);
         realTimeDag.removeNode(workspaceId, operatorId);
-//        List<String> nextNodesId = realTimeDag.getNode(workspaceId, operatorId).getNextNodesId();//todo
-//        for (String s : nextNodesId) {
-//          scheduleService.executeTask(workspaceId, s);
-//        }
+
+        for (DagNode dagNode : nextNodes) {
+          scheduleService.executeTask(workspaceId, dagNode.getNodeId());
+        }
         break;
       case "addEdge":
         String addPreNodeId = desc.getString("preNodeId");
         String addNextNodeId = desc.getString("nextNodeId");
         String addSlotIndex = desc.getString("slotIndex");
         realTimeDag.addEdge(workspaceId, addPreNodeId, addNextNodeId, Integer.valueOf(addSlotIndex));
-        //scheduleService.executeTask(workspaceId, addNextNodeId);
+        scheduleService.executeTask(workspaceId, addNextNodeId);
         break;
       case "removeEdge":
         String rmPreNodeId = desc.getString("preNodeId");
         String rmNextNodeId = desc.getString("nextNodeId");
         String rmSlotIndex = desc.getString("slotIndex");
         realTimeDag.removeEdge(workspaceId,rmPreNodeId,rmNextNodeId,Integer.valueOf(rmSlotIndex));
-        //scheduleService.executeTask(workspaceId, rmNextNodeId);
+        scheduleService.executeTask(workspaceId, rmNextNodeId);
         break;
       default:
         throw new RuntimeException("not exist this dagType");

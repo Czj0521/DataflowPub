@@ -96,6 +96,6 @@ public class TableSqlGenerator extends SqlGeneratorBase implements LinkSqlGenera
       }
     }
 
-    return projectStr + super.datasource() + filter() + groupStr;
+    return projectStr + super.datasource(0) + filter() + groupStr;
   }
 }

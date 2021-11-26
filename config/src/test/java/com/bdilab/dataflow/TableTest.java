@@ -37,7 +37,7 @@ public class TableTest {
   @Test
   public void table() {
     TableDescription tableDescription = new TableDescription();
-    tableDescription.setDataSource("dataflow.airuuid");
+    tableDescription.setDataSource(new String[]{"dataflow.airuuid"});
     tableDescription.setFilter("");
     tableDescription.setGroup(new String[]{});
     tableDescription.setJobType("");
@@ -64,7 +64,7 @@ public class TableTest {
   })
   public void tableFilter(String filterStm) {
     TableDescription td = new TableDescription();
-    td.setDataSource("dataflow.airuuid");
+    td.setDataSource(new String[]{"dataflow.airuuid"});
     td.setProject(new String[]{"*"});
     td.setGroup(new String[]{});
     td.setLimit(10);
@@ -84,7 +84,7 @@ public class TableTest {
   public void tableAggregate(String[] groups, String[] aggs) {
 
     TableDescription td = new TableDescription();
-    td.setDataSource("dataflow.airuuid");
+    td.setDataSource(new String[]{"dataflow.airuuid"});
     td.setProject(aggs);
     td.setGroup(groups);
     td.setLimit(10);

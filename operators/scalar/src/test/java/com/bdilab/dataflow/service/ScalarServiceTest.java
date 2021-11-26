@@ -30,7 +30,7 @@ public class ScalarServiceTest {
     private static ScalarDescription scalarDescription = new ScalarDescription();
 
     static {
-      scalarDescription.setDataSource("dataflow.airuuid");
+      scalarDescription.setDataSource(new String[]{"dataflow.airuuid"});
       scalarDescription.setJobType("scalar");
       scalarDescription.setLimit(-1);
       scalarDescription.setTarget("AQI");

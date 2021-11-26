@@ -22,12 +22,12 @@ public abstract class SqlGeneratorBase {
   /**
    * get datasource sql.
    */
-  public String datasource() {
+  public String datasource(int slotIndex) {
     // todo Check datasource
     if (jobDescription.getDataSource() == null) {
       throw new UncheckException(ExceptionMsgEnum.TABLE_SQL_PARSE_ERROR.getMsg());
     }
-    return " FROM " + jobDescription.getDataSource();
+    return " FROM " + jobDescription.getDataSource()[slotIndex];
   }
 
   public String limit() {

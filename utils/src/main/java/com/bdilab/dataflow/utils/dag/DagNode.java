@@ -89,4 +89,8 @@ public class DagNode {
     }
     return dataSources;
   }
+
+  void removeOutputSlot(OutputDataSlot removeOutputSlot){
+    this.outputDataSlots.remove(removeOutputSlot);
+  }
 }

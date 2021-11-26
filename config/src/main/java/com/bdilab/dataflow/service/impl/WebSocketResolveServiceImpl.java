@@ -1,6 +1,8 @@
 package com.bdilab.dataflow.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.common.enums.OperatorOutputTypeEnum;
 import com.bdilab.dataflow.service.WebSocketResolveService;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.RealTimeDag;
@@ -10,6 +12,7 @@ import javax.annotation.Resource;
 import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -34,25 +37,32 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
     String workspaceId = jsonObject.getString("workspaceId");
     String operatorId = (String) jsonObject.getOrDefault("operatorId", "");
     JSONObject desc = jsonObject.getJSONObject(operatorType + "Description");
-
-
+    JSONArray dataSources = desc.getJSONArray("dataSource");
+    String nodeType = "";
 
     switch (dagType) {
       case "addNode":
         DagNodeInputDto dagNodeInputDto = new DagNodeInputDto(operatorId,operatorType,desc);
         realTimeDag.addNode(workspaceId,dagNodeInputDto);
-        scheduleService.executeTask(workspaceId, operatorId);
+        if(isDataSourceReady(dataSources)){
+          scheduleService.executeTask(workspaceId, operatorId);
+        }
         break;
       case "updateNode":
         realTimeDag.updateNode(workspaceId, operatorId, desc);
+        if(isDataSourceReady(dataSources)){
+          scheduleService.executeTask(workspaceId, operatorId);
+        }
         scheduleService.executeTask(workspaceId, operatorId);
         break;
       case "removeNode":
         List<DagNode> nextNodes = realTimeDag.getNextNodes(workspaceId, operatorId);
+        nodeType = realTimeDag.getNode(workspaceId, operatorId).getNodeType();
         realTimeDag.removeNode(workspaceId, operatorId);
-
-        for (DagNode dagNode : nextNodes) {
-          scheduleService.executeTask(workspaceId, dagNode.getNodeId());
+        if(OperatorOutputTypeEnum.isFilterOutput(nodeType)) {
+          for (DagNode dagNode : nextNodes) {
+            scheduleService.executeTask(workspaceId, dagNode.getNodeId());
+          }
         }
         break;
       case "addEdge":
@@ -66,13 +76,24 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         String rmPreNodeId = desc.getString("preNodeId");
         String rmNextNodeId = desc.getString("nextNodeId");
         String rmSlotIndex = desc.getString("slotIndex");
+        nodeType = realTimeDag.getNode(workspaceId, rmPreNodeId).getNodeType();
         realTimeDag.removeEdge(workspaceId,rmPreNodeId,rmNextNodeId,Integer.valueOf(rmSlotIndex));
-        scheduleService.executeTask(workspaceId, rmNextNodeId);
+        if(OperatorOutputTypeEnum.isFilterOutput(dagType)) {
+          scheduleService.executeTask(workspaceId, rmNextNodeId);
+        }
         break;
       default:
         throw new RuntimeException("not exist this dagType");
     }
 
+  }
 
+  private boolean isDataSourceReady(JSONArray dataSources) {
+    for (Object dataSource : dataSources) {
+      if(StringUtils.isEmpty(dataSource)) {
+        return false;
+      }
+    }
+    return true;
   }
 }

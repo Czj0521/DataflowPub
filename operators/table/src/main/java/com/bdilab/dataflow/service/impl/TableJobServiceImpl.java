@@ -157,7 +157,7 @@ public class TableJobServiceImpl implements TableJobService {
       clickHouseJdbcUtils.execute(viewSql);
     }
 
-    // 返回结果
+    // return the result
     return clickHouseJdbcUtils.queryForList(tableSqlGenerator.generate());
   }
 }

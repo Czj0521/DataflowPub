@@ -78,7 +78,7 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         String rmSlotIndex = desc.getString("slotIndex");
         nodeType = realTimeDag.getNode(workspaceId, rmPreNodeId).getNodeType();
         realTimeDag.removeEdge(workspaceId,rmPreNodeId,rmNextNodeId,Integer.valueOf(rmSlotIndex));
-        if(OperatorOutputTypeEnum.isFilterOutput(dagType)) {
+        if(OperatorOutputTypeEnum.isFilterOutput(nodeType)) {
           scheduleService.executeTask(workspaceId, rmNextNodeId);
         }
         break;

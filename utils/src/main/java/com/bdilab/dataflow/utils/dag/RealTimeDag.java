@@ -49,8 +49,16 @@ public class RealTimeDag {
    * @param nextNodeId ID of subsequent node of the edge
    */
   public void addEdge(String workspaceId, String preNodeId, String nextNodeId, Integer slotIndex) {
-    DagNode preNode = (DagNode) redisUtils.hget(workspaceId, preNodeId);
-    DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
+    Map<Object, Object> dagMap = redisUtils.hmget(workspaceId);
+    DagNode preNode = (DagNode) dagMap.get(preNodeId);
+    DagNode nextNode = (DagNode) dagMap.get(nextNodeId);
+
+    if(!StringUtils.isEmpty(nextNode.getPreNodeId(slotIndex))){
+      //本数据槽已经被连了，需要替换
+      DagNode oldPreNode = (DagNode) dagMap.get(nextNode.getPreNodeId(slotIndex));
+      oldPreNode.removeOutputSlot(new OutputDataSlot(nextNodeId, slotIndex));
+    }
+
     preNode.getOutputDataSlots().add(new OutputDataSlot(nextNodeId, slotIndex));
     JSONObject nodeDescription = (JSONObject) nextNode.getNodeDescription();
     String deleteInputTableName = "";

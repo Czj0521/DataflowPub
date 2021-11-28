@@ -6,6 +6,9 @@ import com.bdilab.dataflow.dto.jobdescription.PivotChartDescription;
 import com.bdilab.dataflow.service.impl.PivotChartServiceImpl;
 import com.bdilab.dataflow.sql.generator.PivotChartSqlGenerator;
 import com.fasterxml.jackson.databind.util.ArrayBuilders;
+import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.bridge.Message;
 import org.junit.Test;
@@ -15,14 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * @author: Guo Yongqiang
  * @date: 2021/11/22 16:56
- * @version:
  */
 
 @Slf4j
@@ -41,28 +39,24 @@ public class PcSqlGeneratorTest {
 
   @Test
   public void sqlGeneration() {
-
-    Menu xAxis = new Menu();
-
     pivotChartDescription.setDataSource("dataflow.airuuid");
     pivotChartDescription.setJobType("pivot-chart");
     pivotChartDescription.setLimit(100);
+    Menu xaxis = new Menu();
+    xaxis.setAttribute("city");
+    xaxis.setMenu("x-axis");
+    xaxis.setBinning("AlphabeticBinning");
+    xaxis.setSort("Asc");
+    xaxis.setAggregation("none");
 
-    xAxis.setAttribute("city");
-    xAxis.setMenu("x-axis");
-    xAxis.setBinning("AlphabeticBinning");
-    xAxis.setSort("Asc");
-    xAxis.setAggregation("none");
+    Menu yaxis = new Menu();
+    yaxis.setAttribute("AQI");
+    yaxis.setMenu("y-axis");
+    yaxis.setAggregation("average");
+    yaxis.setBinning("none");
+    yaxis.setSort("none");
 
-
-    Menu yAxis = new Menu();
-    yAxis.setAttribute("AQI");
-    yAxis.setMenu("y-axis");
-    yAxis.setAggregation("average");
-    yAxis.setBinning("none");
-    yAxis.setSort("none");
-
-    Menu[] menus = new Menu[] {xAxis, yAxis};
+    Menu[] menus = new Menu[] {xaxis, yaxis};
     pivotChartDescription.setMenus(menus);
 
     pivotChartSqlGenerator = new PivotChartSqlGenerator(pivotChartDescription);
@@ -76,27 +70,24 @@ public class PcSqlGeneratorTest {
 
   @Test
   public void datetimeBinning() {
-    Menu xAxis = new Menu();
-
     pivotChartDescription.setDataSource("dataflow.airuuid");
     pivotChartDescription.setJobType("pivot-chart");
     pivotChartDescription.setLimit(100);
+    Menu xaxis = new Menu();
+    xaxis.setAttribute("time");
+    xaxis.setMenu("x-axis");
+    xaxis.setBinning("day");
+    xaxis.setSort("Asc");
+    xaxis.setAggregation("none");
 
-    xAxis.setAttribute("time");
-    xAxis.setMenu("x-axis");
-    xAxis.setBinning("day");
-    xAxis.setSort("Asc");
-    xAxis.setAggregation("none");
+    Menu yaxis = new Menu();
+    yaxis.setAttribute("AQI");
+    yaxis.setMenu("y-axis");
+    yaxis.setAggregation("average");
+    yaxis.setBinning("none");
+    yaxis.setSort("none");
 
-
-    Menu yAxis = new Menu();
-    yAxis.setAttribute("AQI");
-    yAxis.setMenu("y-axis");
-    yAxis.setAggregation("average");
-    yAxis.setBinning("none");
-    yAxis.setSort("none");
-
-    Menu[] menus = new Menu[] {xAxis, yAxis};
+    Menu[] menus = new Menu[] {xaxis, yaxis};
     pivotChartDescription.setMenus(menus);
 
     pivotChartSqlGenerator = new PivotChartSqlGenerator(pivotChartDescription);

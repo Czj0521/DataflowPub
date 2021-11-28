@@ -60,7 +60,6 @@ public class TransposeSqlGenerator extends SqlGeneratorBase implements LinkSqlGe
     return stringBuilder.toString();
   }
 
-
   private void appendColumns(StringBuilder stringBuilder) {
     String template = transposeDescription.isColumnIsNumeric() ? NUMERIC_TEMPLATE : STRING_TEMPLATE;
     Map<String, String> attributes = transposeDescription.getAttributeWithAggregationMap();

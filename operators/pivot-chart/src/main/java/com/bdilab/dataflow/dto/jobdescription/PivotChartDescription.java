@@ -18,8 +18,8 @@ import lombok.ToString;
 @ApiModel
 public class PivotChartDescription extends JobDescription {
 
-    /**
-     * 选择了属性或其他菜单选项的菜单集合
-     */
-    private Menu[] menus;
+  /**
+   * 选择了属性或其他菜单选项的菜单集合.
+   */
+  private Menu[] menus;
 }

@@ -1,10 +1,9 @@
 package com.bdilab.dataflow.dto.joboutputjson;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * @author : [zhangpeiliang]
@@ -15,11 +14,11 @@ import java.util.List;
 @NoArgsConstructor
 public class ParamTypeRespObj {
 
-    private List<String> String;
+  private List<String> string;
 
-    private List<String> Boolean;
+  private List<String> booleans;
 
-    private List<String> Date;
+  private List<String> date;
 
-    private List<String> Numeric;
+  private List<String> numeric;
 }

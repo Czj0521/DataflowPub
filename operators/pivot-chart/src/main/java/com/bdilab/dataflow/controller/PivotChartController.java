@@ -8,11 +8,10 @@ import com.bdilab.dataflow.dto.joboutputjson.ParamTypeRespObj;
 import com.bdilab.dataflow.service.PivotChartService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * @author : [zhangpeiliang]
@@ -25,24 +24,24 @@ import java.util.List;
 @RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/job")
 public class PivotChartController {
 
-    @Autowired
-    private PivotChartService pivotChartService;
+  @Autowired
+  private PivotChartService pivotChartService;
 
-    @PostMapping("/pivot-chart")
-    @ApiOperation(value = "透视图操作符")
-    public List<Object> getPivotChart(@RequestBody PivotChartDescription description) {
-        return pivotChartService.getPivotChart(description);
-    }
+  @PostMapping("/pivot-chart")
+  @ApiOperation(value = "透视图操作符")
+  public List<Object> getPivotChart(@RequestBody PivotChartDescription description) {
+    return pivotChartService.getPivotChart(description);
+  }
 
-    @GetMapping("/aggregation/type")
-    @ApiOperation(value = "获取聚合函数类型")
-    public ParamTypeRespObj getAggregationType() {
-        return pivotChartService.getType(AggregationConstants.AGGREGATION);
-    }
+  @GetMapping("/aggregation/type")
+  @ApiOperation(value = "获取聚合函数类型")
+  public ParamTypeRespObj getAggregationType() {
+    return pivotChartService.getType(AggregationConstants.AGGREGATION);
+  }
 
-    @GetMapping("/binning/type")
-    @ApiOperation(value = "获取数据分箱类型")
-    public ParamTypeRespObj getBinningType() {
-        return pivotChartService.getType(BinningConstants.BIN);
-    }
+  @GetMapping("/binning/type")
+  @ApiOperation(value = "获取数据分箱类型")
+  public ParamTypeRespObj getBinningType() {
+    return pivotChartService.getType(BinningConstants.BIN);
+  }
 }

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 public class DagManager {
   @Resource
   private RedisUtils redisUtils;
+  @Resource
+  RealTimeDag realTimeDag;
 
   //  public void createDag(String workspaceId) {
   //    if (!containsWorkspaceId(workspaceId)) {
@@ -24,7 +26,7 @@ public class DagManager {
   //  }
 
   public void deleteDag(String workspaceId) {
-    redisUtils.del(workspaceId);
+    realTimeDag.clearDag(workspaceId);
   }
 
   public boolean containsWorkspaceId(String workspaceId) {

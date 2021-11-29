@@ -212,10 +212,27 @@ public class RealTimeDag {
 
   /**
    * Clear dag.
+   *
+   * @param workspaceId workspace ID
    */
   public void clearDag(String workspaceId) {
-    //todo 删除数据库
+    Map<Object, Object> dagMap = redisUtils.hmget(workspaceId);
     redisUtils.del(workspaceId);
+
+    List<String> inputDataSources = new ArrayList<>();
+    List<String> outputDataSources = new ArrayList<>();
+    for(Map.Entry<Object, Object> node : dagMap.entrySet()) {
+      DagNode value = (DagNode) node.getValue();
+      for (int i = 0; i < value.getInputSlotSize(); i++) {
+        if(StringUtils.isEmpty(value.getDataSource(i))) {
+          inputDataSources.add(value.getDataSource(i));
+        }
+      }
+      outputDataSources.add(CommonConstants.CPL_TEMP_TABLE_PREFIX + value.getNodeId());
+    }
+    for (String allDataSource : inputDataSources) {
+      clickhouseUtils.deleteInputTable(allDataSource);
+    }
   }
 
   /**

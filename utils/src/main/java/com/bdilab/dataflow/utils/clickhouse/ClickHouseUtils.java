@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import com.bdilab.dataflow.common.consts.CommonConstants;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 /**
  * Data table manager for clickhouse in  .
@@ -51,7 +52,7 @@ public class ClickHouseUtils {
    * @param tableName table name
    */
   public void deleteInputTable(String tableName) {
-    if (tableName.startsWith(CommonConstants.TEMP_INPUT_TABLE_PREFIX)) {
+    if (!StringUtils.isEmpty(tableName) && tableName.startsWith(CommonConstants.TEMP_INPUT_TABLE_PREFIX)) {
       StringBuilder sql = new StringBuilder();
       sql.append("DROP TABLE ").append(tableName);
       clickHouseJdbcUtils.execute(new String(sql));

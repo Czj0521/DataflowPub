@@ -3,6 +3,8 @@ package com.bdilab.dataflow;
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.dto.JoinDescription;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
+import com.bdilab.dataflow.utils.dag.DagNode;
+import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -25,7 +27,21 @@ public class JoinTest {
     JoinServiceImpl joinService;
     @Autowired
     ClickHouseJdbcUtils clickHouseJdbcUtils;
+   /* @Test
+    public void test(){
+        DagNode join = new DagNode(new DagNodeInputDto("123", "join", JSONObject.parse("{\"jobType\":\"join\",\n" +
+                "            \"dataSource\": [\"dataflow.id_address\",\"dataflow.id_name\"],\n" +
+                "            \"joinType\":\"inner Join\",\n" +
+                "            \"joinKeys\":[{\"left\":\"id\",\"right\":\"id\"}],\n" +
+                "            \"includePrefixes\":\"false\",\n" +
+                "            \"leftPrefix\":\"left_\",\n" +
+                "            \"rightPrefix\":\"right_\"}")));
+        HashMap<Integer, StringBuffer> integerStringBufferHashMap = new HashMap<>();
+        integerStringBufferHashMap.put(0,new StringBuffer("id = 3"));
+        integerStringBufferHashMap.put(1,new StringBuffer("1=1"));
 
+        joinService.saveToClickHouse(join,integerStringBufferHashMap);
+    }*/
 
     @ParameterizedTest
     @MethodSource("aggregateProvider")
@@ -34,8 +50,7 @@ public class JoinTest {
 
         //git test
         joinDescription.setJobType("join");
-        joinDescription.setLeftDataSource((String)map.get("leftDataSource"));
-        joinDescription.setRightDataSource((String)map.get("rightDataSource"));
+        joinDescription.setDataSource(new String[]{(String)map.get("leftDataSource"),(String)map.get("rightDataSource")});
         joinDescription.setJoinType((String)map.get("joinType"));
         joinDescription.setJoinKeys((JSONObject[])map.get("joinKeys"));
         joinDescription.setIncludePrefixes((String)map.get("includePrefixes"));

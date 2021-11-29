@@ -1,9 +1,10 @@
 //添加节点
+//new table No.1
 {
   "job": "start_job",
   "tableDescription": {
     "jobType": "table",
-    "dataSource": "airuuid",
+    "dataSource": ["dataflow.airuuid"],
     "filter": "(AQI>30 AND O3 = 0 AND startsWith(city,'新'))",
     "group": ["city"],
     "limit": 2000,
@@ -11,16 +12,31 @@
   },
   "operatorType": "table",
   "dagType": "addNode",
-  "operatorId": "wjhtest3",
-  "workspaceId": "stringd12a3d"
+  "operatorId": "wjhtest1124_1",
+  "workspaceId": "wjhsp"
 }
-
+//new table No.2
 {
   "job": "start_job",
-  "JoinDescription": {
+  "tableDescription": {
+    "jobType": "table",
+    "dataSource": ["dataflow.airuuid"],
+    "filter": "(AQI>30 AND O3 = 0 AND startsWith(city,'新'))",
+    "group": ["city"],
+    "limit": 2000,
+    "project": ["city","count(city)"]
+  },
+  "operatorType": "table",
+  "dagType": "addNode",
+  "operatorId": "wjhtest1124_2",
+  "workspaceId": "wjhsp"
+}
+//new join No.3
+{
+  "job": "start_job",
+  "joinDescription": {
             "jobType":"join",
-            "leftDataSource": "test1",
-            "rightDataSource": "test2",
+            "dataSource": ["",""],
             "joinType":"innerJoin",
             "joinKeys":[{"left":"id","right":"id"},{"left":"id2","right":"id2"}],
             "includePrefixes":"false",
@@ -29,29 +45,61 @@
   },
   "operatorType": "join",
   "dagType": "addNode",
-  "operatorId": "wjhtest3",
-  "workspaceId": "stringd12a3d"
+  "operatorId": "wjhtest1124_3",
+  "workspaceId": "wjhsp"
+}
+//new filter1 No.4
+{
+  "job": "start_job",
+  "filterDescription": {
+           "dataSource": ["dataflow.airuuid"],
+           "filter": "AQI > 30 or AQI <10",
+           "jobType": "filter",
+           "limit": -1
+  },
+  "operatorType": "filter",
+  "dagType": "addNode",
+  "operatorId": "wjhtest1124_4",
+  "workspaceId": "wjhsp"
+}
+
+//new filter2 No.5
+{
+  "job": "start_job",
+  "filterDescription": {
+           "dataSource": ["dataflow.airuuid"],
+           "filter": "AQI > 31 or AQI <10",
+           "jobType": "filter",
+           "limit": -1
+  },
+  "operatorType": "filter",
+  "dagType": "addNode",
+  "operatorId": "wjhtest1124_5",
+  "workspaceId": "wjhsp"
 }
 
 
+
 //更新节点
+//更新table No.6
 {
   "job": "start_job",
   "tableDescription": {
     "jobType": "table",
-    "dataSource": "airuuid",
-    "filter": "(AQI>30 AND O3 = 0 AND startsWith(city,'新'))",
+    "dataSource": ["airuuid"],
+    "filter": "(AQI>30 AND O3 = 0 AND startsWith(city,'旧'))",
     "group": ["city"],
     "limit": 2000,
     "project": ["city","count(city)"]
   },
   "operatorType": "table",
   "dagType": "updateNode",
-  "operatorId": "wjhtest1",
-  "workspaceId": "stringd12a3d"
+  "operatorId": "wjhtest1124_1",
+  "workspaceId": "wjhsp"
 }
 
-//删除节点
+
+//删除节点 No.13
 {
   "job": "start_job",
   "dagDescription": {
@@ -59,31 +107,87 @@
   },
   "operatorType": "dag",
   "dagType": "removeNode",
-  "operatorId": "wjhtest3",
-  "workspaceId": "stringd12a3d"
+  "operatorId": "wjhtest1124_4",
+  "workspaceId": "wjhsp"
 }
+
 //添加边
+//table1---join No.7
 {
   "job": "start_job",
   "dagDescription": {
     "jobType": "addEdge",
-    "preNodeId": "wjhtest1",
-    "nextNodeId": "wjhtest3"
+    "preNodeId": "wjhtest1124_1",
+    "nextNodeId": "wjhtest1124_3",
+    "slotIndex": "0"
   },
   "operatorType": "dag",
   "dagType": "addEdge",
-  "workspaceId": "stringd12a3d"
+  "workspaceId": "wjhsp"
 }
-
-//删除边
+//table2---join No.8
 {
   "job": "start_job",
   "dagDescription": {
     "jobType": "addEdge",
-    "preNodeId": "wjhtest1",
-    "nextNodeId": "wjhtest2"
+    "preNodeId": "wjhtest1124_2",
+    "nextNodeId": "wjhtest1124_3",
+    "slotIndex": "1"
+  },
+  "operatorType": "dag",
+  "dagType": "addEdge",
+  "workspaceId": "wjhsp"
+}
+//filter1-----join_slot0 No.9
+{
+  "job": "start_job",
+  "dagDescription": {
+    "jobType": "addEdge",
+    "preNodeId": "wjhtest1124_4",
+    "nextNodeId": "wjhtest1124_3",
+    "slotIndex": "0"
+  },
+  "operatorType": "dag",
+  "dagType": "addEdge",
+  "workspaceId": "wjhsp"
+}
+
+//filter2-----join_slot0 No.10
+{
+  "job": "start_job",
+  "dagDescription": {
+    "jobType": "addEdge",
+    "preNodeId": "wjhtest1124_5",
+    "nextNodeId": "wjhtest1124_3",
+    "slotIndex": "0"
+  },
+  "operatorType": "dag",
+  "dagType": "addEdge",
+  "workspaceId": "wjhsp"
+}
+//filter1-----join_slot1 No.11
+{
+  "job": "start_job",
+  "dagDescription": {
+    "jobType": "addEdge",
+    "preNodeId": "wjhtest1124_4",
+    "nextNodeId": "wjhtest1124_3",
+    "slotIndex": "1"
+  },
+  "operatorType": "dag",
+  "dagType": "addEdge",
+  "workspaceId": "wjhsp"
+}
+//删除边 No.12
+{
+  "job": "start_job",
+  "dagDescription": {
+    "jobType": "addEdge",
+    "preNodeId": "wjhtest1124_1",
+    "nextNodeId": "wjhtest1124_3",
+    "slotIndex": "0"
   },
   "operatorType": "dag",
   "dagType": "removeEdge",
-  "workspaceId": "stringd12a3d"
+  "workspaceId": "wjhsp"
 }

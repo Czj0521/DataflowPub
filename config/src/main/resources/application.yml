@@ -52,6 +52,11 @@ spring:
         max-wait: -1
         max-idle: 50
         min-idle: 5
+  thymeleaf:
+    cache: false
+    mode: LEGACYHTML5
+    prefix: classpath:/templates/
+    suffix: .html
 clickhouse:
   http:
     url: http://47.104.202.153:8123/?query=
@@ -68,3 +73,5 @@ flink:
       path: ./FlinkJob/jar/
       testpath: D:\JetBrains\local\DataFlow\FlinkJob\target\
       name: FlinkJob-1.0-SNAPSHOT-jar-with-dependencies.jar
+server:
+  port: 8080

@@ -23,5 +23,5 @@ public interface TableJobService extends OperatorService<TableDescription> {
    */
   String generateDataSourceSql(TableDescription tableDescription);
 
-  List<Map<String, Object>> saveToClickHouse(DagNode dagNode, String filter);
+  List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap);
 }

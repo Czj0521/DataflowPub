@@ -128,20 +128,21 @@ public class TableJobServiceImpl implements TableJobService {
   }
 
   @Override
-  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, String filter) {
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap) {
     // 读取数据源，并根据filter加入过滤条件
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
-    String filter1 = nodeDescription.getString("filter");
-    if (!StringUtils.isEmpty(filter1)) {
-      nodeDescription.put("filter", filter1 + " AND " + filter);
+    String filter0 = nodeDescription.getString("filter");
+    if (!StringUtils.isEmpty(filter0)) {
+      nodeDescription.put("filter", filter0 + " AND " + preFilterMap.get(0).toString());
     } else {
-      nodeDescription.put("filter", filter);
+      nodeDescription.put("filter", preFilterMap.get(0).toString());
     }
 
     TableDescription tableDescription = nodeDescription.toJavaObject(TableDescription.class);
 
     // 将计算结果保存到ClickHouse
-    String sql = new TableSqlGenerator(tableDescription).generate();
+    TableSqlGenerator tableSqlGenerator = new TableSqlGenerator(tableDescription);
+    String sql = tableSqlGenerator.generateDataSourceSql();
     String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + dagNode.getNodeId();
 
     StringBuilder sb = new StringBuilder();
@@ -156,7 +157,7 @@ public class TableJobServiceImpl implements TableJobService {
       clickHouseJdbcUtils.execute(viewSql);
     }
 
-    // 返回结果
-    return clickHouseJdbcUtils.queryForList(sql);
+    // return the result
+    return clickHouseJdbcUtils.queryForList(tableSqlGenerator.generate());
   }
 }

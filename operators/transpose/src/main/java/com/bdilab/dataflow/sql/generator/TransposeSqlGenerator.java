@@ -103,11 +103,11 @@ public class TransposeSqlGenerator extends SqlGeneratorBase implements LinkSqlGe
 
   @Override
   public String generate() {
-    return project() + super.datasource() + group() + super.limit();
+    return project() + super.datasource(0) + group() + super.limit();
   }
 
   @Override
   public String generateDataSourceSql() {
-    return project() + super.datasource() + group();
+    return project() + super.datasource(0) + group();
   }
 }

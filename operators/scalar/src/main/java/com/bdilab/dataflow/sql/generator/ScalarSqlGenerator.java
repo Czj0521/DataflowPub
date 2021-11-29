@@ -28,6 +28,6 @@ public class ScalarSqlGenerator extends SqlGeneratorBase implements LinkSqlGener
 
   @Override
   public String generateDataSourceSql() {
-    return MessageFormat.format("SELECT {0}(`{1}`) AS scalar", aggregation, target) + datasource();
+    return MessageFormat.format("SELECT {0}(`{1}`) AS scalar", aggregation, target) + datasource(0);
   }
 }

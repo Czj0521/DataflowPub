@@ -1,8 +1,14 @@
 package com.bdilab.dataflow.utils.dag;
 
+
 import java.util.ArrayList;
 import java.util.List;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
 import lombok.Data;
+import org.springframework.util.StringUtils;
 
 /**
  * The node of dag.
@@ -17,20 +23,12 @@ public class DagNode {
    */
   private String nodeId;
 
-  /**
-   * The list containing the ID of the preceding nodes.
-   */
-  private List<String> preNodesId;
+  private InputDataSlot[] inputDataSlots;
 
   /**
    * The list containing the ID of the subsequent nodes.
    */
-  private List<String> nextNodesId;
-
-  /**
-   * The node ID that filter this node data source.
-   */
-  private List<String> filterId = new ArrayList<>();
+  private List<OutputDataSlot> outputDataSlots;
 
   /**
    * The type of operator.
@@ -48,51 +46,51 @@ public class DagNode {
   private DagNode() {
   }
 
-  /**
-   * Constructor.
-   *
-   * @param nodeId node ID
-   */
-  public DagNode(String nodeId) {
-    if (nodeId == null || "".equals(nodeId)) {
-      throw new RuntimeException("NodeId can not be empty !");
+  public DagNode(DagNodeInputDto dagNodeInputDto){
+    this.nodeId = dagNodeInputDto.getNodeId();
+    JSONArray dataSources = ((JSONObject) dagNodeInputDto.getNodeDescription()).getJSONArray("dataSource");
+    this.inputDataSlots = new InputDataSlot[dataSources.size()];
+    for (int i = 0; i < dataSources.size(); i++) {
+      this.inputDataSlots[i] = new InputDataSlot(dataSources.getString(i));
     }
-    this.nodeId = nodeId;
-    this.preNodesId = new ArrayList<>();
-    this.nextNodesId = new ArrayList<>();
+    this.outputDataSlots = new ArrayList<>();
+    this.nodeType = dagNodeInputDto.getNodeType();
+    this.nodeDescription = dagNodeInputDto.getNodeDescription();
   }
 
-  /**
-   * Constructor.
-   *
-   * @param nodeId node ID
-   * @param nodeType node type
-   */
-  public DagNode(String nodeId, String nodeType) {
-    if (nodeId == null || "".equals(nodeId)) {
-      throw new RuntimeException("NodeId can not be empty !");
-    }
-    this.nodeId = nodeId;
-    this.preNodesId = new ArrayList<>();
-    this.nextNodesId = new ArrayList<>();
-    this.nodeType = nodeType;
+  public Integer getInputSlotSize() {
+    return this.inputDataSlots.length;
   }
 
-  /**
-   * Constructor.
-   *
-   * @param nodeId node ID
-   * @param nodeType node type
-   * @param nodeDescription node description
-   */
-  public DagNode(String nodeId, String nodeType, Object nodeDescription) {
-    if (nodeId == null || "".equals(nodeId)) {
-      throw new RuntimeException("NodeId can not be empty !");
+  public String getPreNodeId(int slotIndex) {
+    return this.inputDataSlots[slotIndex].getPreNodeId();
+  }
+
+  void setPreNodeId(int slotIndex, String preNodeId) {
+    this.inputDataSlots[slotIndex].setPreNodeId(preNodeId);
+  }
+
+  public List<String> getFilterId(int slotIndex) {
+    return this.inputDataSlots[slotIndex].getFilterId();
+  }
+
+  public String getDataSource(int slotIndex) {
+    return this.inputDataSlots[slotIndex].getDataSource();
+  }
+
+  void setDataSource(int slotIndex, String dataSource) {
+    this.inputDataSlots[slotIndex].setDataSource(dataSource);
+  }
+
+  public List<String> getAllDataSources() {
+    List<String> dataSources = new ArrayList<>();
+    for (InputDataSlot inputDataSlot : this.inputDataSlots) {
+      dataSources.add(inputDataSlot.getDataSource());
     }
-    this.nodeId = nodeId;
-    this.preNodesId = new ArrayList<>();
-    this.nextNodesId = new ArrayList<>();
-    this.nodeType = nodeType;
-    this.nodeDescription = nodeDescription;
+    return dataSources;
+  }
+
+  void removeOutputSlot(OutputDataSlot removeOutputSlot){
+    this.outputDataSlots.remove(removeOutputSlot);
   }
 }

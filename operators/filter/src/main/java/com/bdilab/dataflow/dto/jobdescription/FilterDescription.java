@@ -19,7 +19,7 @@ public class FilterDescription extends JobDescription {
   String filter;
 
   public FilterDescription(String jobType, String dataSource, Integer limit, String filter) {
-    super(jobType, dataSource, limit);
+    super(jobType, new String[]{dataSource}, limit);
     this.filter = filter;
   }
 

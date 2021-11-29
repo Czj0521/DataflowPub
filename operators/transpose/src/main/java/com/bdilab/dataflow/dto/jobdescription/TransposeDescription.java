@@ -45,7 +45,7 @@ public class TransposeDescription extends JobDescription {
   public TransposeDescription(String jobType, String dataSource,
       int limit, String column, boolean columnIsNumeric, String[] groupBy,
       Map<String, String> attributeWithAggregationMap, int topTransposedValuesNum) {
-    super(jobType, dataSource, limit);
+    super(jobType, new String[]{dataSource}, limit);
     this.column = column;
     this.columnIsNumeric = columnIsNumeric;
     this.attributeWithAggregationMap = attributeWithAggregationMap;
@@ -54,7 +54,7 @@ public class TransposeDescription extends JobDescription {
   }
 
   public TransposeDescription(String jobType, String dataSource, int limit) {
-    super(jobType, dataSource, limit);
+    super(jobType, new String[]{dataSource}, limit);
     topTransposedValuesNum = 20;
   }
 

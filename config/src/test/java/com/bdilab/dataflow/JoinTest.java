@@ -31,6 +31,8 @@ public class JoinTest {
     @MethodSource("aggregateProvider")
     public void testJoin(HashMap<String,Object> map) {
         JoinDescription joinDescription = new JoinDescription();
+
+        //git test
         joinDescription.setJobType("join");
         joinDescription.setLeftDataSource((String)map.get("leftDataSource"));
         joinDescription.setRightDataSource((String)map.get("rightDataSource"));

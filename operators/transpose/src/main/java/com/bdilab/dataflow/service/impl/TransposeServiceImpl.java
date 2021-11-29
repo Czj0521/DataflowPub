@@ -28,7 +28,7 @@ public class TransposeServiceImpl implements TransposeService {
    */
   private List<String> columnValues(TransposeDescription transposeDescription) {
     String column = transposeDescription.getColumn();
-    String datasource = transposeDescription.getDataSource();
+    String datasource = transposeDescription.getDataSource()[0];
     String sql = "SELECT distinct(" + column + ") FROM " + datasource;
     return clickHouseJdbcUtils.queryForStrList(sql);
   }

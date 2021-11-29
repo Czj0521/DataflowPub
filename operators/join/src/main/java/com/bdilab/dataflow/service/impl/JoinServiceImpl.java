@@ -11,10 +11,13 @@ import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import java.util.List;
 import java.util.Map;
 
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
 
 
 /**
@@ -32,6 +35,8 @@ public class JoinServiceImpl implements JoinService {
 
   @Autowired
   TableMetadataServiceImpl tableMetadataService;
+  @Resource
+  ClickHouseManager clickHouseManager;
 
   @Override
   public List<Map<String, Object>> execute(JoinDescription joinDescription) {
@@ -68,15 +73,8 @@ public class JoinServiceImpl implements JoinService {
 
     //创建视图（后续提取公共部分），此处代码不同操作符都一样
     String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + dagNode.getNodeId();
-    StringBuilder sb = new StringBuilder();
-    String viewSql = sb.append("CREATE VIEW ").append(tableName).append(" AS ")
-            .append("(").append(sql).append(")").toString();
-    try {
-      clickHouseJdbcUtils.execute(viewSql);
-    } catch (Exception e) {
-      clickHouseJdbcUtils.execute("drop view " + tableName);
-      clickHouseJdbcUtils.execute(viewSql);
-    }
+
+    clickHouseManager.createView(tableName, sql);
 
     // return the result,join return null;
     return null;

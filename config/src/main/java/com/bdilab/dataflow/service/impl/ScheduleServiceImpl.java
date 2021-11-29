@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.dto.JobOutputJson;
 import com.bdilab.dataflow.service.ScheduleService;
@@ -80,12 +81,14 @@ public class ScheduleServiceImpl implements ScheduleService {
           break;
         case "transpose":
           break;
+        case "scalar":
+          break;
         default:
           throw new RuntimeException("not exist this operator !");
       }
 
       if(null != outputJson) {
-        WebSocketServer.sendMessage(outputJson.toString());
+        WebSocketServer.sendMessage(JSON.toJSONString(outputJson).toString());
       }
     }
   }

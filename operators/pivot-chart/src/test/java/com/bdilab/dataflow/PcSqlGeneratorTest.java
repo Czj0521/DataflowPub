@@ -25,7 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = PivotChartTestApplication.class)
+@SpringBootTest(classes = com.bdilab.dataflow.PivotChartTestApplication.class)
 public class PcSqlGeneratorTest {
   private static PivotChartDescription pivotChartDescription = new PivotChartDescription();
   private static PivotChartSqlGenerator pivotChartSqlGenerator;
@@ -39,7 +39,7 @@ public class PcSqlGeneratorTest {
 
   @Test
   public void sqlGeneration() {
-    pivotChartDescription.setDataSource("dataflow.airuuid");
+    pivotChartDescription.setDataSource(new String[]{"dataflow.airuuid"});
     pivotChartDescription.setJobType("pivot-chart");
     pivotChartDescription.setLimit(100);
     Menu xaxis = new Menu();
@@ -70,7 +70,7 @@ public class PcSqlGeneratorTest {
 
   @Test
   public void datetimeBinning() {
-    pivotChartDescription.setDataSource("dataflow.airuuid");
+    pivotChartDescription.setDataSource(new String[]{"dataflow.airuuid"});
     pivotChartDescription.setJobType("pivot-chart");
     pivotChartDescription.setLimit(100);
     Menu xaxis = new Menu();

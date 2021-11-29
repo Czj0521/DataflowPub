@@ -56,7 +56,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
   public PivotChartSqlGenerator(PivotChartDescription description) {
     super(description);
     this.description = description;
-    this.datasource = description.getDataSource();
+    this.datasource = description.getDataSource()[0];
     this.clickHouseJdbcUtils = SpringUtil.getBean(ClickHouseJdbcUtils.class);
     this.attributeAndBinningSet = new LinkedHashSet<>();
     this.aggregationSet = new LinkedHashSet<>();
@@ -105,7 +105,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
     }
 
 
-    return sql + Communal.BLANK + SqlConstants.FROM + description.getDataSource() + Communal.BLANK
+    return sql + Communal.BLANK + SqlConstants.FROM + description.getDataSource()[0] + Communal.BLANK
         + groupBy
         + Communal.BLANK + orderBy
         + Communal.BLANK + SqlConstants.LIMIT + SqlConstants.POINTS;

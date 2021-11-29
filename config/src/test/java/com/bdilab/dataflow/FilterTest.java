@@ -17,7 +17,7 @@ public class FilterTest {
   @Test
   public void testFilter() {
     String profilerJson = "{\n" +
-        "    \"dataSource\": \"dataflow.airuuid\",\n" +
+        "    \"dataSource\": [\"dataflow.airuuid\"],\n" +
         "    \"filter\": \"AQI > 30 or AQI <10\",\n" +
         "    \"jobType\": \"\",\n" +
         "    \"limit\": 100,\n" +

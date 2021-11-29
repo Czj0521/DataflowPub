@@ -10,21 +10,12 @@ import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.InputDataSlot;
 import com.bdilab.dataflow.utils.dag.RealTimeDag;
-
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
+import java.util.*;
 
 /**
  * Task scheduling module.
@@ -90,12 +81,14 @@ public class ScheduleServiceImpl implements ScheduleService {
           break;
         case "transpose":
           break;
+        case "scalar":
+          break;
         default:
           throw new RuntimeException("not exist this operator !");
       }
 
       if(null != outputJson) {
-        WebSocketServer.sendMessage(outputJson.toString());
+        WebSocketServer.sendMessage(JSON.toJSONString(outputJson).toString());
       }
     }
   }

@@ -17,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author wjh
  */
-@ServerEndpoint("/webSocket2")
+@ServerEndpoint("/webSocket")
 @Service
 public class WebSocketServer {
 

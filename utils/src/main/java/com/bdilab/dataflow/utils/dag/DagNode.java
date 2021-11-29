@@ -82,13 +82,13 @@ public class DagNode {
     this.inputDataSlots[slotIndex].setDataSource(dataSource);
   }
 
-  public List<String> getAllDataSources() {
-    List<String> dataSources = new ArrayList<>();
-    for (InputDataSlot inputDataSlot : this.inputDataSlots) {
-      dataSources.add(inputDataSlot.getDataSource());
-    }
-    return dataSources;
-  }
+//  public List<String> getAllDataSources() {
+//    List<String> dataSources = new ArrayList<>();
+//    for (InputDataSlot inputDataSlot : getInputDataSlots()) {
+//      dataSources.add(inputDataSlot.getDataSource());
+//    }
+//    return dataSources;
+//  }
 
   void removeOutputSlot(OutputDataSlot removeOutputSlot){
     this.outputDataSlots.remove(removeOutputSlot);

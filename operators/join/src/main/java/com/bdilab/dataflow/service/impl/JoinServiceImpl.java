@@ -14,6 +14,7 @@ import java.util.Map;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -46,8 +47,20 @@ public class JoinServiceImpl implements JoinService {
     //设置过滤后的join的两个数据源
     StringBuffer leftFilter = preFilterMap.get(0);
     StringBuffer rightFilter = preFilterMap.get(1);
-    String dataSourceWithFilter0 = "(SELECT * FROM "+ joinDescription.getDataSource()[0]+" WHERE " + leftFilter+")";
-    String dataSourceWithFilter1 = "(SELECT * FROM "+ joinDescription.getDataSource()[1]+" WHERE " + rightFilter+")";
+
+    String dataSourceWithFilter0;
+    String dataSourceWithFilter1;
+    if(leftFilter.length()!=0){
+      dataSourceWithFilter0 = "(SELECT * FROM "+ joinDescription.getDataSource()[0]+" WHERE " + leftFilter+")";
+    }else{
+      dataSourceWithFilter0 = joinDescription.getDataSource()[0];
+    }
+    if(rightFilter.length()!=0){
+      dataSourceWithFilter1 = "(SELECT * FROM "+ joinDescription.getDataSource()[1]+" WHERE " + rightFilter+")";
+    }else{
+      dataSourceWithFilter1 = joinDescription.getDataSource()[1];
+    }
+
 
     //生成sql
     joinDescription.setDataSource(new String[]{dataSourceWithFilter0,dataSourceWithFilter1});

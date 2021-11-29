@@ -27,7 +27,7 @@ public class JoinTest {
     JoinServiceImpl joinService;
     @Autowired
     ClickHouseJdbcUtils clickHouseJdbcUtils;
-   /* @Test
+/*    @Test
     public void test(){
         DagNode join = new DagNode(new DagNodeInputDto("123", "join", JSONObject.parse("{\"jobType\":\"join\",\n" +
                 "            \"dataSource\": [\"dataflow.id_address\",\"dataflow.id_name\"],\n" +
@@ -38,7 +38,7 @@ public class JoinTest {
                 "            \"rightPrefix\":\"right_\"}")));
         HashMap<Integer, StringBuffer> integerStringBufferHashMap = new HashMap<>();
         integerStringBufferHashMap.put(0,new StringBuffer("id = 3"));
-        integerStringBufferHashMap.put(1,new StringBuffer("1=1"));
+        integerStringBufferHashMap.put(1,new StringBuffer(""));
 
         joinService.saveToClickHouse(join,integerStringBufferHashMap);
     }*/

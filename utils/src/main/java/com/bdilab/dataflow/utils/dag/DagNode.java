@@ -1,14 +1,12 @@
 package com.bdilab.dataflow.utils.dag;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
-import org.springframework.util.StringUtils;
 
 /**
  * The node of dag.
@@ -46,9 +44,15 @@ public class DagNode {
   private DagNode() {
   }
 
-  public DagNode(DagNodeInputDto dagNodeInputDto){
+  /**
+   * Constructor.
+   *
+   * @param dagNodeInputDto dagNodeInputDto
+   */
+  public DagNode(DagNodeInputDto dagNodeInputDto) {
     this.nodeId = dagNodeInputDto.getNodeId();
-    JSONArray dataSources = ((JSONObject) dagNodeInputDto.getNodeDescription()).getJSONArray("dataSource");
+    JSONArray dataSources =
+        ((JSONObject) dagNodeInputDto.getNodeDescription()).getJSONArray("dataSource");
     this.inputDataSlots = new InputDataSlot[dataSources.size()];
     for (int i = 0; i < dataSources.size(); i++) {
       this.inputDataSlots[i] = new InputDataSlot(dataSources.getString(i));
@@ -58,39 +62,54 @@ public class DagNode {
     this.nodeDescription = dagNodeInputDto.getNodeDescription();
   }
 
+  @JSONField(serialize = false)
   public Integer getInputSlotSize() {
     return this.inputDataSlots.length;
   }
 
+  @JSONField(serialize = false)
   public String getPreNodeId(int slotIndex) {
     return this.inputDataSlots[slotIndex].getPreNodeId();
   }
 
+  @JSONField(serialize = false)
   void setPreNodeId(int slotIndex, String preNodeId) {
     this.inputDataSlots[slotIndex].setPreNodeId(preNodeId);
   }
 
+  @JSONField(serialize = false)
   public List<String> getFilterId(int slotIndex) {
     return this.inputDataSlots[slotIndex].getFilterId();
   }
 
-  public String getDataSource(int slotIndex) {
+  @JSONField(serialize = false)
+  public String getInputDataSource(int slotIndex) {
     return this.inputDataSlots[slotIndex].getDataSource();
   }
 
+  @JSONField(serialize = false)
   void setDataSource(int slotIndex, String dataSource) {
     this.inputDataSlots[slotIndex].setDataSource(dataSource);
+    JSONObject nodeDescription = (JSONObject) this.nodeDescription;
+    JSONArray decDataSource = nodeDescription.getJSONArray("dataSource");
+    decDataSource.set(slotIndex, dataSource);
+    nodeDescription.put("dataSource", decDataSource);
   }
 
-//  public List<String> getAllDataSources() {
-//    List<String> dataSources = new ArrayList<>();
-//    for (InputDataSlot inputDataSlot : getInputDataSlots()) {
-//      dataSources.add(inputDataSlot.getDataSource());
-//    }
-//    return dataSources;
-//  }
+  /**
+   * Get all input dataSources.
+   */
+  @JSONField(serialize = false)
+  public List<String> getInputDataSources() {
+    List<String> dataSources = new ArrayList<>();
+    for (int i = 0; i < getInputSlotSize(); i++) {
+      dataSources.add(getInputDataSource(i));
+    }
+    return dataSources;
+  }
 
-  void removeOutputSlot(OutputDataSlot removeOutputSlot){
+  @JSONField(serialize = false)
+  void removeOutputSlot(OutputDataSlot removeOutputSlot) {
     this.outputDataSlots.remove(removeOutputSlot);
   }
 }

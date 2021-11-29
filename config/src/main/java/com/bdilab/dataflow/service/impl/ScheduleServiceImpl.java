@@ -81,7 +81,7 @@ public class ScheduleServiceImpl implements ScheduleService {
           break;
         case "filter":
           String filter = preFilterMap.get(0).toString() + " AND "+ parseFilterAndPivot(node);
-          log.info("The current filter :" + filter);
+//          log.info("-- The current filter :" + filter);
           dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
           break;
         case "join":
@@ -119,6 +119,7 @@ public class ScheduleServiceImpl implements ScheduleService {
    * @param workspaceId workspace id
    * @param operatorId  operator id
    */
+  @Override
   public List<String> getSortedList(String workspaceId, String operatorId) {
     List<String> result = new ArrayList<>();
 

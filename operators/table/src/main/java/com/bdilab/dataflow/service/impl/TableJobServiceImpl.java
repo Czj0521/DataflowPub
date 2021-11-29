@@ -12,6 +12,7 @@ import com.bdilab.dataflow.model.TableStatistic;
 import com.bdilab.dataflow.service.TableJobService;
 import com.bdilab.dataflow.sql.generator.TableSqlGenerator;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -41,6 +42,8 @@ public class TableJobServiceImpl implements TableJobService {
   private TableStatisticMapper tableStatisticMapper;
   @Autowired
   private DataSourceStatisticMapper dataSourceStatisticMapper;
+  @Autowired
+  private ClickHouseManager clickHouseManager;
 
 
   /**
@@ -145,17 +148,7 @@ public class TableJobServiceImpl implements TableJobService {
     String sql = tableSqlGenerator.generateDataSourceSql();
     String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + dagNode.getNodeId();
 
-    StringBuilder sb = new StringBuilder();
-    String viewSql = sb.append("CREATE VIEW ").append(tableName).append(" AS ")
-      .append("(").append(sql).append(")").toString();
-    log.info(viewSql);
-
-    try {
-      clickHouseJdbcUtils.execute(viewSql);
-    } catch (Exception e) {
-      clickHouseJdbcUtils.execute("drop view " + tableName);
-      clickHouseJdbcUtils.execute(viewSql);
-    }
+    clickHouseManager.createView(tableName, sql);
 
     // return the result
     return clickHouseJdbcUtils.queryForList(tableSqlGenerator.generate());

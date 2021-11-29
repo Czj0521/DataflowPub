@@ -53,7 +53,6 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         if(isDataSourceReady(dataSources)){
           scheduleService.executeTask(workspaceId, operatorId);
         }
-        scheduleService.executeTask(workspaceId, operatorId);
         break;
       case "removeNode":
         List<DagNode> nextNodes = realTimeDag.getNextNodes(workspaceId, operatorId);

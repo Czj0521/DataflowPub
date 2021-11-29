@@ -3,7 +3,7 @@ package com.bdilab.dataflow;
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.service.impl.ScheduleServiceImpl;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
-import com.bdilab.dataflow.utils.clickhouse.ClickHouseUtils;
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseManager;
 import com.bdilab.dataflow.utils.dag.*;
 import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
 import com.bdilab.dataflow.utils.redis.RedisUtils;
@@ -30,7 +30,7 @@ public class DagTest {
   @Resource
   ClickHouseJdbcUtils clickHouseJdbcUtils;
   @Resource
-  ClickHouseUtils clickHouseUtils;
+  ClickHouseManager clickHouseManager;
   @Resource
   DagFilterManager dagFilterManager;
   @Resource

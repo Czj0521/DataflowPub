@@ -38,5 +38,14 @@ public class CommonUtils {
     return jsonObjects;
   }
 
+  public static String[] jsonArrayToStringArray(JSONArray jsonArray) {
+    int len = jsonArray.size();
+    String[] strings = new String[len];
+    for (int i = 0; i < len; i++) {
+      strings[i] = jsonArray.getString(i);
+    }
+    return strings;
+  }
+
 
 }

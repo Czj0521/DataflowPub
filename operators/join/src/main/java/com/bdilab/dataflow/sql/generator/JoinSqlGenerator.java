@@ -20,8 +20,7 @@ import java.util.Set;
 public class JoinSqlGenerator implements LinkSqlGenerator {
 //      "JoinDescription": {
 //          "jobType":"join"
-//          "leftDataSource": "test1",
-//          "rightDataSource": "test2",
+//          "dataSource": ["test1","test2"],
 //          "joinType":"innerJoin",
 //          "joinKeys":[{"left":"id","right":"id"},{"left":"id2","right":"id2"}],
 //          "includePrefixes":"false",
@@ -44,8 +43,8 @@ public class JoinSqlGenerator implements LinkSqlGenerator {
    * @return String
    */
   public String project() {
-    String inputLeft = joinDescription.getLeftDataSource();
-    String inputRight = joinDescription.getRightDataSource();
+    String inputLeft = joinDescription.getDataSource()[0];
+    String inputRight = joinDescription.getDataSource()[1];
     String leftPrefix = joinDescription.getLeftPrefix();
     String rightPrefix = joinDescription.getRightPrefix();
     Set<String> joinkeysRight = new HashSet<>();
@@ -82,8 +81,8 @@ public class JoinSqlGenerator implements LinkSqlGenerator {
    * @return String
    */
   public String datasource() {
-    String inputLeft = joinDescription.getLeftDataSource();
-    String inputRight = joinDescription.getRightDataSource();
+    String inputLeft = joinDescription.getDataSource()[0];
+    String inputRight = joinDescription.getDataSource()[1];
     String joinType = joinDescription.getJoinType();
     if (inputLeft == null || inputRight == null || joinType == null) {
       throw new UncheckException(ExceptionMsgEnum.TABLE_SQL_PARSE_ERROR.getMsg());

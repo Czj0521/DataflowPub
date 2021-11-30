@@ -2,7 +2,8 @@ package com.bdilab.dataflow.service;
 
 import com.bdilab.dataflow.dto.jobdescription.PivotChartDescription;
 import com.bdilab.dataflow.dto.joboutputjson.ParamTypeRespObj;
-import java.util.List;
+
+import com.bdilab.dataflow.utils.R;
 import org.springframework.stereotype.Service;
 
 /**
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface PivotChartService {
-  List<Object> getPivotChart(PivotChartDescription description);
+  R getPivotChart(PivotChartDescription description);
 
   ParamTypeRespObj getType(String type);
 }

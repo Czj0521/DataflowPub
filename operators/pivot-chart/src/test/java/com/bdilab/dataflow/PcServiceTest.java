@@ -8,6 +8,8 @@ import com.bdilab.dataflow.service.impl.PivotChartServiceImpl;
 import com.bdilab.dataflow.sql.generator.PivotChartSqlGenerator;
 import java.text.MessageFormat;
 import java.util.List;
+
+import com.bdilab.dataflow.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +56,7 @@ public class PcServiceTest {
 
 
 
-    List<Object> res = pivotChartService.getPivotChart(pivotChartDescription);
+    R res = pivotChartService.getPivotChart(pivotChartDescription);
     log.info(MessageFormat.format("[Pivot Chart Response]: {0}", res));
   }
 
@@ -80,7 +82,7 @@ public class PcServiceTest {
     Menu[] menus = new Menu[] {xaxis, yaxis};
     pivotChartDescription.setMenus(menus);
 
-    List<Object> res = pivotChartService.getPivotChart(pivotChartDescription);
+    R res = pivotChartService.getPivotChart(pivotChartDescription);
     log.info(MessageFormat.format("[Pivot Chart Response]: {0}", res));
     log.info("\n" + JSON.toJSONString(res, true));
   }

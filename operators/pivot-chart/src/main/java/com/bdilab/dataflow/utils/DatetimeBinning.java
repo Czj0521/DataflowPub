@@ -2,8 +2,8 @@ package com.bdilab.dataflow.utils;
 
 import com.bdilab.dataflow.dto.jobdescription.Menu;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+
 import static com.bdilab.dataflow.constants.BinningConstants.*;
 
 /**
@@ -14,6 +14,11 @@ import static com.bdilab.dataflow.constants.BinningConstants.*;
 public class DatetimeBinning {
   private String column = null;
   private String binning = null;
+
+  /**
+   * 存储日期分箱的左右属性（如SalesDate_bin,SalesDate_bin_RIGHT）
+   */
+  public static ThreadLocal<List<String>> DateTimeListThreadLocal = new ThreadLocal<>();
 
   public DatetimeBinning(Menu menu) {
     if (menu == null || menu.getAttribute() == null || menu.getBinning() == null) {
@@ -33,7 +38,7 @@ public class DatetimeBinning {
         break;
       default:
         throw new RuntimeException(MessageFormat.format("Unsupported DatetimeBinning: {0}.",
-            binning));
+                binning));
     }
     column = menu.getAttribute();
   }
@@ -43,6 +48,10 @@ public class DatetimeBinning {
   public List<String> binningAttributes() {
     String left = MessageFormat.format("{0} AS {1}", left(), rename());
     String right = MessageFormat.format("{0} AS {1}", right(), rename() + "_RIGHT");
+    String params = rename() + "," + rename() +  "_RIGHT";
+    List<String> DateTimeSetList = new ArrayList<>();
+    DateTimeSetList.add(params);
+    DateTimeListThreadLocal.set(DateTimeSetList);
     // String count = MessageFormat.format("count(*) AS {0}", column + "_COUNT");
     // String percent = MessageFormat.format("count(*) / {0} * 100 AS {1}",
     // ROWS, column + "_PERCENTAGE");

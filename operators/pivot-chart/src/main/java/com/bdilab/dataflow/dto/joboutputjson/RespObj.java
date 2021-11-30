@@ -27,10 +27,15 @@ public class RespObj {
   /**
    * 值的基数集合，用于坐标轴或展示基准.
    */
-  private Set<String> distinctValues;
+  private Set<Object> distinctValues;
 
   /**
    * 属性的所有值.
    */
-  private List<String> values;
+  private List<?> values;
+
+  /**
+   * 返回数据的数量.
+   */
+  private int size;
 }

@@ -6,9 +6,9 @@ import com.bdilab.dataflow.constants.BinningConstants;
 import com.bdilab.dataflow.dto.jobdescription.PivotChartDescription;
 import com.bdilab.dataflow.dto.joboutputjson.ParamTypeRespObj;
 import com.bdilab.dataflow.service.PivotChartService;
+import com.bdilab.dataflow.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +29,7 @@ public class PivotChartController {
 
   @PostMapping("/pivot-chart")
   @ApiOperation(value = "透视图操作符")
-  public List<Object> getPivotChart(@RequestBody PivotChartDescription description) {
+  public R getPivotChart(@RequestBody PivotChartDescription description) {
     return pivotChartService.getPivotChart(description);
   }
 

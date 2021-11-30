@@ -6,13 +6,15 @@ import com.bdilab.dataflow.constants.Communal;
 import com.bdilab.dataflow.constants.SqlConstants;
 import com.bdilab.dataflow.dto.jobdescription.Menu;
 import com.bdilab.dataflow.dto.jobdescription.PivotChartDescription;
+import com.bdilab.dataflow.exception.BizCodeEnum;
+import com.bdilab.dataflow.exception.RRException;
 import com.bdilab.dataflow.operator.dto.jobdescription.SqlGeneratorBase;
-import com.bdilab.dataflow.utils.AlphabeticBinning;
-import com.bdilab.dataflow.utils.DatetimeBinning;
-import com.bdilab.dataflow.utils.SpringUtil;
+import com.bdilab.dataflow.utils.*;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
+
 import java.text.MessageFormat;
 import java.util.*;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -28,6 +30,11 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
   private final String datasource;
 
   private final ClickHouseJdbcUtils clickHouseJdbcUtils;
+
+  /**
+   * 存储多个等宽分箱箱子集合的ThreadLocal变量，比如[[0,50,100],[2015,1016]]存储了两个不同菜单均使用了等宽分箱后的箱子集合
+   */
+  public static ThreadLocal<List<Set<Object>>> EquiWidthBinningSetThreadLocal = new ThreadLocal<>();
 
   /**
    * 纯属性和分箱集合.
@@ -49,9 +56,10 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
    */
   Set<String> groupSet;
 
-  // whether there is any aggregation that requires group operation.
-  // no need to group if there is no aggregation.
-  private Boolean aggregatable;
+  /**
+   * 存储等宽分箱Set集合的List集合
+   */
+  List<Set<Object>> binningSetList = new ArrayList<>();
 
   public PivotChartSqlGenerator(PivotChartDescription description) {
     super(description);
@@ -62,8 +70,6 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
     this.aggregationSet = new LinkedHashSet<>();
     this.orderSet = new LinkedHashSet<>();
     this.groupSet = new LinkedHashSet<>();
-    aggregatable = Arrays.stream(description.getMenus()).anyMatch(Menu::hasAggregation);
-    System.out.println(MessageFormat.format("Aggregatable: {0}", aggregatable));
   }
 
   @Override
@@ -72,7 +78,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
   }
 
   /**
-   *  生成SQL.
+   * 生成SQL.
    */
   private String generateSql() {
     //根据选择属性的菜单数目，给集合中添加值
@@ -81,17 +87,18 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
     }
 
     String sql = totalRows() + Communal.BLANK + SqlConstants.SELECT;
-    String groupBy;
+    String groupBy = "";
     String orderBy;
     if (StringUtils.isEmpty(extractSegment(attributeAndBinningSet))
-        && StringUtils.isEmpty(extractSegment(aggregationSet))) {
+            && StringUtils.isEmpty(extractSegment(aggregationSet))) {
       throw new RuntimeException("please choose at least one attribute");
     } else {
 
       if (!StringUtils.isEmpty(extractSegment(attributeAndBinningSet))) {
         sql = sql + extractSegment(attributeAndBinningSet);
+        groupBy = SqlConstants.GROUP_BY + extractSegment(groupSet);
       }
-      groupBy = groupSet.isEmpty() ? "" : SqlConstants.GROUP_BY + extractSegment(groupSet);
+
       if (!StringUtils.isEmpty(extractSegment(aggregationSet))) {
         if (!StringUtils.isEmpty(extractSegment(attributeAndBinningSet))) {
           sql = sql + SqlConstants.COMMA + extractSegment(aggregationSet);
@@ -99,16 +106,17 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
           sql = sql + extractSegment(aggregationSet);
         }
       }
-      // orderSet is always not empty now
-      orderBy = SqlConstants.ORDER_BY + extractSegment(orderSet);
+      // orderBy
+      if (!StringUtils.isEmpty(extractSegment(orderSet))) {
+        orderBy = SqlConstants.ORDER_BY + extractSegment(orderSet);
+      } else {
+        orderBy = SqlConstants.ORDER_BY + extractSegment(groupSet);
+      }
 
     }
 
-
-    return sql + Communal.BLANK + SqlConstants.FROM + description.getDataSource()[0] + Communal.BLANK
-        + groupBy
-        + Communal.BLANK + orderBy
-        + Communal.BLANK + SqlConstants.LIMIT + SqlConstants.POINTS;
+    return sql + Communal.BLANK + SqlConstants.FROM + datasource
+            + Communal.BLANK + groupBy + Communal.BLANK + orderBy;
   }
 
   /**
@@ -131,34 +139,6 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
   }
 
   /**
-   * 从attributeAndBinningSet集合提取属性用于group by和默认的order by.
-   */
-  private String extractAttribute(Set<String> set) {
-    StringBuilder sb = new StringBuilder();
-    List<String> list = new ArrayList<>(set);
-    if (list.size() > 0) {
-      for (int i = 0; i < list.size(); i++) {
-        String[] s = list.get(i).split(Communal.BLANK);
-        if (i != list.size() - 1) {
-          if (s.length > 1) {
-            sb.append(s[1]).append(SqlConstants.COMMA);
-          } else {
-            sb.append(list.get(i)).append(SqlConstants.COMMA);
-          }
-        } else {
-          if (s.length > 1) {
-            sb.append(s[1]);
-          } else {
-            sb.append(list.get(i));
-          }
-        }
-      }
-      return sb.toString();
-    }
-    return "";
-  }
-
-  /**
    * 如果菜单不为空，分析菜单中的选项，加到对应选项（纯属性和分箱，聚合函数，排序）集合.
    */
   private void analyzeMenu(Menu menu) {
@@ -169,12 +149,10 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
     // 先看是否是单纯的属性，或者是属性聚合或者是属性分箱
     if (!menu.hasAggregation() && !menu.hasBinning()) {
       if (!StringUtils.isEmpty(menu.getAttribute())
-          && !menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
+              && !menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
         attributeAndBinningSet.add(menu.getAttribute());
+        groupSet.add(menu.getAttribute());
         setOrder(menu, menu.getAttribute());
-        if (aggregatable) {
-          addGroup(menu.getAttributeRenaming());
-        }
       }
       return;
     }
@@ -182,24 +160,46 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
     StringBuilder b = new StringBuilder();
     // handle binning
     if (menu.hasBinning()) {
-      // TODO 数据分箱菜单
       switch (menu.getBinning()) {
         case BinningConstants.ALPHABETIC_BINNING:
           b.append(SqlConstants.SELECT).append(SqlConstants.DISTINCT).append(menu.getAttribute())
-              .append(Communal.BLANK).append(SqlConstants.FROM).append(datasource);
+                  .append(Communal.BLANK).append(SqlConstants.FROM).append(datasource);
           int index
-              = AlphabeticBinning.commonIndex(clickHouseJdbcUtils.queryForStrList(b.toString()));
+                  = AlphabeticBinning.commonIndex(clickHouseJdbcUtils.queryForStrList(b.toString()));
           b.delete(0, b.length());
           b.append(SqlConstants.SUBSTRING).append(SqlConstants.LEFT_BRACKET)
-              .append(menu.getAttribute()).append(SqlConstants.COMMA)
-              .append(1).append(SqlConstants.COMMA).append(index)
-              .append(SqlConstants.RIGHT_BRACKET).append(Communal.BLANK)
-              .append(menu.getAttributeRenaming());
+                  .append(menu.getAttribute()).append(SqlConstants.COMMA)
+                  .append(1).append(SqlConstants.COMMA).append(index)
+                  .append(SqlConstants.RIGHT_BRACKET).append(Communal.BLANK)
+                  .append(menu.getAttributeRenaming());
 
           attributeAndBinningSet.add(b.toString());
-
+          groupSet.add(menu.getAttributeRenaming());
           break;
         case BinningConstants.NOMINAL_BINNING:
+          b.append(menu.getAttribute()).append(Communal.BLANK).append(menu.getAttribute())
+                  .append(Communal.UNDER_CROSS).append(BinningConstants.BIN);
+          attributeAndBinningSet.add(b.toString());
+          groupSet.add(menu.getAttributeRenaming());
+          break;
+        case BinningConstants.EQUI_WIDTH_BINNING:
+          String s = SqlConstants.SELECT + SqlConstants.DISTINCT + menu.getAttribute()
+                  + Communal.BLANK + SqlConstants.FROM + datasource;
+          Set<Object> setAsc = new TreeSet<>(new ComparatorAsc());
+          setAsc.addAll(clickHouseJdbcUtils.query(s));
+          //等宽分箱
+          EquiWidthBinning equiWidthBinning = new EquiWidthBinning(setAsc, menu.getInclude_zero());
+          //获取分箱后的箱子集合
+          Set<Object> binningSet = equiWidthBinning.binningSet();
+          binningSetList.add(binningSet);
+          EquiWidthBinningSetThreadLocal.set(binningSetList);
+
+          b.append(SqlConstants.ROUND_DOWN).append(SqlConstants.LEFT_BRACKET).append(menu.getAttribute())
+                  .append(SqlConstants.COMMA).append(binningSet).append(SqlConstants.RIGHT_BRACKET)
+                  .append(Communal.BLANK).append(menu.getAttribute()).append(Communal.UNDER_CROSS)
+                  .append(BinningConstants.BIN);
+          attributeAndBinningSet.add(b.toString());
+          groupSet.add(menu.getAttributeRenaming());
           break;
         case BinningConstants.SECOND:
         case BinningConstants.MINUTE:
@@ -209,11 +209,10 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
         case BinningConstants.YEAR:
           handleDatetimeBinning(menu);
           break;
+        //TODO 其他分箱
         default:
-          throw new RuntimeException("wrong binning type!");
-      }
-      if (aggregatable) {
-        addGroup(menu.getAttributeRenaming());
+          throw new RRException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg() + menu.getMenu(),
+                  BizCodeEnum.INVALID_BINNING_TYPE.getCode());
       }
 
     } else if (menu.hasAggregation()) {
@@ -221,44 +220,45 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
       switch (menu.getAggregation()) {
         case AggregationConstants.COUNT:
           b.append(AggregationConstants.COUNT).append(SqlConstants.LEFT_BRACKET)
-              .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
-              .append(Communal.BLANK).append(menu.getAttributeRenaming());
+                  .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
+                  .append(Communal.BLANK).append(menu.getAttributeRenaming());
           break;
         case AggregationConstants.DISTINCT_COUNT:
           b.append(AggregationConstants.COUNT).append(SqlConstants.LEFT_BRACKET)
-              .append(AggregationConstants.DISTINCT).append(Communal.BLANK)
-              .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
-              .append(Communal.BLANK).append(menu.getAttribute()).append(Communal.UNDER_CROSS)
-              .append(AggregationConstants.DISTINCT).append(Communal.UNDER_CROSS)
-              .append(AggregationConstants.COUNT);
+                  .append(AggregationConstants.DISTINCT).append(Communal.BLANK)
+                  .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
+                  .append(Communal.BLANK).append(menu.getAttribute()).append(Communal.UNDER_CROSS)
+                  .append(AggregationConstants.DISTINCT).append(Communal.UNDER_CROSS)
+                  .append(AggregationConstants.COUNT);
           break;
         case AggregationConstants.AVERAGE:
           b.append(AggregationConstants.AVG).append(SqlConstants.LEFT_BRACKET)
-              .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
-              .append(Communal.BLANK).append(menu.getAttributeRenaming());
+                  .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
+                  .append(Communal.BLANK).append(menu.getAttributeRenaming());
           break;
         case AggregationConstants.SUM:
           b.append(AggregationConstants.SUM).append(SqlConstants.LEFT_BRACKET)
-              .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
-              .append(Communal.BLANK).append(menu.getAttributeRenaming());
+                  .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
+                  .append(Communal.BLANK).append(menu.getAttributeRenaming());
           break;
         case AggregationConstants.MIN:
           b.append(AggregationConstants.MIN).append(SqlConstants.LEFT_BRACKET)
-              .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
-              .append(Communal.BLANK).append(menu.getAttributeRenaming());
+                  .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
+                  .append(Communal.BLANK).append(menu.getAttributeRenaming());
           break;
         case AggregationConstants.MAX:
           b.append(AggregationConstants.MAX).append(SqlConstants.LEFT_BRACKET)
-              .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
-              .append(Communal.BLANK).append(menu.getAttributeRenaming());
+                  .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
+                  .append(Communal.BLANK).append(menu.getAttributeRenaming());
           break;
         case AggregationConstants.STANDARD_DEV:
           b.append(AggregationConstants.STDDEVPOP).append(SqlConstants.LEFT_BRACKET)
-              .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
-              .append(Communal.BLANK).append(menu.getAttributeRenaming());
+                  .append(menu.getAttribute()).append(SqlConstants.RIGHT_BRACKET)
+                  .append(Communal.BLANK).append(menu.getAttributeRenaming());
           break;
         default:
-          throw new RuntimeException("wrong aggregation type!");
+          throw new RRException(BizCodeEnum.INVALID_AGGREGATION_TYPE.getMsg() + menu.getMenu(),
+                  BizCodeEnum.INVALID_AGGREGATION_TYPE.getCode());
       }
       aggregationSet.add(b.toString());
     }
@@ -270,23 +270,23 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
    * 设置排序集合，前提是菜单中的排序字段不为空，且不为none.
    */
   private void setOrder(Menu menu, String attribute) {
-    StringBuilder sb = new StringBuilder();
-    sb.append(attribute).append(Communal.BLANK);
-    if (! menu.hasSort()) {
-      sb.append(SqlConstants.ASC);
-    } else if (menu.getSort().equalsIgnoreCase(SqlConstants.ASC)
-        || menu.getSort().equalsIgnoreCase(SqlConstants.DESC)) {
-      sb.append(menu.getSort());
-    } else {
-      throw new RuntimeException("Wrong sort type!");
+    if (!StringUtils.isEmpty(menu.getSort()) && !menu.getSort().equalsIgnoreCase(Communal.NONE)) {
+      StringBuilder sb = new StringBuilder();
+      switch (menu.getSort()) {
+        case SqlConstants.ASC:
+          sb.append(attribute).append(Communal.BLANK).append(SqlConstants.ASC);
+          orderSet.add(sb.toString());
+          break;
+        case SqlConstants.DESC:
+          sb.append(attribute).append(Communal.BLANK).append(SqlConstants.DESC);
+          orderSet.add(sb.toString());
+          break;
+        default:
+          throw new RRException(BizCodeEnum.INVALID_SORT_TYPE.getMsg() + menu.getMenu(),
+                  BizCodeEnum.INVALID_SORT_TYPE.getCode());
+      }
     }
-    orderSet.add(sb.toString());
   }
-
-  private void addGroup(String attr) {
-    groupSet.add(attr);
-  }
-
 
   /**
    * handle datetime binning series.
@@ -296,6 +296,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
   private void handleDatetimeBinning(Menu menu) {
     DatetimeBinning binning = new DatetimeBinning(menu);
     attributeAndBinningSet.addAll(binning.binningAttributes());
+    groupSet.add(menu.getAttributeRenaming());
     //        System.out.println(binning.rename());
     //        System.out.println(GROUP_BY_ARGS);
   }

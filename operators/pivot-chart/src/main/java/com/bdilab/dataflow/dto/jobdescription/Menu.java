@@ -48,6 +48,12 @@ public class Menu {
   @ApiModelProperty(value = "排序方式", required = true, example = "None")
   private String sort;
 
+  /**
+   * 是否包含0，Numeric类型才使用该字段.
+   */
+  @ApiModelProperty(value = "是否包含0", example = "true")
+  private Boolean include_zero = false;
+
   public String getAttributeRenaming() {
     StringBuilder b = new StringBuilder();
     b.append(attribute);
@@ -66,8 +72,8 @@ public class Menu {
         break;
       case AggregationConstants.DISTINCT_COUNT:
         b.append(AggregationConstants.DISTINCT)
-            .append(Communal.UNDER_CROSS)
-            .append(AggregationConstants.COUNT);
+                .append(Communal.UNDER_CROSS)
+                .append(AggregationConstants.COUNT);
         break;
       case AggregationConstants.SUM:
         b.append(AggregationConstants.SUM);
@@ -98,7 +104,7 @@ public class Menu {
 
   public Boolean hasAggregation() {
     return aggregation != null && !aggregation.isEmpty()
-        && !aggregation.equalsIgnoreCase(Communal.NONE);
+            && !aggregation.equalsIgnoreCase(Communal.NONE);
   }
 
   public Boolean hasSort() {

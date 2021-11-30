@@ -37,4 +37,21 @@ public class ClickHouseJdbcUtils {
     jdbcTemplate.execute(sql);
   }
 
+  public List<?> query(String sql) {
+    String limitSQL = sql + " limit 1";
+    List<Map<String,Object>> mapList = this.queryForList(limitSQL);
+    Object o = null;
+    for (String key : mapList.get(0).keySet())
+    {
+      o = mapList.get(0).get(key);
+    }
+    assert o != null;
+    return jdbcTemplate.queryForList(sql, o.getClass());
+  }
+
+  public Integer getCount(String sql) {
+    String countSQL = "select count(*) from (" + sql + ")";
+    return jdbcTemplate.queryForObject(countSQL, Integer.class);
+  }
+
 }

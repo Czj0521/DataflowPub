@@ -28,8 +28,18 @@ public class SqlConstants {
 
   public static final String SUBSTRING = "substring";
 
-  public static final String LIMIT = "limit ";
+  public static final Integer POINTS = 200;
 
-  public static final Integer POINTS = 100;
+  public static final String ALL = "* ";
+
+  public static final String WHERE = "where ";
+
+  public static final String MOD ="mod";
+
+  public static final String ROW = "rowNumberInAllBlocks()";
+
+  public static final String EQUAL = "=";
+
+  public static final String ROUND_DOWN = "roundDown";
 
 }

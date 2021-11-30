@@ -1,8 +1,5 @@
 package com.bdilab.dataflow.dto;
 
-import java.util.List;
-import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,10 +15,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class JobOutputJson {
-  private String jobStatus;
-  private String operatorId;
-  private String workspaceId;
-  private List<String> dataSource;
-  private List<Map<String, Object>> outputs;
+public class JobOutputJson extends BaseOutputJson{
+  private OutputData outputs;
+
+  public JobOutputJson(String jobStatus, String operatorId, String workspaceId, OutputData outputs) {
+    super.setJobStatus(jobStatus);
+    super.setOperatorId(operatorId);
+    super.setWorkspaceId(workspaceId);
+    this.outputs = outputs;
+  }
 }

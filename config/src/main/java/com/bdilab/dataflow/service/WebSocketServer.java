@@ -2,6 +2,7 @@ package com.bdilab.dataflow.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -55,14 +56,16 @@ public class WebSocketServer {
    */
   @OnMessage
   public void onMessage(String message, Session session) {
-    socketResolveService.resolve(message);
+    if (!StringUtils.isEmpty(message)) {
+      socketResolveService.resolve(message);
+    }
   }
 
   /**
    * Error occurred.
    *
    * @param session The current session.
-   * @param error The error.
+   * @param error   The error.
    */
   @OnError
   public void onError(Session session, Throwable error) {

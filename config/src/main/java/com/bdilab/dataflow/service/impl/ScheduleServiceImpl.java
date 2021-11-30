@@ -2,7 +2,11 @@ package com.bdilab.dataflow.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.common.consts.CommonConstants;
 import com.bdilab.dataflow.dto.JobOutputJson;
+import com.bdilab.dataflow.dto.Metadata;
+import com.bdilab.dataflow.dto.MetadataOutputJson;
+import com.bdilab.dataflow.dto.OutputData;
 import com.bdilab.dataflow.service.ScheduleService;
 import com.bdilab.dataflow.service.TableJobService;
 import com.bdilab.dataflow.service.WebSocketServer;
@@ -33,6 +37,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   private DagFilterManager dagFilterManager;
   @Autowired
   private TableJobService tableJobService;
+  @Autowired
+  private TableMetadataServiceImpl tableMetadataService;
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
@@ -42,7 +48,7 @@ public class ScheduleServiceImpl implements ScheduleService {
       DagNode node = realTimeDag.getNode(workspaceId, nodeId);
 
       Map<Integer, StringBuffer> preFilterMap = new HashMap<>();
-      List<String> dataSourceMap = new ArrayList<>();
+      List<Metadata> metadataList = new ArrayList<>();
       // 获取当前结点每个数据源对应的前驱filter id 列表
       Map<Integer, List<String>> filterIdsMap = new HashMap<>();
 
@@ -50,8 +56,14 @@ public class ScheduleServiceImpl implements ScheduleService {
       for (int i = 0; i < inputDataSlots.length; i++) {
         preFilterMap.put(i, new StringBuffer());
         filterIdsMap.put(i, inputDataSlots[i].getFilterId());
-        dataSourceMap.add(inputDataSlots[i].getDataSource());
+        String dataSource = inputDataSlots[i].getDataSource();
+        Metadata metadata = new Metadata(dataSource, tableMetadataService.metadataFromDatasource(dataSource));
+        metadataList.add(metadata);
       }
+
+      MetadataOutputJson metadataOutputJson = new MetadataOutputJson("JOB_RUNNING", nodeId, workspaceId, metadataList);
+      WebSocketServer.sendMessage(JSON.toJSONString(metadataOutputJson).toString());
+
 
       for (Integer slotNum : filterIdsMap.keySet()) {
         if (!CollectionUtils.isEmpty(filterIdsMap.get(slotNum))) {
@@ -69,8 +81,12 @@ public class ScheduleServiceImpl implements ScheduleService {
       JobOutputJson outputJson = null;
       switch (nodeType) {
         case "table":
-          List<Map<String, Object>> outputs = tableJobService.saveToClickHouse(node, preFilterMap);
-          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, dataSourceMap, outputs);
+          List<Map<String, Object>> data = tableJobService.saveToClickHouse(node, preFilterMap);
+
+          String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
+          OutputData outputData = new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
+
+          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputData);
           break;
         case "filter":
           String filter = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);

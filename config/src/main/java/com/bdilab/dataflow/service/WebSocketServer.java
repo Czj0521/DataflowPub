@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.websocket.OnClose;
@@ -20,7 +21,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @ServerEndpoint("/webSocket")
 @Service
 public class WebSocketServer {
-
+  @Autowired
+  private WebSocketResolveService socketResolveService;
   // private static final AtomicInteger OnlineCount = new AtomicInteger(0);
   private static CopyOnWriteArraySet<Session> sessionSet = new CopyOnWriteArraySet<>();
 
@@ -53,7 +55,7 @@ public class WebSocketServer {
    */
   @OnMessage
   public void onMessage(String message, Session session) {
-    System.out.println("message :" + message);
+    socketResolveService.resolve(message);
   }
 
   /**

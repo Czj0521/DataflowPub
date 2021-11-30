@@ -42,13 +42,15 @@ public class ScheduleServiceImpl implements ScheduleService {
       DagNode node = realTimeDag.getNode(workspaceId, nodeId);
 
       Map<Integer, StringBuffer> preFilterMap = new HashMap<>();
-
+      List<String> dataSourceMap = new ArrayList<>();
       // 获取当前结点每个数据源对应的前驱filter id 列表
       Map<Integer, List<String>> filterIdsMap = new HashMap<>();
+
       InputDataSlot[] inputDataSlots = node.getInputDataSlots();
       for (int i = 0; i < inputDataSlots.length; i++) {
         preFilterMap.put(i, new StringBuffer());
         filterIdsMap.put(i, inputDataSlots[i].getFilterId());
+        dataSourceMap.add(inputDataSlots[i].getDataSource());
       }
 
       for (Integer slotNum : filterIdsMap.keySet()) {
@@ -68,10 +70,10 @@ public class ScheduleServiceImpl implements ScheduleService {
       switch (nodeType) {
         case "table":
           List<Map<String, Object>> outputs = tableJobService.saveToClickHouse(node, preFilterMap);
-          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputs);
+          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, dataSourceMap, outputs);
           break;
         case "filter":
-          String filter = preFilterMap.get(0).toString() + " AND "+ parseFilterAndPivot(node);
+          String filter = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
 //          log.info("-- The current filter :" + filter);
           dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
           break;
@@ -87,7 +89,7 @@ public class ScheduleServiceImpl implements ScheduleService {
           throw new RuntimeException("not exist this operator !");
       }
 
-      if(null != outputJson) {
+      if (null != outputJson) {
         WebSocketServer.sendMessage(JSON.toJSONString(outputJson).toString());
       }
     }

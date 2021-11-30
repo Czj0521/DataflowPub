@@ -22,5 +22,6 @@ public class JobOutputJson {
   private String jobStatus;
   private String operatorId;
   private String workspaceId;
+  private List<String> dataSource;
   private List<Map<String, Object>> outputs;
 }

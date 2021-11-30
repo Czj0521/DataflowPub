@@ -28,16 +28,16 @@ public class MaterializeTest {
   @ParameterizedTest
   @MethodSource("descriptionProvider")
   public void materializeTest(String materializedType, String materializedOperator) {
-    MaterializeDescription materializeDescription = new MaterializeDescription();
-    materializeDescription.setJobType("materialize");
-    materializeDescription.setMaterializedType(materializedType);
-    materializeDescription.setMaterializedOperator(JSONObject.parseObject(materializedOperator));
-    assertDoesNotThrow(() -> {
-      MaterializeOutputJson materialize = materializeJobService.materialize(new MaterializeInputJson(materializeDescription));
-      System.out.println(materialize);
-      System.out.println(materializeJobService.deleteSubTable(materialize.getOutputs().getString("subTableId")));
+//    MaterializeDescription materializeDescription = new MaterializeDescription();
+//    materializeDescription.setJobType("materialize");
+//    materializeDescription.setMaterializedType(materializedType);
+//    materializeDescription.setMaterializedOperator(JSONObject.parseObject(materializedOperator));
+//    assertDoesNotThrow(() -> {
+//      MaterializeOutputJson materialize = materializeJobService.materialize(new MaterializeInputJson(materializeDescription));
+//      System.out.println(materialize);
+//      System.out.println(materializeJobService.deleteSubTable(materialize.getOutputs().getString("subTableId")));
 
-    });
+//    });
   }
 
   private static List<Arguments> descriptionProvider() {

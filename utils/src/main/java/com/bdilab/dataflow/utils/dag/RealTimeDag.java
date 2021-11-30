@@ -245,6 +245,7 @@ public class RealTimeDag {
       log.error("Input [dataSource] size error !");
       throw new RuntimeException("Input [dataSource] size error !");
     }
+    node.setNodeDescription(nodeDescription);
     List<String> deleteInputTableName = new ArrayList<>();
     if (!newDataSources.equals(oldDataSources)) {
       for (int i = 0; i < newDataSources.size(); i++) {

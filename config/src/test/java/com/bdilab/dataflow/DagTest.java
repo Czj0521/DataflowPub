@@ -77,14 +77,6 @@ public class DagTest {
 
   @Test
   public void testDagManager(){
-    String workspaceId = "testCRUD";
-    HashMap<String, Object> testMap = new HashMap<>();
-    testMap.put("testKey","testValue");
-    redisUtils.hmset(workspaceId, testMap);
-    dagManager.deleteDag(workspaceId);
-    if (dagManager.containsWorkspaceId(workspaceId)) {
-      throw new RuntimeException("DagTest.testDagManager Error !");
-    }
   }
 
   @Test

@@ -1,4 +1,4 @@
-package com.bdilab.dataflow.dto.jobdescription;
+package com.bdilab.dataflow.dto;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
@@ -16,6 +16,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MaterializeDescription {
   private String jobType;
-  private String materializedType;
-  private JSONObject materializedOperator;
+  private String operatorId;
 }

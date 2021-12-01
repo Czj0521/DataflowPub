@@ -2,7 +2,6 @@ package com.bdilab.dataflow.controller;
 
 
 import com.bdilab.dataflow.common.consts.WebConstants;
-import com.bdilab.dataflow.dto.jobinputjson.MaterializeInputJson;
 import com.bdilab.dataflow.service.MaterializeJobService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @CrossOrigin
-@Api(tags = "Materialize Operator")
+@Api(tags = "Materialize")
 @RequestMapping(value = WebConstants.BASE_API_PATH + "/gluttony/job")
 public class MaterializeController {
   @Resource
@@ -35,13 +34,13 @@ public class MaterializeController {
 
   @PostMapping("/materialize")
   @ApiOperation(value = "materialize")
-  public ResponseEntity table(@RequestBody MaterializeInputJson materializeInputJson) {
-    return ResponseEntity.ok(materializeJobService.materialize(materializeInputJson));
+  public ResponseEntity materialize(@Valid @RequestParam("operatorId") String operatorId) {
+    return ResponseEntity.ok(materializeJobService.materialize(operatorId));
   }
 
   @DeleteMapping("/deleteSubTable")
   @ApiOperation(value = "deleteSubTable")
-  public ResponseEntity deleteSubTable(@Valid @RequestParam("subTableId") String subTableId) {
-    return ResponseEntity.ok(materializeJobService.deleteSubTable(subTableId));
+  public ResponseEntity deleteSubTable(@Valid @RequestParam("materializeId") String materializeId) {
+    return ResponseEntity.ok(materializeJobService.deleteMaterialize(materializeId));
   }
 }

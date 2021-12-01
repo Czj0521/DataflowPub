@@ -81,12 +81,7 @@ public class DagTest {
 
   @Test
   public void clickhouseManager(){
-//    clickHouseUtils.copyTableToTable("dataflow.TEST_airuuid", "dataflow.test");
-//    List<Map<String, Object>> desc_airuuid = clickHouseJdbcUtils.queryForList("select name from (desc airuuid)");
-//    for (Map<String, Object> stringObjectMap : desc_airuuid) {
-//
-//    }
-//    clickHouseUtils.copyToTable("dataflow.airuuid", "dataflow.TEST_VIEW5");
+
   }
 
 }

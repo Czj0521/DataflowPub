@@ -6,6 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Data table manager for clickhouse in  .
  *
@@ -27,16 +31,11 @@ public class ClickHouseManager {
   public void copyToTable(String oldTableName, String newTableName) {
     StringBuilder sql = new StringBuilder();
     String engine = chooseTableEngine(oldTableName);
+    sql.append("DROP TABLE IF EXISTS ").append(newTableName).append(";");
     sql.append("CREATE TABLE ").append(newTableName).append(engine)
-        .append(" AS (SELECT * FROM ").append(oldTableName).append(")");
-    try {
-      clickHouseJdbcUtils.execute(new String(sql));
-    } catch (Exception e) {
-      clickHouseJdbcUtils.execute("drop view " + newTableName);
-      clickHouseJdbcUtils.execute(new String(sql));
-    } finally {
-      log.info("- Copy table {} to {} with [{}].", oldTableName, newTableName, engine);
-    }
+        .append(" AS (SELECT * FROM ").append(oldTableName).append(");");
+    clickHouseJdbcUtils.execute(new String(sql));
+    log.info("- Copy table {} to {} with [{}].", oldTableName, newTableName, engine);
   }
 
   private String chooseTableEngine(String tableName) {
@@ -74,16 +73,12 @@ public class ClickHouseManager {
    */
   public void createView(String viewName, String selectSql) {
     StringBuilder sql = new StringBuilder();
+    sql.append("DROP VIEW IF EXISTS ").append(viewName).append(";");
     sql.append("CREATE VIEW ").append(viewName).append(" AS ")
-        .append("(").append(selectSql).append(")");
-    try {
-      clickHouseJdbcUtils.execute(new String(sql));
-      log.info("- Create view {}.", viewName);
-    } catch (Exception e) {
-      clickHouseJdbcUtils.execute("drop view " + viewName);
-      clickHouseJdbcUtils.execute(new String(sql));
-      log.info("- Create view {} with coverage existed view.", viewName);
-    }
+        .append("(").append(selectSql).append(");");
+    clickHouseJdbcUtils.execute(new String(sql));
+    log.info("- Drop if exit and create view {}.", viewName);
+
   }
 
   /**
@@ -95,7 +90,7 @@ public class ClickHouseManager {
     if (!StringUtils.isEmpty(tableName)
         && tableName.split("\\.")[1].startsWith(CommonConstants.TEMP_INPUT_TABLE_PREFIX)) {
       StringBuilder sql = new StringBuilder();
-      sql.append("DROP TABLE ").append(tableName);
+      sql.append("DROP TABLE IF EXISTS ").append(tableName);
       clickHouseJdbcUtils.execute(new String(sql));
       log.info("- Delete input table {}.", tableName);
     }
@@ -108,13 +103,32 @@ public class ClickHouseManager {
    */
   public void deleteTable(String tableName) {
     StringBuilder sql = new StringBuilder();
-    sql.append("DROP TABLE ").append(tableName);
-    try {
-      clickHouseJdbcUtils.execute(new String(sql));
-      log.info("- Delete table or view {}.", tableName);
-    } catch (Exception e) {
-      log.info("- Delete fail, table {} is not existed.", tableName);
-    }
+    sql.append("DROP TABLE IF EXISTS ").append(tableName);
+    clickHouseJdbcUtils.execute(new String(sql));
+    log.info("- Delete table or view {}.", tableName);
   }
 
+  /**
+   * Materialize.
+   *
+   * @param tempName tempName
+   * @param materializeName materializeName
+   */
+  public void createMaterialize(String tempName, String materializeName) {
+    copyToTable(tempName, materializeName);
+  }
+
+  /**
+   * Get meta data.
+   * @param tableName tableName
+   * @return metadata
+   */
+  public Map<String, String> getMetadata(String tableName) {
+    List<Map<String, Object>> metaDateMap = clickHouseJdbcUtils.queryForList("desc " + tableName);
+    Map<String, String> metaDate = new HashMap<>(metaDateMap.size());
+    metaDateMap.forEach((map) -> {
+      metaDate.put(String.valueOf(map.get("name")), String.valueOf(map.get("type")));
+    });
+    return metaDate;
+  }
 }

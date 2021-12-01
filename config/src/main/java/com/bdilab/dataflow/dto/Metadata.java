@@ -1,13 +1,13 @@
 package com.bdilab.dataflow.dto;
 
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
-
 /**
- * description:
+ * description: Metadata information.
  *
  * @author zhb
  */

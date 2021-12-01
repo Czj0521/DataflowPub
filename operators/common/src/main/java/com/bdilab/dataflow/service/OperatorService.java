@@ -32,5 +32,6 @@ public interface OperatorService<T extends JobDescription> {
    * @param preFilterMap the filters' string of different datasource.
    * @return data
    */
-  List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap);
+  List<Map<String, Object>> saveToClickHouse(DagNode dagNode,
+                                             Map<Integer, StringBuffer> preFilterMap);
 }

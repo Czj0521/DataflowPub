@@ -1,13 +1,13 @@
 package com.bdilab.dataflow.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
- * description: metadata.
+ * description: Metadata.
  *
  * @author zhb
  */
@@ -18,7 +18,12 @@ import java.util.List;
 public class MetadataOutputJson extends BaseOutputJson {
   private List<Metadata> inputs;
 
-  public MetadataOutputJson(String jobStatus, String operatorId, String workspaceId, List<Metadata> inputMetadataSlots) {
+  /**
+   * Construction method.
+   *
+   */
+  public MetadataOutputJson(String jobStatus, String operatorId,
+                            String workspaceId, List<Metadata> inputMetadataSlots) {
     super.setJobStatus(jobStatus);
     super.setOperatorId(operatorId);
     super.setWorkspaceId(workspaceId);

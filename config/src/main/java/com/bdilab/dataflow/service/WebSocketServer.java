@@ -1,5 +1,8 @@
 package com.bdilab.dataflow.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -21,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 @ServerEndpoint("/webSocket")
 @Service
+@Slf4j
 public class WebSocketServer {
   @Autowired
   private WebSocketResolveService socketResolveService;
@@ -56,8 +60,11 @@ public class WebSocketServer {
    */
   @OnMessage
   public void onMessage(String message, Session session) {
-    if (!StringUtils.isEmpty(message)) {
+    try {
+      JSON.parse(message);
       socketResolveService.resolve(message);
+    } catch (JSONException e) {
+      log.info("WebSocket test : " + message);
     }
   }
 

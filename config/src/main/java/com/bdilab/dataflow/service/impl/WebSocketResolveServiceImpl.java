@@ -31,6 +31,8 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
   ScheduleServiceImpl scheduleService;
   @Resource
   DagFilterManager dagFilterManager;
+  @Resource
+  MaterializeJobServiceImpl materializeJobService;
 
   @Override
   public void resolve(String jsonString) {
@@ -86,7 +88,7 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         }
         break;
       default:
-        throw new RuntimeException("not exist this dagType");
+        throw new RuntimeException("not exist this dagType !");
     }
 
   }

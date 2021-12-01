@@ -34,4 +34,7 @@ public class CommonConstants {
   public static final String TEMP_INPUT_TABLE_PREFIX = "temp_input_";
   public static final String CPL_TEMP_TABLE_PREFIX = CommonConstants.DATABASE + "." + CommonConstants.TEMP_TABLE_PREFIX;
   public static final String CPL_TEMP_INPUT_TABLE_PREFIX = CommonConstants.DATABASE + "." + CommonConstants.TEMP_INPUT_TABLE_PREFIX;
+
+  public static final String MATERIALIZE_PREFIX = "materialize_";
+  public static final String CPL_MATERIALIZE_PREFIX = CommonConstants.DATABASE + "." + CommonConstants.MATERIALIZE_PREFIX;
 }

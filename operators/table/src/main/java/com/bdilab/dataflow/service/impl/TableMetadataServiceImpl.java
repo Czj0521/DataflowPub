@@ -5,10 +5,12 @@ import com.bdilab.dataflow.common.consts.JobTypeConstants;
 import com.bdilab.dataflow.common.consts.OperatorConstants;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
+
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.util.URLEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Table Metadata ServiceImpl.
-
+ *
  * @author: Zunjing Chen
  * @create: 2021-09-18
  **/
@@ -38,11 +40,16 @@ public class TableMetadataServiceImpl {
    * Get table names.
    */
   public List<String> getTableName() {
-    return jdbcUtils.queryForStrList("show tables from "
-      + CommonConstants.DATABASE
-      + " not like '"
-      + JobTypeConstants.MATERIALIZE_JOB
-      + "_%'");
+    return jdbcUtils.queryForStrList("select name from system.tables where " +
+      "database='" +
+      CommonConstants.DATABASE +
+      "' " +
+      "and tables.name not like '" +
+      CommonConstants.TEMP_TABLE_PREFIX +
+      "%' " +
+      "and tables.name not like '" +
+      JobTypeConstants.MATERIALIZE_JOB +
+      "_%'");
   }
 
   /**

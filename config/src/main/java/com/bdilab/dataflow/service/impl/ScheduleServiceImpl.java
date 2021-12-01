@@ -77,7 +77,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         metadataList.add(metadata);
       }
 
-      MetadataOutputJson metadataOutputJson = new MetadataOutputJson("JOB_RUNNING", nodeId,
+      MetadataOutputJson metadataOutputJson = new MetadataOutputJson("JOB_START", nodeId,
           workspaceId, metadataList);
       WebSocketServer.sendMessage(JSON.toJSONString(metadataOutputJson).toString());
 

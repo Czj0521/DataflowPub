@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TableTest {
   @Autowired
   TableJobServiceImpl tableJobService;
+  
 
   @Test
   public void table() {

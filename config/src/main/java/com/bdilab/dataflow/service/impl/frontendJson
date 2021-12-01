@@ -103,7 +103,7 @@
 {
   "job": "start_job",
   "dagDescription": {
-    "jobType": "addEdge",
+    "jobType": "removeNode",
   },
   "operatorType": "dag",
   "dagType": "removeNode",

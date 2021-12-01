@@ -47,6 +47,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   @Autowired
   private TableJobService tableJobService;
   @Autowired
+  private JoinServiceImpl joinService;
+  @Autowired
   private TableMetadataServiceImpl tableMetadataService;
   @Autowired
   private TransposeService transposeService;
@@ -107,6 +109,18 @@ public class ScheduleServiceImpl implements ScheduleService {
           dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
           break;
         case "join":
+          JSONObject nodeDescription = (JSONObject) node.getNodeDescription();
+          if(nodeDescription.getJSONArray("joinKeys").size()!=0){
+            try {
+              joinService.saveToClickHouse(node,preFilterMap);
+              outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, null);
+            } catch (Exception e) {
+              outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, null);
+              e.printStackTrace();
+            }
+          }else{
+            outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, null);
+          }
           break;
         case "profiler":
           break;

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.enums.OperatorOutputTypeEnum;
 import com.bdilab.dataflow.service.WebSocketResolveService;
+import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.RealTimeDag;
 import java.util.List;
@@ -28,6 +29,8 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
   RealTimeDag realTimeDag;
   @Resource
   ScheduleServiceImpl scheduleService;
+  @Resource
+  DagFilterManager dagFilterManager;
 
   @Override
   public void resolve(String jsonString) {
@@ -62,6 +65,7 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
           for (DagNode dagNode : nextNodes) {
             scheduleService.executeTask(workspaceId, dagNode.getNodeId());
           }
+          dagFilterManager.deleteFilter(workspaceId, operatorId);
         }
         break;
       case "addEdge":

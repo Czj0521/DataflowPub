@@ -60,6 +60,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     for (String nodeId : sortedList) {
       DagNode node = realTimeDag.getNode(workspaceId, nodeId);
+      String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
 
       Map<Integer, StringBuffer> preFilterMap = new HashMap<>();
       List<Metadata> metadataList = new ArrayList<>();
@@ -98,11 +99,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
       switch (nodeType) {
         case "table":
-          List<Map<String, Object>> data = tableJobService.saveToClickHouse(node, preFilterMap);
-          String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
-          OutputData outputData = new OutputData(data,
-              tableMetadataService.metadataFromDatasource(tableName));
-          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputData);
+          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId,
+            tableSavedData(node, tableName, preFilterMap));
           break;
         case "filter":
           String filter = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
@@ -127,7 +125,7 @@ public class ScheduleServiceImpl implements ScheduleService {
           break;
         case "transpose":
           outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId,
-            transposeSavedData(node, nodeId, preFilterMap));
+            transposeSavedData(node, tableName, preFilterMap));
           break;
         case "scalar":
           //TODO
@@ -143,12 +141,20 @@ public class ScheduleServiceImpl implements ScheduleService {
   }
 
   /**
+   * Table execute: save to ClickHouse and return the saved data.
+   */
+  private OutputData tableSavedData(DagNode node, String tableName,
+                                    Map<Integer, StringBuffer> preFilterMap) {
+    List<Map<String, Object>> data = tableJobService.saveToClickHouse(node, preFilterMap);
+    return new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
+  }
+
+  /**
    * Transpose execute: save to ClickHouse and return the saved data.
    */
-  private OutputData transposeSavedData(DagNode node, String nodeId,
+  private OutputData transposeSavedData(DagNode node, String tableName,
                                         Map<Integer, StringBuffer> preFilterMap) {
-    List<Map<String, Object>> data = tableJobService.saveToClickHouse(node, preFilterMap);
-    String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
+    List<Map<String, Object>> data = transposeService.saveToClickHouse(node, preFilterMap);
     return new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
   }
 

@@ -55,7 +55,7 @@ public class TableMetadataServiceImpl {
     sql = encoder.encode(sql, Charset.defaultCharset());
     String url = httpPrefix + query.replace(OperatorConstants.COLUMN_MAGIC_NUMBER, sql);
     Map<String, String> result = new HashMap<>();
-    log.info(url);
+//    log.info(url);
     String content = ClickHouseHttpUtils.sendGet(url);
     String[] split = content.split("\n");
     for (String s : split) {

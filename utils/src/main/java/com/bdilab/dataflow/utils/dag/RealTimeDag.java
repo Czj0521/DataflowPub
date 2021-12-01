@@ -211,7 +211,7 @@ public class RealTimeDag {
   public void clearDag(String workspaceId) {
     Map<Object, Object> dagMap = redisUtils.hmget(workspaceId);
     redisUtils.del(workspaceId);
-    log.info("Clear dag with workspace ID {}.", workspaceId);
+    log.info("Clear dag with workspace ID [{}].", workspaceId);
 
     List<String> inputDataSources = new ArrayList<>();
     List<String> outputDataSources = new ArrayList<>();
@@ -239,30 +239,32 @@ public class RealTimeDag {
    */
   public void updateNode(String workspaceId, String nodeId, Object nodeDescription) {
     DagNode node = (DagNode) redisUtils.hget(workspaceId, nodeId);
-    JSONArray newDataSources = ((JSONObject) nodeDescription).getJSONArray("dataSource");
+    JSONObject newNodeDescription = (JSONObject) nodeDescription;
+    JSONArray newDataSources = newNodeDescription.getJSONArray("dataSource");
     JSONArray oldDataSources = ((JSONObject) node.getNodeDescription()).getJSONArray("dataSource");
     if (newDataSources.size()  != oldDataSources.size()) {
       log.error("Input [dataSource] size error !");
       throw new RuntimeException("Input [dataSource] size error !");
     }
+    newNodeDescription.put("dataSource", oldDataSources);
     node.setNodeDescription(nodeDescription);
-    List<String> deleteInputTableName = new ArrayList<>();
-    if (!newDataSources.equals(oldDataSources)) {
-      for (int i = 0; i < newDataSources.size(); i++) {
-        String oldDataSource = oldDataSources.getString(i);
-        String newDataSource = newDataSources.getString(i);
-        if (!oldDataSource.equals(newDataSource)) {
-          deleteInputTableName.add(oldDataSource);
-          node.setDataSource(i, newDataSource);
-        }
-      }
-    }
+//    List<String> deleteInputTableName = new ArrayList<>();
+//    if (!newDataSources.equals(oldDataSources)) {
+//      for (int i = 0; i < newDataSources.size(); i++) {
+//        String oldDataSource = oldDataSources.getString(i);
+//        String newDataSource = newDataSources.getString(i);
+//        if (!oldDataSource.equals(newDataSource)) {
+//          deleteInputTableName.add(oldDataSource);
+//          node.setDataSource(i, newDataSource);
+//        }
+//      }
+//    }
     redisUtils.hset(workspaceId, nodeId, node);
     log.info("Update node [{}] in [{}]", nodeId, workspaceId);
 
-    deleteInputTableName.forEach((name) -> {
-      clickhouseManager.deleteInputTable(name);
-    });
+//    deleteInputTableName.forEach((name) -> {
+//      clickhouseManager.deleteInputTable(name);
+//    });
   }
 
   /**

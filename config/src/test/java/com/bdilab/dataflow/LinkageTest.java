@@ -137,7 +137,7 @@ public class LinkageTest {
         "  \"job\": \"start_job\",\n" +
         "  \"tableDescription\": {\n" +
         "    \"jobType\": \"table\",\n" +
-        "    \"dataSource\": [\"\"],\n" +
+        "    \"dataSource\": [\"dataflow.airuuid\"],\n" +
         "    \"filter\": \"\",\n" +
         "    \"group\": [],\n" +
         "    \"limit\": 0,\n" +
@@ -153,7 +153,7 @@ public class LinkageTest {
         "  \"job\": \"start_job\",\n" +
         "  \"tableDescription\": {\n" +
         "    \"jobType\": \"table\",\n" +
-        "    \"dataSource\": [\"dataflow.airuuid\"],\n" +
+        "    \"dataSource\": [\"\"],\n" +
         "    \"filter\": \"(startsWith(city,'新'))\",\n" +
         "    \"group\": [],\n" +
         "    \"limit\": 2000,\n" +

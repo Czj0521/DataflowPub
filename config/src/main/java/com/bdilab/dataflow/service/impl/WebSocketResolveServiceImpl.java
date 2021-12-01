@@ -55,7 +55,8 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         break;
       case "updateNode":
         realTimeDag.updateNode(workspaceId, operatorId, desc);
-        if(isDataSourceReady(dataSources)){
+        List<String> inputDataSources = realTimeDag.getNode(workspaceId, operatorId).getInputDataSources();
+        if(isDataSourceReady(inputDataSources)){
           scheduleService.executeTask(workspaceId, operatorId);
         }
         break;
@@ -87,6 +88,12 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
           scheduleService.executeTask(workspaceId, rmNextNodeId);
         }
         break;
+      case "addDateSource":
+        break;
+      case "updateDateSource":
+        break;
+      case "deleteDateSource":
+        break;
       default:
         throw new RuntimeException("not exist this dagType !");
     }
@@ -95,6 +102,15 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
 
   private boolean isDataSourceReady(JSONArray dataSources) {
     for (Object dataSource : dataSources) {
+      if(StringUtils.isEmpty(dataSource)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean isDataSourceReady(List<String> dataSources) {
+    for (String dataSource : dataSources) {
       if(StringUtils.isEmpty(dataSource)) {
         return false;
       }

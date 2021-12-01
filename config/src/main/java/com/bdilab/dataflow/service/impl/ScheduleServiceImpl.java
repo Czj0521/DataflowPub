@@ -56,9 +56,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
+
     List<String> sortedList = getSortedList(workspaceId, operatorId);
 
     for (String nodeId : sortedList) {
+      log.info("- Execute the task of the operator with ID [{}] in workspace ID [{}]", operatorId, workspaceId);
       DagNode node = realTimeDag.getNode(workspaceId, nodeId);
       String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
 

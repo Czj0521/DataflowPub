@@ -105,6 +105,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         case "filter":
           String filter = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
           dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
+          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, null);
           break;
         case "join":
           JSONObject nodeDescription = (JSONObject) node.getNodeDescription();

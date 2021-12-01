@@ -9,7 +9,7 @@ import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
  * @create: 2021-10-25
  * @description: transpose operator service
  **/
-public interface TransposeService {
+public interface TransposeService extends OperatorService<TransposeDescription>  {
   /**
    * transpose operator.
    *

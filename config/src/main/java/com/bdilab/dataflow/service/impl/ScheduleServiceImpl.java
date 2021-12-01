@@ -9,17 +9,25 @@ import com.bdilab.dataflow.dto.MetadataOutputJson;
 import com.bdilab.dataflow.dto.OutputData;
 import com.bdilab.dataflow.service.ScheduleService;
 import com.bdilab.dataflow.service.TableJobService;
+import com.bdilab.dataflow.service.TransposeService;
 import com.bdilab.dataflow.service.WebSocketServer;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.InputDataSlot;
 import com.bdilab.dataflow.utils.dag.RealTimeDag;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
-import java.util.*;
 
 /**
  * Task scheduling module.
@@ -31,6 +39,7 @@ import java.util.*;
 @Slf4j
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
+
   @Autowired
   private RealTimeDag realTimeDag;
   @Autowired
@@ -39,6 +48,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   private TableJobService tableJobService;
   @Autowired
   private TableMetadataServiceImpl tableMetadataService;
+  @Autowired
+  private TransposeService transposeService;
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
@@ -57,18 +68,20 @@ public class ScheduleServiceImpl implements ScheduleService {
         preFilterMap.put(i, new StringBuffer());
         filterIdsMap.put(i, inputDataSlots[i].getFilterId());
         String dataSource = inputDataSlots[i].getDataSource();
-        Metadata metadata = new Metadata(dataSource, tableMetadataService.metadataFromDatasource(dataSource));
+        Metadata metadata = new Metadata(dataSource,
+            tableMetadataService.metadataFromDatasource(dataSource));
         metadataList.add(metadata);
       }
 
-      MetadataOutputJson metadataOutputJson = new MetadataOutputJson("JOB_RUNNING", nodeId, workspaceId, metadataList);
+      MetadataOutputJson metadataOutputJson = new MetadataOutputJson("JOB_RUNNING", nodeId,
+          workspaceId, metadataList);
       WebSocketServer.sendMessage(JSON.toJSONString(metadataOutputJson).toString());
-
 
       for (Integer slotNum : filterIdsMap.keySet()) {
         if (!CollectionUtils.isEmpty(filterIdsMap.get(slotNum))) {
           for (String filterId : filterIdsMap.get(slotNum)) {
-            preFilterMap.get(slotNum).append(dagFilterManager.getFilter(workspaceId, filterId) + " AND ");
+            preFilterMap.get(slotNum)
+                .append(dagFilterManager.getFilter(workspaceId, filterId) + " AND ");
           }
         }
       }
@@ -84,13 +97,13 @@ public class ScheduleServiceImpl implements ScheduleService {
           List<Map<String, Object>> data = tableJobService.saveToClickHouse(node, preFilterMap);
 
           String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
-          OutputData outputData = new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
+          OutputData outputData = new OutputData(data,
+              tableMetadataService.metadataFromDatasource(tableName));
 
           outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputData);
           break;
         case "filter":
           String filter = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
-//          log.info("-- The current filter :" + filter);
           dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
           break;
         case "join":
@@ -98,6 +111,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         case "profiler":
           break;
         case "transpose":
+          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId,
+              transposeSavedData(node, nodeId, preFilterMap));
           break;
         case "scalar":
           break;
@@ -112,10 +127,18 @@ public class ScheduleServiceImpl implements ScheduleService {
   }
 
   /**
-   * Get filter string
+   * Transpose execute: save to clickhouse and return the saved data.
+   */
+  private OutputData transposeSavedData(DagNode node, String nodeId,
+      Map<Integer, StringBuffer> preFilterMap) {
+    List<Map<String, Object>> data = tableJobService.saveToClickHouse(node, preFilterMap);
+    String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
+    return new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
+  }
+
+  /**
+   * Get filter string.
    *
-   * @param dagNode
-   * @return
    */
   private String parseFilterAndPivot(DagNode dagNode) {
 

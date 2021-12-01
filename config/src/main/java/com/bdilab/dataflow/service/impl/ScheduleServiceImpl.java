@@ -15,6 +15,7 @@ import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.InputDataSlot;
 import com.bdilab.dataflow.utils.dag.RealTimeDag;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,8 +34,7 @@ import org.springframework.util.CollectionUtils;
 /**
  * Task scheduling module.
  *
- * @author: zhb
- * @createTime: 2021/11/16 16:15
+ * @author zhb
  */
 
 @Slf4j
@@ -83,7 +84,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (!CollectionUtils.isEmpty(filterIdsMap.get(slotNum))) {
           for (String filterId : filterIdsMap.get(slotNum)) {
             preFilterMap.get(slotNum)
-                .append(dagFilterManager.getFilter(workspaceId, filterId) + " AND ");
+              .append(dagFilterManager.getFilter(workspaceId, filterId) + " AND ");
           }
         }
       }
@@ -94,14 +95,13 @@ public class ScheduleServiceImpl implements ScheduleService {
 
       String nodeType = node.getNodeType();
       JobOutputJson outputJson = null;
+
       switch (nodeType) {
         case "table":
           List<Map<String, Object>> data = tableJobService.saveToClickHouse(node, preFilterMap);
-
           String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
           OutputData outputData = new OutputData(data,
               tableMetadataService.metadataFromDatasource(tableName));
-
           outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputData);
           break;
         case "filter":
@@ -110,25 +110,27 @@ public class ScheduleServiceImpl implements ScheduleService {
           break;
         case "join":
           JSONObject nodeDescription = (JSONObject) node.getNodeDescription();
-          if(nodeDescription.getJSONArray("joinKeys").size()!=0){
+          if (nodeDescription.getJSONArray("joinKeys").size() != 0) {
             try {
-              joinService.saveToClickHouse(node,preFilterMap);
+              joinService.saveToClickHouse(node, preFilterMap);
               outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, null);
             } catch (Exception e) {
               outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, null);
               e.printStackTrace();
             }
-          }else{
+          } else {
             outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, null);
           }
           break;
         case "profiler":
+          // TODO
           break;
         case "transpose":
           outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId,
-              transposeSavedData(node, nodeId, preFilterMap));
+            transposeSavedData(node, nodeId, preFilterMap));
           break;
         case "scalar":
+          // TODO
           break;
         default:
           throw new RuntimeException("not exist this operator !");
@@ -141,10 +143,10 @@ public class ScheduleServiceImpl implements ScheduleService {
   }
 
   /**
-   * Transpose execute: save to clickhouse and return the saved data.
+   * Transpose execute: save to ClickHouse and return the saved data.
    */
   private OutputData transposeSavedData(DagNode node, String nodeId,
-      Map<Integer, StringBuffer> preFilterMap) {
+                                        Map<Integer, StringBuffer> preFilterMap) {
     List<Map<String, Object>> data = tableJobService.saveToClickHouse(node, preFilterMap);
     String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
     return new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
@@ -152,7 +154,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   /**
    * Get filter string.
-   *
    */
   private String parseFilterAndPivot(DagNode dagNode) {
 
@@ -198,7 +199,7 @@ public class ScheduleServiceImpl implements ScheduleService {
       }
     }
 
-    // Modify the subgraph structure
+    // Modify the subGraph structure
     for (String curId : copySubDag.keySet()) {
       List<String> nextNodesId = nextNodeIdMap.get(curId);
       for (String nextNodeId : nextNodesId) {

@@ -40,6 +40,7 @@ public class WebSocketServer {
   public void onOpen(Session session) {
     session.setMaxIdleTimeout(360000);
     sessionSet.add(session);
+    log.info("Session [{}] has connected.", session);
   }
 
   /**
@@ -50,6 +51,7 @@ public class WebSocketServer {
   @OnClose
   public void onClose(Session session) {
     sessionSet.remove(session);
+    log.info("Session [{}] has closed.", session);
   }
 
   /**
@@ -76,6 +78,7 @@ public class WebSocketServer {
    */
   @OnError
   public void onError(Session session, Throwable error) {
+    log.error("Session [{}] ERROR: ", session);
     error.printStackTrace();
   }
 
@@ -89,6 +92,12 @@ public class WebSocketServer {
       for (Session session : sessionSet) {
         session.getBasicRemote().sendText(String.format("%s", message));
       }
+      if (message.length() > 300) {
+        log.info("Send message to all session. The message: {}", message.substring(0,300));
+      } else {
+        log.info("Send message to all session. The message: {}", message);
+      }
+
     } catch (IOException e) {
       e.printStackTrace();
     }

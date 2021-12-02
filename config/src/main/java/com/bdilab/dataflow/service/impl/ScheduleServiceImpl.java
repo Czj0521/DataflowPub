@@ -7,10 +7,7 @@ import com.bdilab.dataflow.dto.JobOutputJson;
 import com.bdilab.dataflow.dto.Metadata;
 import com.bdilab.dataflow.dto.MetadataOutputJson;
 import com.bdilab.dataflow.dto.OutputData;
-import com.bdilab.dataflow.service.ScheduleService;
-import com.bdilab.dataflow.service.TableJobService;
-import com.bdilab.dataflow.service.TransposeService;
-import com.bdilab.dataflow.service.WebSocketServer;
+import com.bdilab.dataflow.service.*;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.InputDataSlot;
@@ -53,6 +50,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   private TableMetadataServiceImpl tableMetadataService;
   @Autowired
   private TransposeService transposeService;
+  @Autowired
+  private ProfilerService profilerService;
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
@@ -125,6 +124,10 @@ public class ScheduleServiceImpl implements ScheduleService {
           break;
         case "profiler":
           //TODO
+          List<Map<String, Object>> profilerData = profilerService.getProfiler(node,preFilterMap);
+          OutputData outputData = new OutputData();
+          outputData.setData(profilerData);
+          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputData);
           break;
         case "transpose":
           outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId,

@@ -17,13 +17,7 @@ import java.util.Map;
  * @author YuShaochao
  * @create 2021-11-11
  */
-@Api(tags = "ProfilerService")
+
 public interface ProfilerService {
-  @ApiOperation(value = "getProfiler")
-  public List<Map<String, Object>> getProfiler(
-      @ApiParam(name = "dagNode", value = "联动节点信息") DagNode dagNode,
-      @ApiParam(name = "preFilterMap", value = "filter字符串")  Map<Integer,StringBuffer> preFilterMap);
-
-
-
+  public List<Map<String, Object>> getProfiler(DagNode dagNode, Map<Integer,StringBuffer> preFilterMap);
 }

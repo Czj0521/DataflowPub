@@ -42,7 +42,7 @@ public class ProfilerServiceImpl implements ProfilerService {
    * @return for a column: {"min": ,"minVal":}
    */
   @Override
-      public List<Map<String, Object>> getProfiler(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap){
+  public List<Map<String, Object>> getProfiler(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap){
 
     //由dagNode拿到profilerDesc
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();

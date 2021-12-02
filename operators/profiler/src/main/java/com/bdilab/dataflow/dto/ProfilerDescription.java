@@ -1,6 +1,7 @@
 package com.bdilab.dataflow.dto;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import java.util.List;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProfilerDescription {
   private String jobType;
-  private String dataSource;
+  private String[] dataSource;
   private List<String> profilerColumnList;
 
 
@@ -29,7 +30,7 @@ public class ProfilerDescription {
   public static ProfilerDescription generateFromJson(JSONObject json) {
     return new ProfilerDescription(
         json.getString("jobType"),
-        json.getString("dataSource"),
+        (String[]) json.get("dataSource"),
         (List<String>) json.get("profilerColumnList")
     );
   }

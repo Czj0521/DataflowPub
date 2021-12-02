@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.enums.DataTypeEnum;
 import com.bdilab.dataflow.common.exception.UncheckException;
 import com.bdilab.dataflow.dto.ProfilerDescription;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.bdilab.dataflow.utils.dag.DagNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,8 +41,24 @@ public class ProfilerServiceImpl implements ProfilerService {
    *
    * @return for a column: {"min": ,"minVal":}
    */
-  public List<Map<String, Object>> getProfiler(ProfilerDescription profilerDescription) {
-    String dataSource = profilerDescription.getDataSource();
+  @Override
+  public List<Map<String, Object>> getProfiler(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap){
+
+    //由dagNode拿到profilerDesc
+    JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
+    ProfilerDescription profilerDescription = nodeDescription.toJavaObject(ProfilerDescription.class);
+
+    //设置过滤后的数据源
+    StringBuffer leftFilter = preFilterMap.get(0);
+
+    String dataSource;
+    if(leftFilter == null || leftFilter.length()==0){
+      dataSource = profilerDescription.getDataSource()[0];
+
+    }else{
+      dataSource = "(SELECT * FROM "+ profilerDescription.getDataSource()[0] +" WHERE " + leftFilter+")";
+    }
+
     List<String> profilerColumnList = profilerDescription.getProfilerColumnList();
     List<Map<String, Object>> columnType = getColumnType(dataSource, profilerColumnList);
     List<Map<String, Object>> columnMaxMin = getColumnInfo(dataSource, columnType);

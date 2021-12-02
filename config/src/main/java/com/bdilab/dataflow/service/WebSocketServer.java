@@ -38,7 +38,7 @@ public class WebSocketServer {
    */
   @OnOpen
   public void onOpen(Session session) {
-    session.setMaxIdleTimeout(360000);
+    session.setMaxIdleTimeout(3600000);
     sessionSet.add(session);
     log.info("Session [{}] has connected.", session);
   }

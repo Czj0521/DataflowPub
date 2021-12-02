@@ -7,6 +7,7 @@ import com.bdilab.dataflow.dto.JobOutputJson;
 import com.bdilab.dataflow.dto.Metadata;
 import com.bdilab.dataflow.dto.MetadataOutputJson;
 import com.bdilab.dataflow.dto.OutputData;
+import com.bdilab.dataflow.service.ProfilerService;
 import com.bdilab.dataflow.service.ScheduleService;
 import com.bdilab.dataflow.service.TableJobService;
 import com.bdilab.dataflow.service.TransposeService;
@@ -53,14 +54,20 @@ public class ScheduleServiceImpl implements ScheduleService {
   private TableMetadataServiceImpl tableMetadataService;
   @Autowired
   private TransposeService transposeService;
+  @Autowired
+  private ProfilerService profilerService;
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
-
     List<String> sortedList = getSortedList(workspaceId, operatorId);
+    boolean flag = false;
 
     for (String nodeId : sortedList) {
-      log.info("- Execute the task of the operator with ID [{}] in workspace ID [{}]", operatorId, workspaceId);
+      if (flag) break;
+
+      log.info("- Execute the task of the operator with ID [{}] in workspace ID [{}]",
+        nodeId, workspaceId);
+
       DagNode node = realTimeDag.getNode(workspaceId, nodeId);
       String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
 
@@ -75,19 +82,19 @@ public class ScheduleServiceImpl implements ScheduleService {
         filterIdsMap.put(i, inputDataSlots[i].getFilterId());
         String dataSource = inputDataSlots[i].getDataSource();
         Metadata metadata = new Metadata(dataSource,
-            tableMetadataService.metadataFromDatasource(dataSource));
+          tableMetadataService.metadataFromDatasource(dataSource));
         metadataList.add(metadata);
       }
 
       MetadataOutputJson metadataOutputJson = new MetadataOutputJson("JOB_START", nodeId,
-          workspaceId, metadataList);
-      WebSocketServer.sendMessage(JSON.toJSONString(metadataOutputJson).toString());
+        workspaceId, metadataList);
+      WebSocketServer.sendMessage(JSON.toJSONString(metadataOutputJson));
 
       for (Integer slotNum : filterIdsMap.keySet()) {
         if (!CollectionUtils.isEmpty(filterIdsMap.get(slotNum))) {
           for (String filterId : filterIdsMap.get(slotNum)) {
             preFilterMap.get(slotNum)
-              .append(dagFilterManager.getFilter(workspaceId, filterId) + " AND ");
+              .append(dagFilterManager.getFilter(workspaceId, filterId)).append(" AND ");
           }
         }
       }
@@ -99,46 +106,56 @@ public class ScheduleServiceImpl implements ScheduleService {
       String nodeType = node.getNodeType();
       JobOutputJson outputJson = null;
 
-      switch (nodeType) {
-        case "table":
-          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId,
-            tableSavedData(node, tableName, preFilterMap));
-          break;
-        case "filter":
-          String filter = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
-          dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
-          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, null);
-          break;
-        case "join":
-          JSONObject nodeDescription = (JSONObject) node.getNodeDescription();
-          if (nodeDescription.getJSONArray("joinKeys").size() != 0) {
-            try {
-              joinService.saveToClickHouse(node, preFilterMap);
-              outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, null);
-            } catch (Exception e) {
+      try {
+        switch (nodeType) {
+          case "table":
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId,
+              tableSavedData(node, tableName, preFilterMap));
+            break;
+          case "filter":
+            String filter = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
+            dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, null);
+            break;
+          case "join":
+            JSONObject nodeDescription = (JSONObject) node.getNodeDescription();
+            if (nodeDescription.getJSONArray("joinKeys").size() != 0) {
+              try {
+                joinService.saveToClickHouse(node, preFilterMap);
+                outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, null);
+              } catch (Exception e) {
+                outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, null);
+                e.printStackTrace();
+              }
+            } else {
               outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, null);
-              e.printStackTrace();
             }
-          } else {
-            outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, null);
-          }
-          break;
-        case "profiler":
-          //TODO
-          break;
-        case "transpose":
-          outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId,
-            transposeSavedData(node, tableName, preFilterMap));
-          break;
-        case "scalar":
-          //TODO
-          break;
-        default:
-          throw new RuntimeException("not exist this operator !");
+            break;
+          case "profiler":
+            //TODO
+            List<Map<String, Object>> profilerData = profilerService.getProfiler(node, preFilterMap);
+            OutputData outputData = new OutputData();
+            outputData.setData(profilerData);
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputData);
+            break;
+          case "transpose":
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId,
+              transposeSavedData(node, tableName, preFilterMap));
+            break;
+          case "scalar":
+            // TODO
+            break;
+          default:
+            throw new RuntimeException("not exist this operator !");
+        }
+      } catch (Exception e) {
+        outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, null);
+        log.error("ClickHouse error !");
+        flag = true;
       }
 
       if (null != outputJson) {
-        WebSocketServer.sendMessage(JSON.toJSONString(outputJson).toString());
+        WebSocketServer.sendMessage(JSON.toJSONString(outputJson));
       }
     }
   }

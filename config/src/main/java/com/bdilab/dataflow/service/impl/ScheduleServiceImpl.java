@@ -7,7 +7,11 @@ import com.bdilab.dataflow.dto.JobOutputJson;
 import com.bdilab.dataflow.dto.Metadata;
 import com.bdilab.dataflow.dto.MetadataOutputJson;
 import com.bdilab.dataflow.dto.OutputData;
-import com.bdilab.dataflow.service.*;
+import com.bdilab.dataflow.service.ProfilerService;
+import com.bdilab.dataflow.service.ScheduleService;
+import com.bdilab.dataflow.service.TableJobService;
+import com.bdilab.dataflow.service.TransposeService;
+import com.bdilab.dataflow.service.WebSocketServer;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.InputDataSlot;
@@ -59,7 +63,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     List<String> sortedList = getSortedList(workspaceId, operatorId);
 
     for (String nodeId : sortedList) {
-      log.info("- Execute the task of the operator with ID [{}] in workspace ID [{}]", operatorId, workspaceId);
+      log.info("- Execute the task of the operator with ID [{}] in workspace ID [{}]",
+          operatorId, workspaceId);
       DagNode node = realTimeDag.getNode(workspaceId, nodeId);
       String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
 
@@ -80,13 +85,13 @@ public class ScheduleServiceImpl implements ScheduleService {
 
       MetadataOutputJson metadataOutputJson = new MetadataOutputJson("JOB_START", nodeId,
           workspaceId, metadataList);
-      WebSocketServer.sendMessage(JSON.toJSONString(metadataOutputJson).toString());
+      WebSocketServer.sendMessage(JSON.toJSONString(metadataOutputJson));
 
       for (Integer slotNum : filterIdsMap.keySet()) {
         if (!CollectionUtils.isEmpty(filterIdsMap.get(slotNum))) {
           for (String filterId : filterIdsMap.get(slotNum)) {
             preFilterMap.get(slotNum)
-              .append(dagFilterManager.getFilter(workspaceId, filterId) + " AND ");
+              .append(dagFilterManager.getFilter(workspaceId, filterId)).append(" AND ");
           }
         }
       }
@@ -141,7 +146,7 @@ public class ScheduleServiceImpl implements ScheduleService {
       }
 
       if (null != outputJson) {
-        WebSocketServer.sendMessage(JSON.toJSONString(outputJson).toString());
+        WebSocketServer.sendMessage(JSON.toJSONString(outputJson));
       }
     }
   }

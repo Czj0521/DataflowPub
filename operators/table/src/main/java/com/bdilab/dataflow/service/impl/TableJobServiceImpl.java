@@ -131,7 +131,7 @@ public class TableJobServiceImpl implements TableJobService {
   }
 
   @Override
-  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap) {
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap){
     // 读取数据源，并根据filter加入过滤条件
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
     String filter0 = nodeDescription.getString("filter");

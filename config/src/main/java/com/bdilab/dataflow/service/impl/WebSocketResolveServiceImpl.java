@@ -76,7 +76,10 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         String addNextNodeId = desc.getString("nextNodeId");
         String addSlotIndex = desc.getString("slotIndex");
         realTimeDag.addEdge(workspaceId, addPreNodeId, addNextNodeId, Integer.valueOf(addSlotIndex));
-        scheduleService.executeTask(workspaceId, addNextNodeId);
+        List<String> nextDataSources = realTimeDag.getNode(workspaceId, addNextNodeId).getInputDataSources();
+        if(isDataSourceReady(nextDataSources)){
+          scheduleService.executeTask(workspaceId, addNextNodeId);
+        }
         break;
       case "removeEdge":
         String rmPreNodeId = desc.getString("preNodeId");

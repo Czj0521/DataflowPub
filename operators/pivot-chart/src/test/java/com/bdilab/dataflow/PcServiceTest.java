@@ -23,8 +23,8 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 
 @Slf4j
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = com.bdilab.dataflow.PivotChartTestApplication.class)
+/*@RunWith(SpringRunner.class)
+@SpringBootTest(classes = com.bdilab.dataflow.PivotChartTestApplication.class)*/
 public class PcServiceTest {
 
   private PivotChartDescription pivotChartDescription = new PivotChartDescription();
@@ -32,7 +32,9 @@ public class PcServiceTest {
   @Autowired
   private PivotChartServiceImpl pivotChartService;
 
-  @Test
+
+
+  /*@Test
   public void service() {
     pivotChartDescription.setDataSource(new String[]{"dataflow.airuuid"});
     pivotChartDescription.setJobType("pivot-chart");
@@ -58,9 +60,9 @@ public class PcServiceTest {
 
     R res = pivotChartService.getPivotChart(pivotChartDescription);
     log.info(MessageFormat.format("[Pivot Chart Response]: {0}", res));
-  }
+  }*/
 
-  @Test
+ /* @Test
   public void datetimeService() {
     pivotChartDescription.setDataSource(new String[]{"dataflow.airuuid"});
     pivotChartDescription.setJobType("pivot-chart");
@@ -85,7 +87,7 @@ public class PcServiceTest {
     R res = pivotChartService.getPivotChart(pivotChartDescription);
     log.info(MessageFormat.format("[Pivot Chart Response]: {0}", res));
     log.info("\n" + JSON.toJSONString(res, true));
-  }
+  }*/
 }
 
 

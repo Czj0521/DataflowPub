@@ -1,44 +1,44 @@
 //添加节点
-//new table No.1
+//new table No.1,托出一个table，并且更新
 {
   "job": "start_job",
   "tableDescription": {
     "jobType": "table",
-    "dataSource": ["dataflow.airuuid"],
-    "filter": "(AQI>30 AND O3 = 0 AND startsWith(city,'新'))",
-    "group": ["city"],
+    "dataSource": ["dataflow.id_address"],
+    "filter": "",
+    "group": [""],
     "limit": 2000,
-    "project": ["city","count(city)"]
+    "project": ["*"]
   },
   "operatorType": "table",
   "dagType": "addNode",
   "operatorId": "wjhtest1124_1",
   "workspaceId": "wjhsp"
 }
-//new table No.2
+//new table No.2 托出一个table，并且更新
 {
   "job": "start_job",
   "tableDescription": {
     "jobType": "table",
-    "dataSource": ["dataflow.airuuid"],
-    "filter": "(AQI>30 AND O3 = 0 AND startsWith(city,'新'))",
-    "group": ["city"],
+    "dataSource": ["dataflow.id_name"],
+    "filter": "",
+    "group": [""],
     "limit": 2000,
-    "project": ["city","count(city)"]
+    "project": ["*"]
   },
   "operatorType": "table",
   "dagType": "addNode",
   "operatorId": "wjhtest1124_2",
   "workspaceId": "wjhsp"
 }
-//new join No.3
+//new join No.3 /。拖出一个join
 {
   "job": "start_job",
   "joinDescription": {
             "jobType":"join",
             "dataSource": ["",""],
             "joinType":"innerJoin",
-            "joinKeys":[{"left":"id","right":"id"},{"left":"id2","right":"id2"}],
+            "joinKeys":[],
             "includePrefixes":"false",
             "leftPrefix":"left_",
             "rightPrefix":"right_"
@@ -48,12 +48,70 @@
   "operatorId": "wjhtest1124_3",
   "workspaceId": "wjhsp"
 }
+
+//table1---join No.4 将table1连接到join
+{
+  "job": "start_job",
+  "dagDescription": {
+    "jobType": "addEdge",
+    "preNodeId": "wjhtest1124_1",
+    "nextNodeId": "wjhtest1124_3",
+    "slotIndex": "0"
+  },
+  "operatorType": "dag",
+  "dagType": "addEdge",
+  "workspaceId": "wjhsp"
+}
+
+//table2---join No.5 将table2连接到join
+{
+  "job": "start_job",
+  "dagDescription": {
+    "jobType": "addEdge",
+    "preNodeId": "wjhtest1124_2",
+    "nextNodeId": "wjhtest1124_3",
+    "slotIndex": "1"
+  },
+  "operatorType": "dag",
+  "dagType": "addEdge",
+  "workspaceId": "wjhsp"
+}
+
+//更新join No.6
+{
+  "job": "start_job",
+  "joinDescription": {
+              "jobType":"join",
+              "dataSource": ["",""],
+              "joinType":"inner Join",
+              "joinKeys":[{"left":"id","right":"id"}],
+              "includePrefixes":"false",
+              "leftPrefix":"left_",
+              "rightPrefix":"right_"
+    },
+  "operatorType": "join",
+  "dagType": "updateNode",
+  "operatorId": "wjhtest1124_3",
+  "workspaceId": "wjhsp"
+}
+
+
+
+
+
+
+
+
+
+
+-----------------------
+
 //new filter1 No.4
 {
   "job": "start_job",
   "filterDescription": {
-           "dataSource": ["dataflow.airuuid"],
-           "filter": "AQI > 30 or AQI <10",
+           "dataSource": [""],
+           "filter": "",
            "jobType": "filter",
            "limit": -1
   },

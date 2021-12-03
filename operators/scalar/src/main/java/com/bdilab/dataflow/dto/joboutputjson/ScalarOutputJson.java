@@ -15,5 +15,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ScalarOutputJson extends AbstractJobOutputJson {
-  private String value;
+  private Object value;
 }

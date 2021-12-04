@@ -17,5 +17,5 @@ public class BaseOutputJson {
   private String jobStatus;
   private String operatorId;
   private String workspaceId;
-  private String operatorName;
+  private String operatorType;
 }

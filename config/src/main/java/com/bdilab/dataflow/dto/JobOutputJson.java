@@ -21,11 +21,11 @@ public class JobOutputJson extends BaseOutputJson {
    * Construction method.
    */
   public JobOutputJson(String jobStatus, String operatorId,
-                       String workspaceId, String operatorName, OutputData outputs) {
+                       String workspaceId, String operatorType, OutputData outputs) {
     super.setJobStatus(jobStatus);
     super.setOperatorId(operatorId);
     super.setWorkspaceId(workspaceId);
-    super.setOperatorName(operatorName);
+    super.setOperatorType(operatorType);
     this.outputs = outputs;
   }
 }

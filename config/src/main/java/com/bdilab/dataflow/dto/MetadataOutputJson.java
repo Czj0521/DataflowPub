@@ -23,10 +23,12 @@ public class MetadataOutputJson extends BaseOutputJson {
    *
    */
   public MetadataOutputJson(String jobStatus, String operatorId,
-                            String workspaceId, List<Metadata> inputMetadataSlots) {
+                            String workspaceId, String operatorName,
+                            List<Metadata> inputMetadataSlots) {
     super.setJobStatus(jobStatus);
     super.setOperatorId(operatorId);
     super.setWorkspaceId(workspaceId);
+    super.setOperatorName(operatorName);
     this.inputs = inputMetadataSlots;
   }
 }

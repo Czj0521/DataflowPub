@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Task scheduling module.
@@ -93,8 +94,11 @@ public class ScheduleServiceImpl implements ScheduleService {
       for (Integer slotNum : filterIdsMap.keySet()) {
         if (!CollectionUtils.isEmpty(filterIdsMap.get(slotNum))) {
           for (String filterId : filterIdsMap.get(slotNum)) {
-            preFilterMap.get(slotNum)
-              .append(dagFilterManager.getFilter(workspaceId, filterId)).append(" AND ");
+            String filter = dagFilterManager.getFilter(workspaceId, filterId);
+            if(!StringUtils.isEmpty(filter)){
+              preFilterMap.get(slotNum)
+                  .append(filter).append(" AND ");
+            }
           }
         }
       }

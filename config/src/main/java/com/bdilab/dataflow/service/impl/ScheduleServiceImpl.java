@@ -7,7 +7,6 @@ import com.bdilab.dataflow.dto.JobOutputJson;
 import com.bdilab.dataflow.dto.Metadata;
 import com.bdilab.dataflow.dto.MetadataOutputJson;
 import com.bdilab.dataflow.dto.OutputData;
-import com.bdilab.dataflow.dto.jobdescription.ScalarDescription;
 import com.bdilab.dataflow.service.*;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;

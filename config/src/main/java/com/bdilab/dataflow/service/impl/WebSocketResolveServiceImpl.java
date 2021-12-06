@@ -3,6 +3,7 @@ package com.bdilab.dataflow.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.enums.OperatorOutputTypeEnum;
+import com.bdilab.dataflow.dto.jobdescription.ScalarDescription;
 import com.bdilab.dataflow.service.WebSocketResolveService;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
@@ -54,6 +55,8 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         }
         break;
       case "updateNode":
+        ScalarDescription scalarDescription = desc.toJavaObject(ScalarDescription.class);
+        System.out.println(scalarDescription);
         realTimeDag.updateNode(workspaceId, operatorId, desc);
         List<String> inputDataSources = realTimeDag.getNode(workspaceId, operatorId).getInputDataSources();
         if(isDataSourceReady(inputDataSources)){

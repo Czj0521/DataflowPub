@@ -57,16 +57,15 @@ public class TransposeServiceImpl implements TransposeService {
   }
 
   @Override
-  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode,
-      Map<Integer, StringBuffer> preFilterMap) {
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode) {
     // add filter
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
-    String filter0 = nodeDescription.getString("filter");
-    if (!StringUtils.isEmpty(filter0)) {
-      nodeDescription.put("filter", filter0 + " AND " + preFilterMap.get(0).toString());
-    } else {
-      nodeDescription.put("filter", preFilterMap.get(0).toString());
-    }
+//    String filter0 = nodeDescription.getString("filter");
+//    if (!StringUtils.isEmpty(filter0)) {
+//      nodeDescription.put("filter", filter0 + " AND " + preFilterMap.get(0).toString());
+//    } else {
+//      nodeDescription.put("filter", preFilterMap.get(0).toString());
+//    }
     TransposeDescription description = nodeDescription.toJavaObject(TransposeDescription.class);
     // save result to ck
     TransposeSqlGenerator sqlGenerator = new TransposeSqlGenerator(description,columnValues(description));

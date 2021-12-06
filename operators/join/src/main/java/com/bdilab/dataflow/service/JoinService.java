@@ -12,8 +12,6 @@ import java.util.Map;
  * @author wjh
  */
 public interface JoinService extends OperatorService<JoinDescription>{
-  @Override
-  List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap);
 
   String join(JoinDescription joinDescription);
 }

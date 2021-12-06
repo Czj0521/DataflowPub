@@ -38,9 +38,9 @@ public class MaterializeController {
     return ResponseEntity.ok(materializeJobService.materialize(operatorId));
   }
 
-  @DeleteMapping("/deleteSubTable")
-  @ApiOperation(value = "deleteSubTable")
-  public ResponseEntity deleteSubTable(@Valid @RequestParam("materializeId") String materializeId) {
+  @DeleteMapping("/deleteMaterialize")
+  @ApiOperation(value = "deleteMaterialize")
+  public ResponseEntity deleteMaterialize(@Valid @RequestParam("materializeId") String materializeId) {
     return ResponseEntity.ok(materializeJobService.deleteMaterialize(materializeId));
   }
 }

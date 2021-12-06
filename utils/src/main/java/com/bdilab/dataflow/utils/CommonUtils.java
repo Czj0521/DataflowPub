@@ -38,6 +38,9 @@ public class CommonUtils {
     return jsonObjects;
   }
 
+  /**
+   * JsonArray To String array.
+   */
   public static String[] jsonArrayToStringArray(JSONArray jsonArray) {
     int len = jsonArray.size();
     String[] strings = new String[len];

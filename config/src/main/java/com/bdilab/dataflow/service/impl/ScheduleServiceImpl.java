@@ -128,7 +128,7 @@ public class ScheduleServiceImpl implements ScheduleService {
               outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
             } else {
               outputJson = null;
-              flag = false;
+              flag = true;
             }
             break;
           case "profiler":

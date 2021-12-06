@@ -1,9 +1,11 @@
 package com.bdilab.dataflow.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.common.consts.CommonConstants;
 import com.bdilab.dataflow.dto.jobdescription.ScalarDescription;
 import com.bdilab.dataflow.sql.generator.ScalarSqlGenerator;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class ScalarService implements OperatorService<ScalarDescription> {
   @Autowired
   private ClickHouseJdbcUtils clickHouseJdbcUtils;
 
+  @Autowired
+  private ClickHouseManager clickHouseManager;
+
   @Override
   public List<Map<String, Object>> execute(ScalarDescription scalarDescription) {
     ScalarSqlGenerator scalarSqlGenerator = new ScalarSqlGenerator(scalarDescription);
@@ -42,6 +47,17 @@ public class ScalarService implements OperatorService<ScalarDescription> {
 
   @Override
   public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap) {
-    return null;
+    JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
+    ScalarDescription scalarDescription = nodeDescription.toJavaObject(ScalarDescription.class);
+
+    // save results to clickhouse
+    ScalarSqlGenerator scalarSqlGenerator = new ScalarSqlGenerator(scalarDescription);
+    String sql = scalarSqlGenerator.generateDataSourceSql();
+    String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + dagNode.getNodeId();
+
+    clickHouseManager.createView(tableName, sql);
+
+    // return the result
+    return clickHouseJdbcUtils.queryForList(scalarSqlGenerator.generate());
   }
 }

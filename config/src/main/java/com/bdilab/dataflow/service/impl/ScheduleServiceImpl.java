@@ -87,8 +87,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         metadataList.add(metadata);
       }
 
+      String nodeType = node.getNodeType();
       MetadataOutputJson metadataOutputJson = new MetadataOutputJson("JOB_START", nodeId,
-        workspaceId, metadataList);
+        workspaceId, nodeType, metadataList);
       WebSocketServer.sendMessage(JSON.toJSONString(metadataOutputJson));
 
       for (Integer slotNum : filterIdsMap.keySet()) {
@@ -107,32 +108,31 @@ public class ScheduleServiceImpl implements ScheduleService {
         preFilterMap.get(slotNum).append(" 1 = 1 ");
       }
 
-      String nodeType = node.getNodeType();
-      JobOutputJson outputJson = null;
 
+      JobOutputJson outputJson = null;
       try {
         switch (nodeType) {
           case "table":
-            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId,
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
               tableSavedData(node, tableName, preFilterMap));
             break;
           case "filter":
             String filter = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
             dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
-            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, null);
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
             break;
           case "join":
             JSONObject nodeDescription = (JSONObject) node.getNodeDescription();
             if (nodeDescription.getJSONArray("joinKeys").size() != 0) {
               try {
                 joinService.saveToClickHouse(node, preFilterMap);
-                outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, null);
+                outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
               } catch (Exception e) {
-                outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, null);
+                outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, nodeType, null);
                 e.printStackTrace();
               }
             } else {
-              outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, null);
+              outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, nodeType, null);
             }
             break;
           case "profiler":
@@ -140,10 +140,10 @@ public class ScheduleServiceImpl implements ScheduleService {
             List<Map<String, Object>> profilerData = profilerService.getProfiler(node, preFilterMap);
             OutputData outputData = new OutputData();
             outputData.setData(profilerData);
-            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, outputData);
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, outputData);
             break;
           case "transpose":
-            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId,
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
               transposeSavedData(node, tableName, preFilterMap));
             break;
           case "scalar":
@@ -153,7 +153,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new RuntimeException("not exist this operator !");
         }
       } catch (Exception e) {
-        outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, null);
+        outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, nodeType, null);
         log.error("ClickHouse error !");
         flag = true;
       }

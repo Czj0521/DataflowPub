@@ -32,9 +32,14 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
   private final ClickHouseJdbcUtils clickHouseJdbcUtils;
 
   /**
-   * 存储多个等宽分箱箱子集合的ThreadLocal变量，比如[[0,50,100],[2015,1016]]存储了两个不同菜单均使用了等宽分箱后的箱子集合
+   * 存储多个等宽分箱箱子集合的ThreadLocal变量，比如[[0,50,100],[2015,1016]]存储了两个不同菜单均使用了等宽分箱后的箱子集合.
    */
   public static ThreadLocal<List<Set<Object>>> EquiWidthBinningSetThreadLocal = new ThreadLocal<>();
+
+  /**
+   * 作用同等宽分箱箱子集合的ThreadLocal变量.
+   */
+  public static ThreadLocal<List<Set<Object>>> NaturalBinningSetThreadLocal = new ThreadLocal<>();
 
   /**
    * 纯属性和分箱集合.
@@ -57,9 +62,14 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
   Set<String> groupSet;
 
   /**
-   * 存储等宽分箱Set集合的List集合
+   * 存储等宽分箱Set集合的List集合.
    */
-  List<Set<Object>> binningSetList = new ArrayList<>();
+  List<Set<Object>> equiWidthBinningSetList = new ArrayList<>();
+
+  /**
+   * 存储自然分箱Set集合的List集合.
+   */
+  List<Set<Object>> naturalBinningSetList = new ArrayList<>();
 
   public PivotChartSqlGenerator(PivotChartDescription description) {
     super(description);
@@ -183,19 +193,47 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
           groupSet.add(menu.getAttributeRenaming());
           break;
         case BinningConstants.EQUI_WIDTH_BINNING:
-          String s = SqlConstants.SELECT + SqlConstants.DISTINCT + menu.getAttribute()
-                  + Communal.BLANK + SqlConstants.FROM + datasource;
-          Set<Object> setAsc = new TreeSet<>(new ComparatorAsc());
-          setAsc.addAll(clickHouseJdbcUtils.query(s));
+          String s1 = SqlConstants.SELECT + SqlConstants.MAX + SqlConstants.LEFT_BRACKET
+                  + menu.getAttribute() + SqlConstants.RIGHT_BRACKET + Communal.BLANK
+                  + SqlConstants.FROM + datasource;
+          String s2 = SqlConstants.SELECT + SqlConstants.MIN + SqlConstants.LEFT_BRACKET
+                  + menu.getAttribute() + SqlConstants.RIGHT_BRACKET + Communal.BLANK
+                  + SqlConstants.FROM + datasource;
+          Long max = clickHouseJdbcUtils.queryForLong(s1);
+          Long min = clickHouseJdbcUtils.queryForLong(s2);
           //等宽分箱
-          EquiWidthBinning equiWidthBinning = new EquiWidthBinning(setAsc, menu.getInclude_zero());
+          EquiWidthBinning equiWidthBinning = new EquiWidthBinning(max, min, menu.getInclude_zero());
           //获取分箱后的箱子集合
           Set<Object> binningSet = equiWidthBinning.binningSet();
-          binningSetList.add(binningSet);
-          EquiWidthBinningSetThreadLocal.set(binningSetList);
+          equiWidthBinningSetList.add(binningSet);
+          EquiWidthBinningSetThreadLocal.set(equiWidthBinningSetList);
 
           b.append(SqlConstants.ROUND_DOWN).append(SqlConstants.LEFT_BRACKET).append(menu.getAttribute())
                   .append(SqlConstants.COMMA).append(binningSet).append(SqlConstants.RIGHT_BRACKET)
+                  .append(Communal.BLANK).append(menu.getAttribute()).append(Communal.UNDER_CROSS)
+                  .append(BinningConstants.BIN);
+          attributeAndBinningSet.add(b.toString());
+          groupSet.add(menu.getAttributeRenaming());
+          break;
+        case BinningConstants.NATURAL_BINNING:
+          long start = System.currentTimeMillis();
+          String ns = SqlConstants.SELECT + SqlConstants.DISTINCT + menu.getAttribute()
+                  + Communal.BLANK + SqlConstants.FROM + datasource;
+          List<?> list = clickHouseJdbcUtils.query(ns);
+
+          System.out.println("hh" + (System.currentTimeMillis() - start));
+          Set<Double> doubleList = new TreeSet<>(new ComparatorAsc());
+          for (Object o : list) {
+            doubleList.add(Double.parseDouble(o.toString()));
+          }
+          Double[] p = doubleList.toArray(new Double[0]);
+          //获取自然分箱后的箱子集合
+          Set<Object> naturalSet = KMeans.NaturalBinning(p, menu.getInclude_zero());
+          naturalBinningSetList.add(naturalSet);
+          NaturalBinningSetThreadLocal.set(naturalBinningSetList);
+
+          b.append(SqlConstants.ROUND_DOWN).append(SqlConstants.LEFT_BRACKET).append(menu.getAttribute())
+                  .append(SqlConstants.COMMA).append(naturalSet).append(SqlConstants.RIGHT_BRACKET)
                   .append(Communal.BLANK).append(menu.getAttribute()).append(Communal.UNDER_CROSS)
                   .append(BinningConstants.BIN);
           attributeAndBinningSet.add(b.toString());
@@ -209,7 +247,6 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
         case BinningConstants.YEAR:
           handleDatetimeBinning(menu);
           break;
-        //TODO 其他分箱
         default:
           throw new RRException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg() + menu.getMenu(),
                   BizCodeEnum.INVALID_BINNING_TYPE.getCode());

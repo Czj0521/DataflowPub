@@ -46,8 +46,10 @@ public class PivotChartServiceImpl implements PivotChartService {
     verify(description);
 
     //通过SQL解析类获取完整SQL
+    long start = System.currentTimeMillis();
     PivotChartSqlGenerator pivotChartSqlGenerator = new PivotChartSqlGenerator(description);
     String sql = pivotChartSqlGenerator.generate();
+    System.out.println(System.currentTimeMillis() - start);
     log.info(MessageFormat.format("[Full SQL]: {0}", sql));
 
     //对完整SQL处理，获取部分数据（einblick中透视图能渲染的最大数据量为200个左右）
@@ -91,14 +93,22 @@ public class PivotChartServiceImpl implements PivotChartService {
                     + SqlConstants.EQUAL + Communal.BLANK + item).collect(Collectors.toList()));
             break;
           case BinningConstants.EQUI_WIDTH_BINNING:
-            List<Set<Object>> binningSetList = PivotChartSqlGenerator.EquiWidthBinningSetThreadLocal.get();
-            Set<Object> binningSet = binningSetList.get(0);
-            binningSetList.remove(0);
+            List<Set<Object>> equiWidthBinningSetList = PivotChartSqlGenerator.EquiWidthBinningSetThreadLocal.get();
+            Set<Object> equiWidthBinningSet = equiWidthBinningSetList.get(0);
+            equiWidthBinningSetList.remove(0);
             //等宽分箱，箱子集合排序要单独处理
-            handleSort(menu, respObj, binningSet);
+            handleSort(menu, respObj, equiWidthBinningSet);
             //将值所在的箱子封装
-            EquiWidthBinning equiWidthBinning = new EquiWidthBinning(binningSet, menu.getInclude_zero());
-            respObj.setValues(equiWidthBinning.values(columnList, binningSet));
+            respObj.setValues(DataUtil.values(columnList, equiWidthBinningSet));
+            break;
+          case BinningConstants.NATURAL_BINNING:
+            List<Set<Object>> naturalBinningSetList = PivotChartSqlGenerator.NaturalBinningSetThreadLocal.get();
+            Set<Object> naturalBinningSet = naturalBinningSetList.get(0);
+            naturalBinningSetList.remove(0);
+            //自然分箱，箱子集合排序要单独处理
+            handleSort(menu, respObj, naturalBinningSet);
+            //将值所在的箱子封装
+            respObj.setValues(DataUtil.values(columnList, naturalBinningSet));
             break;
           case BinningConstants.SECOND:
           case BinningConstants.MINUTE:
@@ -115,7 +125,6 @@ public class PivotChartServiceImpl implements PivotChartService {
             List<Map<String, Object>> mapList = clickHouseJdbcUtils.queryForList(dateTimeSql);
             respObj.setValues(getDate(mapList));
             break;
-          //TODO 其他分箱
           default:
             throw new RRException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg(),
                     BizCodeEnum.INVALID_BINNING_TYPE.getCode());
@@ -256,7 +265,7 @@ public class PivotChartServiceImpl implements PivotChartService {
         respObj.setDate(booleanOrDateList);
         break;
       default:
-        throw new RuntimeException("wrong type!");
+        throw new RRException(BizCodeEnum.INVALID_TYPE.getMsg(), BizCodeEnum.INVALID_TYPE.getCode());
     }
     return respObj;
   }

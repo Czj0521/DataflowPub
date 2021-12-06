@@ -33,11 +33,11 @@ public class EquiWidthBinning {
      */
     private static boolean include_zero;
 
-    public EquiWidthBinning(Set<Object> dataSet, boolean include_zero) {
+    public EquiWidthBinning(Long maxValue, Long minValue, boolean include_zero) {
         EquiWidthBinning.include_zero = include_zero;
-        List<Object> doubleList = new ArrayList<>(dataSet);
-        double min = Double.parseDouble(doubleList.get(0).toString());
-        double max = Double.parseDouble(doubleList.get(doubleList.size() - 1).toString());
+
+        double min = Double.parseDouble(String.valueOf(minValue));
+        double max = Double.parseDouble(String.valueOf(maxValue));
         int numTicks = 20;
         if ((max - min) < numTicks) {
             step = 1;
@@ -68,24 +68,5 @@ public class EquiWidthBinning {
             rangeList.add(min + i * step);
         }
         return new TreeSet<>(rangeList);
-    }
-
-    /**
-     * 获取最终要封装的值
-     */
-    public List<Object> values(List<?> dataList, Set<Object> binningSet) {
-        List<Object> binningList = new ArrayList<>(binningSet);
-
-        List<Object> values = new ArrayList<>();
-        for (Object o : dataList) {
-            List<Object> list = new ArrayList<>();
-            Number value = (Number) o;
-            int begin = binningList.indexOf(value);
-            int end = begin + 1;
-            list.add(binningList.get(begin));
-            list.add(binningList.get(end));
-            values.add(list);
-        }
-        return values;
     }
 }

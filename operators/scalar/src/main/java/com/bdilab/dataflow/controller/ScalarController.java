@@ -34,7 +34,7 @@ public class ScalarController {
     ScalarDescription scalarDescription = scalarInputJson.getScalarDescription();
     ScalarOutputJson scalarOutputJson = new ScalarOutputJson();
     scalarOutputJson.setJobStatus("JOB_FINISH");
-    scalarOutputJson.setValue(scalarService.execute(scalarDescription));
+    scalarOutputJson.setValue(scalarService.execute(scalarDescription).get(0).get("scalar"));
     scalarOutputJson.setRequestId(scalarInputJson.getRequestId());
     scalarOutputJson.setWorkspaceId(scalarInputJson.getWorkspaceId());
 

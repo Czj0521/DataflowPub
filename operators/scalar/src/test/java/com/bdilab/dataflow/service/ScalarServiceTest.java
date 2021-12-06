@@ -3,6 +3,8 @@ package com.bdilab.dataflow.service;
 import com.bdilab.dataflow.ScalarTestApplication;
 import com.bdilab.dataflow.dto.jobdescription.ScalarDescription;
 import com.bdilab.dataflow.dto.jobinputjson.ScalarInputJson;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -13,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author: Guo Yongqiang
@@ -20,7 +24,8 @@ import java.text.MessageFormat;
  * @version:
  */
 
-
+@Slf4j
+@RunWith(SpringRunner.class)
 @SpringBootTest(classes = ScalarTestApplication.class)
 public class ScalarServiceTest {
   @Autowired
@@ -60,7 +65,7 @@ public class ScalarServiceTest {
   })
   public void testNotNull(String target, String aggregation) {
     ScalarDescription scalarDescription = ScalarDescriptionPrototype.copy(target, aggregation);
-    String value = scalarService.execute(scalarDescription);
+    List<Map<String, Object>> value = scalarService.execute(scalarDescription);
     System.out.println(MessageFormat.format("[Scalar Description]: {0}", scalarDescription));
     Assertions.assertNotNull(value);
   }
@@ -71,8 +76,18 @@ public class ScalarServiceTest {
   })
   public void testNull(String target, String aggregation) {
     ScalarDescription scalarDescription = ScalarDescriptionPrototype.copy(target, aggregation);
-    String value = scalarService.execute(scalarDescription);
+    List<Map<String, Object>> value = scalarService.execute(scalarDescription);
     System.out.println(MessageFormat.format("[Scalar Description]: {0}", scalarDescription));
     Assertions.assertNull(value);
+  }
+
+  // Test a sub-query statement as datasource.
+  @Test
+  public void testLinkageDS() {
+    ScalarDescription scalarDescription = ScalarDescriptionPrototype.copy("AQI", "count");
+    scalarDescription.setDataSource(new String[] {"(SELECT * FROM dataflow.airuuid WHERE AQI <= 100 AND SO2 >= 60)"});
+    List<Map<String, Object>> value = scalarService.execute(scalarDescription);
+    System.out.println(MessageFormat.format("[Scalar Description]: {0}", scalarDescription));
+    Assertions.assertNotNull(value);
   }
 }

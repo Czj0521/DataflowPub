@@ -45,7 +45,7 @@ spring:
     host: 47.104.202.153
     port: 6379
     password: bdilab@1308
-    timeout: 1000
+    timeout: 5000
     lettuce:
       pool:
         max-active: 200

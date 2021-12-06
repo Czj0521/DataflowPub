@@ -55,6 +55,7 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
     log.info("Materialize job success.");
 
     JSONObject outputs = new JSONObject();
+    outputs.put("jobType", "materialize");
     outputs.put("metadata", clickHouseManager.getMetadata(materializeName));
     outputs.put("materializeId", materializeName);
     return outputs;

@@ -1,14 +1,13 @@
 package com.bdilab.dataflow.utils.clickhouse;
 
 import com.bdilab.dataflow.common.consts.CommonConstants;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Data table manager for clickhouse in  .
@@ -56,7 +55,7 @@ public class ClickHouseManager {
 
 
   public void createTable(String tableName, String selectSql) {
-//    chooseTableEngine(oldTableName);
+  //    chooseTableEngine(oldTableName);
   }
 
   public void insertToTable(String tableName) {
@@ -120,6 +119,7 @@ public class ClickHouseManager {
 
   /**
    * Get meta data.
+   *
    * @param tableName tableName
    * @return metadata
    */

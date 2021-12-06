@@ -87,13 +87,14 @@ public class RealTimeDag {
       }
     };
     redisUtils.hmset(workspaceId, map);
-    log.info("Add edge between [{}] to slot [{}] of [{}] in [{}].", preNodeId, slotIndex, nextNodeId, workspaceId);
+    log.info("Add edge between [{}] to slot [{}] of [{}] in [{}].",
+        preNodeId, slotIndex, nextNodeId, workspaceId);
 
     if (!StringUtils.isEmpty(deleteInputTableName)) {
       clickhouseManager.deleteInputTable(deleteInputTableName);
     }
     if (!StringUtils.isEmpty(copyTableNames[1])) {
-      clickhouseManager.copyToTable( copyTableNames[0],
+      clickhouseManager.copyToTable(copyTableNames[0],
           copyTableNames[1]);
     }
   }
@@ -205,7 +206,8 @@ public class RealTimeDag {
       }
     };
     redisUtils.hmset(workspaceId, map);
-    log.info("Add edge between [{}] to slot [{}] of [{}] in [{}].", preNodeId, slotIndex, nextNodeId, workspaceId);
+    log.info("Add edge between [{}] to slot [{}] of [{}] in [{}].",
+        preNodeId, slotIndex, nextNodeId, workspaceId);
 
     if (!StringUtils.isEmpty(copyTableNames[1])) {
       clickhouseManager.copyToTable(copyTableNames[0], copyTableNames[1]);
@@ -257,23 +259,23 @@ public class RealTimeDag {
     }
     newNodeDescription.put("dataSource", oldDataSources);
     node.setNodeDescription(nodeDescription);
-//    List<String> deleteInputTableName = new ArrayList<>();
-//    if (!newDataSources.equals(oldDataSources)) {
-//      for (int i = 0; i < newDataSources.size(); i++) {
-//        String oldDataSource = oldDataSources.getString(i);
-//        String newDataSource = newDataSources.getString(i);
-//        if (!oldDataSource.equals(newDataSource)) {
-//          deleteInputTableName.add(oldDataSource);
-//          node.setDataSource(i, newDataSource);
-//        }
-//      }
-//    }
+    //    List<String> deleteInputTableName = new ArrayList<>();
+    //    if (!newDataSources.equals(oldDataSources)) {
+    //      for (int i = 0; i < newDataSources.size(); i++) {
+    //        String oldDataSource = oldDataSources.getString(i);
+    //        String newDataSource = newDataSources.getString(i);
+    //        if (!oldDataSource.equals(newDataSource)) {
+    //          deleteInputTableName.add(oldDataSource);
+    //          node.setDataSource(i, newDataSource);
+    //        }
+    //      }
+    //    }
     redisUtils.hset(workspaceId, nodeId, node);
     log.info("Update node [{}] in [{}]", nodeId, workspaceId);
 
-//    deleteInputTableName.forEach((name) -> {
-//      clickhouseManager.deleteInputTable(name);
-//    });
+    //    deleteInputTableName.forEach((name) -> {
+    //      clickhouseManager.deleteInputTable(name);
+    //    });
   }
 
   /**

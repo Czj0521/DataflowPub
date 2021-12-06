@@ -132,7 +132,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 e.printStackTrace();
               }
             } else {
-              outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, nodeType, null);
+              outputJson = null;
             }
             break;
           case "profiler":

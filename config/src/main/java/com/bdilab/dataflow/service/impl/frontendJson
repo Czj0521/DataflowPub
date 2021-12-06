@@ -157,7 +157,7 @@
 }
 
 
-//删除节点 No.13
+//删除节点filter1 No.13
 {
   "job": "start_job",
   "dagDescription": {
@@ -169,12 +169,24 @@
   "workspaceId": "wjhsp"
 }
 
+//删除节点join No.14
+{
+  "job": "start_job",
+  "dagDescription": {
+    "jobType": "removeEdge"
+  },
+  "operatorType": "dag",
+  "dagType": "removeNode",
+  "operatorId": "wjhtest1124_3",
+  "workspaceId": "wjhsp"
+}
+
 //添加边
 //table1---join No.7
 {
   "job": "start_job",
   "dagDescription": {
-    "jobType": "addEdge",
+    "jobType": "removeEdge"
     "preNodeId": "wjhtest1124_1",
     "nextNodeId": "wjhtest1124_3",
     "slotIndex": "0"

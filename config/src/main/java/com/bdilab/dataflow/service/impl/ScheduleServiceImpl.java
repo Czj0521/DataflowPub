@@ -7,11 +7,7 @@ import com.bdilab.dataflow.dto.JobOutputJson;
 import com.bdilab.dataflow.dto.Metadata;
 import com.bdilab.dataflow.dto.MetadataOutputJson;
 import com.bdilab.dataflow.dto.OutputData;
-import com.bdilab.dataflow.service.ProfilerService;
-import com.bdilab.dataflow.service.ScheduleService;
-import com.bdilab.dataflow.service.TableJobService;
-import com.bdilab.dataflow.service.TransposeService;
-import com.bdilab.dataflow.service.WebSocketServer;
+import com.bdilab.dataflow.service.*;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.InputDataSlot;
@@ -32,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
 
 /**
  * Task scheduling module.
@@ -57,6 +55,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   private TransposeService transposeService;
   @Autowired
   private ProfilerService profilerService;
+  @Resource
+  private ScalarService scalarService;
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
@@ -148,6 +148,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             break;
           case "scalar":
             // TODO
+//            scalarService.saveToClickHouse()
             break;
           default:
             throw new RuntimeException("not exist this operator !");
@@ -186,9 +187,9 @@ public class ScheduleServiceImpl implements ScheduleService {
    * Get filter string.
    */
   private String parseFilterAndPivot(DagNode dagNode) {
-
     JSONObject nodeDescription = JSONObject.parseObject(dagNode.getNodeDescription().toString());
-    return nodeDescription.getString("filter");
+    String filter = nodeDescription.getString("filter");
+    return StringUtils.isEmpty(filter) ? "1 = 1" : filter;
   }
 
 

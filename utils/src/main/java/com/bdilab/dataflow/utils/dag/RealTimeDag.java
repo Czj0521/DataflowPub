@@ -63,6 +63,7 @@ public class RealTimeDag {
 
     preNode.getOutputDataSlots().add(new OutputDataSlot(nextNodeId, slotIndex));
     String deleteInputTableName = "";
+    String[] copyTableNames = new String[2];
     if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
       nextNode.getFilterId(slotIndex).add(preNodeId);
       //自动填充数据集
@@ -70,7 +71,9 @@ public class RealTimeDag {
       if (StringUtils.isEmpty(nextNode.getInputDataSource(slotIndex))
           && preNode.getInputSlotSize() == 1
           && !StringUtils.isEmpty(fillDataSource)) {
-        nextNode.setDataSource(slotIndex, fillDataSource);
+        copyTableNames[0] = fillDataSource;
+        copyTableNames[1] = CommonConstants.CPL_TEMP_INPUT_TABLE_PREFIX + nextNodeId;
+        nextNode.setDataSource(slotIndex, copyTableNames[1]);
       }
     } else {
       deleteInputTableName = nextNode.getInputDataSource(slotIndex);
@@ -88,6 +91,10 @@ public class RealTimeDag {
 
     if (!StringUtils.isEmpty(deleteInputTableName)) {
       clickhouseManager.deleteInputTable(deleteInputTableName);
+    }
+    if (!StringUtils.isEmpty(copyTableNames[1])) {
+      clickhouseManager.copyToTable( copyTableNames[0],
+          copyTableNames[1]);
     }
   }
 

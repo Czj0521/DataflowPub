@@ -63,6 +63,7 @@ public class RealTimeDag {
 
     preNode.getOutputDataSlots().add(new OutputDataSlot(nextNodeId, slotIndex));
     String deleteInputTableName = "";
+    String[] copyTableNames = new String[2];
     if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
       nextNode.getFilterId(slotIndex).add(preNodeId);
       //自动填充数据集
@@ -70,7 +71,9 @@ public class RealTimeDag {
       if (StringUtils.isEmpty(nextNode.getInputDataSource(slotIndex))
           && preNode.getInputSlotSize() == 1
           && !StringUtils.isEmpty(fillDataSource)) {
-        nextNode.setDataSource(slotIndex, fillDataSource);
+        copyTableNames[0] = fillDataSource;
+        copyTableNames[1] = CommonConstants.CPL_TEMP_INPUT_TABLE_PREFIX + nextNodeId;
+        nextNode.setDataSource(slotIndex, copyTableNames[1]);
       }
     } else {
       deleteInputTableName = nextNode.getInputDataSource(slotIndex);
@@ -88,6 +91,10 @@ public class RealTimeDag {
 
     if (!StringUtils.isEmpty(deleteInputTableName)) {
       clickhouseManager.deleteInputTable(deleteInputTableName);
+    }
+    if (!StringUtils.isEmpty(copyTableNames[1])) {
+      clickhouseManager.copyToTable( copyTableNames[0],
+          copyTableNames[1]);
     }
   }
 
@@ -115,8 +122,8 @@ public class RealTimeDag {
     }
 
     List<String> deleteInputTableName = new ArrayList<>();
-    String newTableName = "";
     String deleteTableName = "";
+    String[] copyTableNames = new String[2];
     if (OperatorOutputTypeEnum.isFilterOutput(deletedNode.getNodeType())) {
       //本节点为filter
       for (OutputDataSlot outputDataSlot : deletedNode.getOutputDataSlots()) {
@@ -128,12 +135,13 @@ public class RealTimeDag {
       //本节点为table
       deleteTableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + deletedNodeId;
       if (deletedNode.getOutputDataSlots().size() > 0) {
-        newTableName = CommonConstants.CPL_TEMP_INPUT_TABLE_PREFIX + deletedNodeId;
+        copyTableNames[0] = CommonConstants.CPL_TEMP_TABLE_PREFIX + deletedNodeId;
+        copyTableNames[1] = CommonConstants.CPL_TEMP_INPUT_TABLE_PREFIX + deletedNodeId;
         for (OutputDataSlot outputDataSlot : deletedNode.getOutputDataSlots()) {
           //删除后节点的table信息
           DagNode nextNode = (DagNode) dagMap.get(outputDataSlot.getNextNodeId());
           nextNode.setPreNodeId(outputDataSlot.getNextSlotIndex(), null);
-          nextNode.setDataSource(outputDataSlot.getNextSlotIndex(), newTableName);
+          nextNode.setDataSource(outputDataSlot.getNextSlotIndex(), copyTableNames[1]);
         }
       }
     }
@@ -155,9 +163,9 @@ public class RealTimeDag {
         clickhouseManager.deleteInputTable(name);
       });
     }
-    if (!StringUtils.isEmpty(newTableName)) {
-      clickhouseManager.copyToTable(CommonConstants.CPL_TEMP_TABLE_PREFIX + deletedNodeId,
-          newTableName);
+    if (!StringUtils.isEmpty(copyTableNames[1])) {
+      clickhouseManager.copyToTable(copyTableNames[0],
+          copyTableNames[1]);
     }
     if (!StringUtils.isEmpty(deleteTableName)) {
       clickhouseManager.deleteTable(CommonConstants.CPL_TEMP_TABLE_PREFIX + deletedNodeId);
@@ -178,16 +186,17 @@ public class RealTimeDag {
     DagNode preNode = (DagNode) redisUtils.hget(workspaceId, preNodeId);
     DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
     preNode.getOutputDataSlots().remove(new OutputDataSlot(nextNodeId, slotIndex));
-    String newTableName = "";
+    String[] copyTableNames = new String[2];
     if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
       //filter边
       nextNode.getInputDataSlots()[slotIndex].getFilterId().remove(preNodeId);
     } else {
       //table边
       nextNode.getInputDataSlots()[slotIndex].setPreNodeId(null);
-      newTableName = CommonConstants.CPL_TEMP_INPUT_TABLE_PREFIX + preNodeId;
+      copyTableNames[0] = CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId;
+      copyTableNames[1] = CommonConstants.CPL_TEMP_INPUT_TABLE_PREFIX + preNodeId;
       nextNode.setPreNodeId(slotIndex, null);
-      nextNode.setDataSource(slotIndex, newTableName);
+      nextNode.setDataSource(slotIndex, copyTableNames[1]);
     }
     Map<String, Object> map = new HashMap<String, Object>(2) {
       {
@@ -198,8 +207,8 @@ public class RealTimeDag {
     redisUtils.hmset(workspaceId, map);
     log.info("Add edge between [{}] to slot [{}] of [{}] in [{}].", preNodeId, slotIndex, nextNodeId, workspaceId);
 
-    if (!StringUtils.isEmpty(newTableName)) {
-      clickhouseManager.copyToTable(CommonConstants.CPL_TEMP_TABLE_PREFIX + preNodeId, newTableName);
+    if (!StringUtils.isEmpty(copyTableNames[1])) {
+      clickhouseManager.copyToTable(copyTableNames[0], copyTableNames[1]);
     }
   }
 

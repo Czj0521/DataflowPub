@@ -135,7 +135,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
             break;
           case "profiler":
-            // TODO
+            //TODO
             List<Map<String, Object>> profilerData = profilerService.getProfiler(node, preFilterMap);
             OutputData outputData = new OutputData();
             outputData.setData(profilerData);
@@ -210,9 +210,9 @@ public class ScheduleServiceImpl implements ScheduleService {
    * Get filter string.
    */
   private String parseFilterAndPivot(DagNode dagNode) {
-
     JSONObject nodeDescription = JSONObject.parseObject(dagNode.getNodeDescription().toString());
-    return nodeDescription.getString("filter");
+    String filter = nodeDescription.getString("filter");
+    return StringUtils.isEmpty(filter) ? "1 = 1" : filter;
   }
 
 

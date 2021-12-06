@@ -71,18 +71,11 @@ public class ScalarService implements OperatorService<ScalarDescription> {
   }
 
   @Override
-  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap) {
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode) {
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
     ScalarDescription scalarDescription = nodeDescription.toJavaObject(ScalarDescription.class);
 
-    // save results to clickhouse
-    ScalarSqlGenerator scalarSqlGenerator = new ScalarSqlGenerator(scalarDescription);
-    String sql = scalarSqlGenerator.generateDataSourceSql();
-    String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + dagNode.getNodeId();
-
-    clickHouseManager.createView(tableName, sql);
-
     // return the result
-    return getScalar(dagNode, preFilterMap);
+    return execute(scalarDescription);
   }
 }

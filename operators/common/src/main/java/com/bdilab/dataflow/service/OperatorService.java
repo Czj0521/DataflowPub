@@ -24,14 +24,11 @@ public interface OperatorService<T extends JobDescription> {
   List<Map<String, Object>> execute(T jobDescription);
 
   /**
-   * linkage: 1. Read the data source and add filter according to preFilterMap.
-   *          2. save the result to ClickHouse.
-   *          3. return the result.
+   * linkage: 1. save the result to ClickHouse.
+   *          2. return the result (if...exist).
    *
    * @param dagNode DagNode Object, in order to get node description.
-   * @param preFilterMap the filters' string of different datasource.
    * @return data
    */
-  List<Map<String, Object>> saveToClickHouse(DagNode dagNode,
-                                             Map<Integer, StringBuffer> preFilterMap);
+  List<Map<String, Object>> saveToClickHouse(DagNode dagNode);
 }

@@ -42,22 +42,22 @@ public class ProfilerServiceImpl implements ProfilerService {
    * @return for a column: {"min": ,"minVal":}
    */
   @Override
-  public List<Map<String, Object>> getProfiler(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap){
+  public List<Map<String, Object>> getProfiler(DagNode dagNode){
 
     //由dagNode拿到profilerDesc
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
     ProfilerDescription profilerDescription = nodeDescription.toJavaObject(ProfilerDescription.class);
 
     //设置过滤后的数据源
-    StringBuffer leftFilter = preFilterMap.get(0);
-
-    String dataSource;
-    if(leftFilter == null || leftFilter.length()==0){
-      dataSource = profilerDescription.getDataSource()[0];
-
-    }else{
-      dataSource = "(SELECT * FROM "+ profilerDescription.getDataSource()[0] +" WHERE " + leftFilter+")";
-    }
+//    StringBuffer leftFilter = preFilterMap.get(0);
+//
+    String dataSource = profilerDescription.getDataSource()[0];
+//    if(leftFilter == null || leftFilter.length()==0){
+//      dataSource = profilerDescription.getDataSource()[0];
+//
+//    }else{
+//      dataSource = "(SELECT * FROM "+ profilerDescription.getDataSource()[0] +" WHERE " + leftFilter+")";
+//    }
 
     List<String> profilerColumnList = profilerDescription.getProfilerColumnList();
     List<Map<String, Object>> columnType = getColumnType(dataSource, profilerColumnList);

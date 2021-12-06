@@ -7,11 +7,8 @@ import com.bdilab.dataflow.dto.JobOutputJson;
 import com.bdilab.dataflow.dto.Metadata;
 import com.bdilab.dataflow.dto.MetadataOutputJson;
 import com.bdilab.dataflow.dto.OutputData;
-import com.bdilab.dataflow.service.ProfilerService;
-import com.bdilab.dataflow.service.ScheduleService;
-import com.bdilab.dataflow.service.TableJobService;
-import com.bdilab.dataflow.service.TransposeService;
-import com.bdilab.dataflow.service.WebSocketServer;
+import com.bdilab.dataflow.dto.jobdescription.ScalarDescription;
+import com.bdilab.dataflow.service.*;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.InputDataSlot;
@@ -57,6 +54,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   private TransposeService transposeService;
   @Autowired
   private ProfilerService profilerService;
+  @Autowired
+  private ScalarService scalarService;
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
@@ -136,7 +135,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
             break;
           case "profiler":
-            //TODO
+            // TODO
             List<Map<String, Object>> profilerData = profilerService.getProfiler(node, preFilterMap);
             OutputData outputData = new OutputData();
             outputData.setData(profilerData);
@@ -148,6 +147,9 @@ public class ScheduleServiceImpl implements ScheduleService {
             break;
           case "scalar":
             // TODO
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
+                scalarSavedData(node, tableName, preFilterMap));
+            System.out.println(outputJson);
             break;
           default:
             throw new RuntimeException("not exist this operator !");
@@ -180,6 +182,28 @@ public class ScheduleServiceImpl implements ScheduleService {
                                         Map<Integer, StringBuffer> preFilterMap) {
     List<Map<String, Object>> data = transposeService.saveToClickHouse(node, preFilterMap);
     return new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
+  }
+
+  private OutputData scalarSavedData(DagNode node, String tableName,
+                                        Map<Integer, StringBuffer> preFilterMap) {
+    // get operator data
+    System.out.println(tableName);
+    List<Map<String, Object>> data = scalarService.getScalar(node, preFilterMap);
+
+    OutputData outputData = new OutputData();
+    outputData.setData(data);
+    return outputData;
+
+    // query metadata
+//    try {
+//      OutputData outputData = new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
+//      System.out.println(outputData);
+//      return outputData;
+//    }
+//    catch (Exception e) {
+//      System.out.println(e.getMessage());
+//      return null;
+//    }
   }
 
   /**

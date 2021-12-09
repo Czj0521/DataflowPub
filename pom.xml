@@ -23,6 +23,7 @@
         <module>operators/scalar</module>
         <module>operators/profiler</module>
         <module>operators/pivot-chart</module>
+      <module>transformation</module>
     </modules>
 
     <groupId>com.bdilab</groupId>

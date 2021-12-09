@@ -2,6 +2,7 @@ package com.bdilab.dataflow.utils.dag;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.common.annotation.LogMethodTime;
 import com.bdilab.dataflow.common.consts.CommonConstants;
 import com.bdilab.dataflow.common.enums.OperatorOutputTypeEnum;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseManager;
@@ -37,6 +38,7 @@ public class RealTimeDag {
    * @param workspaceId workspace ID
    * @param dagNodeInputDto the nodeDto being added
    */
+  @LogMethodTime
   public void addNode(String workspaceId, DagNodeInputDto dagNodeInputDto) {
     redisUtils.hset(workspaceId, dagNodeInputDto.getNodeId(), new DagNode(dagNodeInputDto));
     log.info("Add node [{}] to [{}].", dagNodeInputDto.getNodeId(), workspaceId);
@@ -50,6 +52,7 @@ public class RealTimeDag {
    * @param preNodeId ID of preceding node of the edge
    * @param nextNodeId ID of subsequent node of the edge
    */
+  @LogMethodTime
   public void addEdge(String workspaceId, String preNodeId, String nextNodeId, Integer slotIndex) {
     Map<Object, Object> dagMap = redisUtils.hmget(workspaceId);
     DagNode preNode = (DagNode) dagMap.get(preNodeId);
@@ -105,6 +108,7 @@ public class RealTimeDag {
    * @param workspaceId workspace ID
    * @param deletedNodeId the ID of node that will be deleted
    */
+  @LogMethodTime
   public void removeNode(String workspaceId, String deletedNodeId) {
     Map<Object, Object> dagMap = redisUtils.hmget(workspaceId);
     DagNode deletedNode = (DagNode) dagMap.get(deletedNodeId);
@@ -180,6 +184,7 @@ public class RealTimeDag {
    * @param preNodeId the ID of preceding node
    * @param nextNodeId the ID of subsequent node
    */
+  @LogMethodTime
   public void removeEdge(String workspaceId,
                          String preNodeId,
                          String nextNodeId,
@@ -219,6 +224,7 @@ public class RealTimeDag {
    *
    * @param workspaceId workspace ID
    */
+  @LogMethodTime
   public void clearDag(String workspaceId) {
     Map<Object, Object> dagMap = redisUtils.hmget(workspaceId);
     redisUtils.del(workspaceId);
@@ -248,6 +254,7 @@ public class RealTimeDag {
    * @param nodeId new node
    * @param nodeDescription node description
    */
+  @LogMethodTime
   public void updateNode(String workspaceId, String nodeId, Object nodeDescription) {
     DagNode node = (DagNode) redisUtils.hget(workspaceId, nodeId);
     JSONObject newNodeDescription = (JSONObject) nodeDescription;

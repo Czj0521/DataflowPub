@@ -69,7 +69,7 @@ public class WebSocketServer {
       JSON.parse(message);
       socketResolveService.resolve(message);
     } catch (JSONException e) {
-      log.info("WebSocket test : " + message);
+      log.debug("WebSocket test : " + message);
     }
   }
 
@@ -96,9 +96,9 @@ public class WebSocketServer {
         session.getBasicRemote().sendText(String.format("%s", message));
       }
       if (message.length() > 300) {
-        log.info("Send message to all session. The message: {}", message.substring(0,300));
+        log.debug("Send message to all session. The message: {}", message.substring(0,300));
       } else {
-        log.info("Send message to all session. The message: {}", message);
+        log.debug("Send message to all session. The message: {}", message);
       }
 
     } catch (IOException e) {

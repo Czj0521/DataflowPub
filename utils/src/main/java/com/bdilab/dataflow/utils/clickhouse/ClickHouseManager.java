@@ -34,7 +34,7 @@ public class ClickHouseManager {
     sql.append("CREATE TABLE ").append(newTableName).append(engine)
         .append(" AS (SELECT * FROM ").append(oldTableName).append(");");
     clickHouseJdbcUtils.execute(new String(sql));
-    log.info("-- Copy table {} to {} with [{}].", oldTableName, newTableName, engine);
+    log.debug("-- Copy table {} to {} with [{}].", oldTableName, newTableName, engine);
   }
 
   private String chooseTableEngine(String tableName) {
@@ -76,7 +76,7 @@ public class ClickHouseManager {
     sql.append("CREATE VIEW ").append(viewName).append(" AS ")
         .append("(").append(selectSql).append(");");
     clickHouseJdbcUtils.execute(new String(sql));
-    log.info("-- Drop if exit and create view {}.", viewName);
+    log.debug("-- Drop if exit and create view {}.", viewName);
 
   }
 
@@ -91,7 +91,7 @@ public class ClickHouseManager {
       StringBuilder sql = new StringBuilder();
       sql.append("DROP TABLE IF EXISTS ").append(tableName);
       clickHouseJdbcUtils.execute(new String(sql));
-      log.info("-- Delete input table {}.", tableName);
+      log.debug("-- Delete input table {}.", tableName);
     }
   }
 
@@ -104,7 +104,7 @@ public class ClickHouseManager {
     StringBuilder sql = new StringBuilder();
     sql.append("DROP TABLE IF EXISTS ").append(tableName);
     clickHouseJdbcUtils.execute(new String(sql));
-    log.info("-- Delete table or view {}.", tableName);
+    log.debug("-- Delete table or view {}.", tableName);
   }
 
   /**

@@ -8,10 +8,12 @@ import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +33,7 @@ public class ScalarService implements OperatorService<ScalarDescription> {
   @Autowired
   private ClickHouseManager clickHouseManager;
 
+  @Deprecated
   // a wrapper method for computing scalar operator in linkage use case.
   public List<Map<String,Object>> getScalar(DagNode node, Map<Integer, StringBuffer> preFilterMap) {
     // get ScalarDescription object
@@ -62,6 +65,14 @@ public class ScalarService implements OperatorService<ScalarDescription> {
     List<Map<String, Object>> res = clickHouseJdbcUtils.queryForList(scalarSqlGenerator.generate());
     if (res.size() == 1) {
       System.out.println(res.get(0).get("scalar"));
+
+      Object value = res.get(0).get("scalar");
+      String target = scalarDescription.getTarget();
+      String agg = scalarDescription.getAggregation();
+      String key = MessageFormat.format("{0} {1}", target, agg);
+      Map<String, Object> map = new HashMap<String, Object>();
+      map.put(key, value);
+      res.set(0, map);
 
       return res;
     }

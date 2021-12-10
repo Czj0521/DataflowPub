@@ -23,7 +23,7 @@ public class Binarizer {
 
   @Override
   public String toString() {
-    return "if(" + filter + "1,0) AS " + newColumnName;
+    return "if(" + filter + ",1,0) AS " + newColumnName;
 
   }
 }

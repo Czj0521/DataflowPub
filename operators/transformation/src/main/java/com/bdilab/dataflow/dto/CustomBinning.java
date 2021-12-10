@@ -3,6 +3,7 @@ package com.bdilab.dataflow.dto;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import javax.validation.constraints.NotEmpty;
+import lombok.Data;
 
 /**
  * CustomBinning dto.
@@ -10,7 +11,9 @@ import javax.validation.constraints.NotEmpty;
  * @author Zunjing Chen
  * @date 2021-12-09
  **/
+@Data
 public class CustomBinning {
+
   @NotEmpty
   @ApiModelProperty(value = "新列名", required = true)
   private String newColumnName;
@@ -34,6 +37,9 @@ public class CustomBinning {
         bin.setBinValue("'" + bin.getBinValue() + "'");
       }
       stringBuilder.append(bin.getFilter()).append(",").append(bin.getBinValue()).append(",");
+    }
+    if (!isNumeric) {
+      defaultBin = "'" + defaultBin + "'";
     }
     stringBuilder.append(defaultBin).append(") AS ").append(newColumnName);
     return stringBuilder.toString();

@@ -16,6 +16,7 @@ public class TransformationSqlGenerator extends SqlGeneratorBase implements Link
   private final TransformationDesc transformationDesc;
 
   public TransformationSqlGenerator(TransformationDesc transformationDesc) {
+    super(transformationDesc);
     this.transformationDesc = transformationDesc;
   }
 
@@ -42,6 +43,9 @@ public class TransformationSqlGenerator extends SqlGeneratorBase implements Link
   }
 
   private String transformation(List<?> transformations) {
+    if(transformations == null){
+      return "";
+    }
     StringBuilder stringBuilder = new StringBuilder();
     for (Object transformation : transformations) {
       stringBuilder.append(transformation).append(",");

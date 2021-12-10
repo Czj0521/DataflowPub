@@ -51,6 +51,7 @@ public class WebLogAspect {
         proceedingJoinPoint.getSignature().getDeclaringTypeName(),
         proceedingJoinPoint.getSignature().getName());
     log.debug("IP               : {}", request.getRemoteAddr());
+    log.debug("Session Id       : {}", request.getSession().getId());
     log.debug("Request Args     : {}", JSONObject.toJSON(proceedingJoinPoint.getArgs()));
     log.debug("Execute method   : ------------");
     long startTime = System.currentTimeMillis();

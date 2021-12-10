@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,18 +132,17 @@ public class TableJobServiceImpl implements TableJobService {
   }
 
   @Override
-  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap){
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode){
     // 读取数据源，并根据filter加入过滤条件
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
-    String filter0 = nodeDescription.getString("filter");
-    if (!StringUtils.isEmpty(filter0)) {
-      nodeDescription.put("filter", filter0 + " AND " + preFilterMap.get(0).toString());
-    } else {
-      nodeDescription.put("filter", preFilterMap.get(0).toString());
-    }
+//    String filter0 = nodeDescription.getString("filter");
+//    if (!StringUtils.isEmpty(filter0)) {
+//      nodeDescription.put("filter", filter0 + " AND " + preFilterMap.get(0).toString());
+//    } else {
+//      nodeDescription.put("filter", preFilterMap.get(0).toString());
+//    }
 
     TableDescription tableDescription = nodeDescription.toJavaObject(TableDescription.class);
-
     // 将计算结果保存到ClickHouse
     TableSqlGenerator tableSqlGenerator = new TableSqlGenerator(tableDescription);
     String sql = tableSqlGenerator.generateDataSourceSql();

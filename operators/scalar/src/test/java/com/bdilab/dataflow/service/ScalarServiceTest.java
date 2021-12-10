@@ -59,14 +59,19 @@ public class ScalarServiceTest {
 
   @ParameterizedTest
   @CsvSource(value = {
-      "AQI, avg",
-
-
-  })
+      "AQI, average",
+      "AQI, min",
+      "AQI, max",
+      "AQI, count",
+      "AQI, distinct count",
+      "AQI, sum",
+      "AQI, standard dev",
+})
   public void testNotNull(String target, String aggregation) {
     ScalarDescription scalarDescription = ScalarDescriptionPrototype.copy(target, aggregation);
     List<Map<String, Object>> value = scalarService.execute(scalarDescription);
     System.out.println(MessageFormat.format("[Scalar Description]: {0}", scalarDescription));
+    System.out.println(value);
     Assertions.assertNotNull(value);
   }
 

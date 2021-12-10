@@ -1,6 +1,8 @@
 package com.bdilab.dataflow.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * CustomBinning dto.
@@ -9,11 +11,18 @@ import java.util.List;
  * @date 2021-12-09
  **/
 public class CustomBinning {
-
+  @NotEmpty
+  @ApiModelProperty(value = "新列名", required = true)
   private String newColumnName;
+  @NotEmpty
+  @ApiModelProperty(value = "默认分箱值", required = true)
   private String defaultBin;
+  @NotEmpty
+  @ApiModelProperty(value = "该列是否为数子", required = true)
   // base on datatype to generate sql
-  private boolean isNumeric;
+  private Boolean isNumeric;
+  @NotEmpty
+  @ApiModelProperty(value = "新列名", required = true)
   private List<Bin> bins;
 
   @Override

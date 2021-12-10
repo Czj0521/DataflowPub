@@ -11,7 +11,7 @@ import lombok.Data;
  * @date 2021-12-09
  **/
 @Data
-public class Expression{
+public class Expression {
 
   @NotEmpty
   @ApiModelProperty(value = "新的列名", required = true)

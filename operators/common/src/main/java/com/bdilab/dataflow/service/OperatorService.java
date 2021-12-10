@@ -21,6 +21,7 @@ public interface OperatorService<T extends JobDescription> {
    * @param jobDescription job desc
    * @return data
    */
+  @Deprecated
   List<Map<String, Object>> execute(T jobDescription);
 
   /**

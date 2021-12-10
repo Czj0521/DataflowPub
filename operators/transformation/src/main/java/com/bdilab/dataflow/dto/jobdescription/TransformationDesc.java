@@ -10,6 +10,8 @@ import java.util.List;
 import lombok.Data;
 
 /**
+ * TransformationDesc dto.
+ *
  * @author Zunjing Chen
  * @date 2021-12-09
  **/

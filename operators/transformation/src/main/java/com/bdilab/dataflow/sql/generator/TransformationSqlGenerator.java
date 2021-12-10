@@ -4,15 +4,16 @@ import com.bdilab.dataflow.dto.jobdescription.TransformationDesc;
 import com.bdilab.dataflow.operator.dto.jobdescription.SqlGeneratorBase;
 import com.bdilab.dataflow.operator.link.LinkSqlGenerator;
 import java.util.List;
-import org.apache.tomcat.websocket.Transformation;
 
 /**
+ * Transformation operator sql logic.
+ *
  * @author Zunjing Chen
  * @date 2021-12-09
  **/
 public class TransformationSqlGenerator extends SqlGeneratorBase implements LinkSqlGenerator {
 
-  final private TransformationDesc transformationDesc;
+  private final TransformationDesc transformationDesc;
 
   public TransformationSqlGenerator(TransformationDesc transformationDesc) {
     this.transformationDesc = transformationDesc;
@@ -25,10 +26,10 @@ public class TransformationSqlGenerator extends SqlGeneratorBase implements Link
 
   @Override
   public String generateDataSourceSql() {
-    return "SELECT * ," + transformationSQL() + super.datasource(0);
+    return "SELECT * ," + transformationSql() + super.datasource(0);
   }
 
-  private String transformationSQL() {
+  private String transformationSql() {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder
         .append(transformation(transformationDesc.getExpressions()))

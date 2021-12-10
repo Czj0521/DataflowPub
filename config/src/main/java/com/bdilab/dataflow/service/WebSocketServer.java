@@ -57,6 +57,7 @@ public class WebSocketServer {
   @OnClose
   public void onClose(Session session) {
     sessionSet.remove(session);
+    onlineCount.decrementAndGet();
     log.info("Session [{}] has closed, , and the number of session is [{}].",
         session.getId(), onlineCount);
   }

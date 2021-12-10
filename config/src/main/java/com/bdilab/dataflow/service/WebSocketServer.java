@@ -2,11 +2,17 @@ package com.bdilab.dataflow.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.bdilab.dataflow.config.GetHttpSessionConfigurator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -18,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -25,36 +32,48 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author wjh
  */
-@ServerEndpoint("/webSocket")
+@ServerEndpoint(value = "/webSocket", configurator = GetHttpSessionConfigurator.class)
 @Service
 @Slf4j
 public class WebSocketServer {
   @Autowired
   private WebSocketResolveService socketResolveService;
-  // private static final AtomicInteger OnlineCount = new AtomicInteger(0);
-  private static CopyOnWriteArraySet<Session> sessionSet = new CopyOnWriteArraySet<>();
+  private static AtomicInteger onlineCount = new AtomicInteger(0);
+  private static ConcurrentHashMap<HttpSession, Session> sessionMap = new ConcurrentHashMap<>();
 
   /**
    * Connection establishment.
    *
-   * @param session The current session.
+   * @param wsSession The current session.
    */
   @OnOpen
-  public void onOpen(Session session) {
-    session.setMaxIdleTimeout(3600000);
-    sessionSet.add(session);
-    log.info("Session [{}] has connected.", session);
+  public void onOpen(Session wsSession, EndpointConfig config) {
+    wsSession.setMaxIdleTimeout(3600000);
+    HttpSession httpSession =
+        ((HttpSession) config.getUserProperties().get(HttpSession.class.getName()));
+    sessionMap.put(httpSession, wsSession);
+    onlineCount.incrementAndGet();
+    log.info("WsSession [{}] has connected, and httpSession id is [{}].", wsSession.getId(), httpSession.getId());
+    log.info("The number of websocket connections is {}", onlineCount);
   }
 
   /**
    * Close connection.
    *
-   * @param session The current session.
+   * @param wsSession The current session.
    */
   @OnClose
-  public void onClose(Session session) {
-    sessionSet.remove(session);
-    log.info("Session [{}] has closed.", session);
+  public void onClose(Session wsSession) {
+    for (Map.Entry<HttpSession, Session> e : sessionMap.entrySet()) {
+      String id = e.getValue().getId();
+      if (wsSession.getId().equals(id)) {
+        sessionMap.remove(e.getKey());
+        break;
+      }
+    }
+    onlineCount.decrementAndGet();
+    log.info("WsSession [{}] has closed.", wsSession.getId());
+    log.info("The number of websocket connections is {}", onlineCount);
   }
 
   /**
@@ -91,16 +110,17 @@ public class WebSocketServer {
    * @param message The message to send.
    */
   public static void sendMessage(String message) {
+    ServletRequestAttributes attributes =
+        (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    assert attributes != null;
+    HttpServletRequest request = attributes.getRequest();
+    Session wsSession = sessionMap.get(request.getSession());
     try {
-      for (Session session : sessionSet) {
-        session.getBasicRemote().sendText(String.format("%s", message));
-      }
+      wsSession.getBasicRemote().sendText(String.format("%s", message));
       if (message.length() > 300) {
-        log.debug("Send message to all session. The message: {}", message.substring(0,300));
-      } else {
-        log.debug("Send message to all session. The message: {}", message);
+        message = message.substring(0,300);
       }
-
+      log.debug("Send to session [{}]. The message: {}", wsSession.getId(), message);
     } catch (IOException e) {
       e.printStackTrace();
     }

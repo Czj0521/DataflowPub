@@ -32,7 +32,6 @@ public class TransformationSqlGeneratorTest {
 
   TransformationSqlGenerator transformationSqlGenerator;
   TransformationDesc transformationDesc;
-
   @Resource
   ClickHouseJdbcUtils clickHouseJdbcUtils;
 
@@ -53,42 +52,53 @@ public class TransformationSqlGeneratorTest {
 
   @Test
   public void testExpression() {
-    Expression expression = new Expression();
-    expression.setExpression("replaceAll(Married,'married','已婚')");
-    expression.setNewColumnName("NewMarried");
-    List<Expression> list = ImmutableList.of(expression);
-    transformationDesc.setExpressions(list);
+    expression();
     String sql = transformationSqlGenerator.generateDataSourceSql();
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
+  }
+  private void expression(){
+    Expression expression1 = new Expression();
+    expression1.setExpression("replaceAll(Married,'married','已婚')");
+    expression1.setNewColumnName("NewMarried1_1");
+    Expression expression2 = new Expression();
+    expression2.setExpression("replaceAll(Married,'single','单身')");
+    expression2.setNewColumnName("NewMarried1_2");
+    List<Expression> list = ImmutableList.of(expression1,expression2);
+    transformationDesc.setExpressions(list);
   }
 
   @Test
   public void testFindReplace() {
-    FindReplace findReplace = new FindReplace();
-    findReplace.setSearchInColumnName("Married");
-    findReplace.setSearch("single");
-    findReplace.setNewColumnName("NewMarried");
-    findReplace.setReplaceWith("单身");
-    List<FindReplace> list = ImmutableList.of(findReplace);
-    transformationDesc.setFindReplaces(list);
+    findReplace();
     String sql = transformationSqlGenerator.generateDataSourceSql();
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
+  }
+  private void findReplace(){
+    FindReplace findReplace = new FindReplace();
+    findReplace.setSearchInColumnName("Married");
+    findReplace.setSearch("single");
+    findReplace.setNewColumnName("NewMarried2");
+    findReplace.setReplaceWith("单身");
+    List<FindReplace> list = ImmutableList.of(findReplace);
+    transformationDesc.setFindReplaces(list);
   }
 
   @Test
   public void testBinarizer() {
-    Binarizer binarizer = new Binarizer();
-    binarizer.setNewColumnName("NewMarried");
-    binarizer.setFilter("Married = 'single'");
-    List<Binarizer> list = ImmutableList.of(binarizer);
-    transformationDesc.setBinarizers(list);
+    binarizer();
     String sql = transformationSqlGenerator.generateDataSourceSql();
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
   }
-
+  private void binarizer(){
+    Binarizer binarizer = new Binarizer();
+    binarizer.setNewColumnName("NewMarried3");
+    binarizer.setFilter("Married = 'single'");
+    List<Binarizer> list = ImmutableList.of(binarizer);
+    transformationDesc.setBinarizers(list);
+  }
   @Test
   public void testDataType() {
     // todo 语法错误
@@ -104,20 +114,31 @@ public class TransformationSqlGeneratorTest {
 
   @Test
   public void testCustomBinning() {
-    CustomBinning customBinning = new CustomBinning();
-    customBinning.setNewColumnName("NewMarried");
-    customBinning.setDefaultBin("-1");
-    customBinning.setIsNumeric(false);
-    customBinning.setBins(
-        ImmutableList.of(new Bin("1", "Married = 'single'"), new Bin("2", "Married = 'married'")));
-    transformationDesc.setCustomBinnings(ImmutableList.of(customBinning));
+    customBinning();
     String sql = transformationSqlGenerator.generateDataSourceSql();
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
   }
 
-  @Test
-  public void testCustomBinningWithNumeric() {
+  private void customBinning() {
+    CustomBinning customBinning = new CustomBinning();
+    customBinning.setNewColumnName("NewMarried4");
+    customBinning.setDefaultBin("-1");
+    customBinning.setIsNumeric(false);
+    customBinning.setBins(
+        ImmutableList.of(new Bin("1", "Married = 'single'"), new Bin("2", "Married = 'married'")));
+    transformationDesc.setCustomBinnings(ImmutableList.of(customBinning));
 
+  }
+
+  @Test
+  public void testAll() {
+    customBinning();
+    findReplace();
+    expression();
+    binarizer();
+    String sql = transformationSqlGenerator.generateDataSourceSql();
+    log.info(sql);
+    clickHouseJdbcUtils.queryForList(sql);
   }
 }

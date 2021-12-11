@@ -43,7 +43,7 @@ public class TransformationSqlGenerator extends SqlGeneratorBase implements Link
   }
 
   private String transformation(List<?> transformations) {
-    if(transformations == null){
+    if (transformations == null) {
       return "";
     }
     StringBuilder stringBuilder = new StringBuilder();

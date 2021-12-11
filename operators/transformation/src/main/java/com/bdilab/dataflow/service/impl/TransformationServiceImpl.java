@@ -2,6 +2,8 @@ package com.bdilab.dataflow.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.consts.CommonConstants;
+import com.bdilab.dataflow.common.enums.ExceptionMsgEnum;
+import com.bdilab.dataflow.common.exception.UncheckException;
 import com.bdilab.dataflow.dto.jobdescription.TransformationDesc;
 import com.bdilab.dataflow.service.TransformationService;
 import com.bdilab.dataflow.sql.generator.TransformationSqlGenerator;
@@ -39,8 +41,11 @@ public class TransformationServiceImpl implements TransformationService {
     String sql = sqlGenerator.generateDataSourceSql();
     log.info("Transformation SQL:" + sql);
     String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + dagNode.getNodeId();
-    clickHouseManager.createView(tableName, sql);
+    try {
+      clickHouseManager.createView(tableName, sql);
+    } catch (Exception e) {
+      throw new UncheckException(ExceptionMsgEnum.TRANSFORMATION_ERROR.getMsg());
+    }
     return null; // transformation do not need to show data
   }
-
 }

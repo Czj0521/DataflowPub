@@ -1,6 +1,7 @@
 package com.bdilab.dataflow.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.common.annotation.WebLog;
 import com.bdilab.dataflow.common.consts.WebConstants;
 import com.bdilab.dataflow.service.WebSocketResolveService;
 import io.swagger.annotations.Api;
@@ -34,6 +35,7 @@ public class UniformController {
 //    return ResponseEntity.ok(uniformService.analyze(requestData));
 //  }
 
+  @WebLog(description = "联动请求")
   @PostMapping("/linkage")
   @ApiOperation(value = "联动接口")
   public void linkage(@RequestBody JSONObject requestData) {

@@ -4,10 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.consts.CommonConstants;
 import com.bdilab.dataflow.dto.MaterializeDescription;
 import com.bdilab.dataflow.service.MaterializeJobService;
-
-import javax.annotation.Resource;
-
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseManager;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +23,15 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
   ClickHouseManager clickHouseManager;
 
 
+  /**
+   * Materialize.
+   *
+   * @param materializeDescriptionJson materialize description
+   * @return outputs
+   */
   public JSONObject materialize(JSONObject materializeDescriptionJson) {
-    MaterializeDescription materializeDescription = materializeDescriptionJson.toJavaObject(MaterializeDescription.class);
+    MaterializeDescription materializeDescription =
+        materializeDescriptionJson.toJavaObject(MaterializeDescription.class);
     String jobType = materializeDescription.getJobType();
     JSONObject outputs = new JSONObject();
     switch (jobType) {
@@ -50,6 +55,7 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
     log.info("Materialize job success.");
 
     JSONObject outputs = new JSONObject();
+    outputs.put("jobType", "materialize");
     outputs.put("metadata", clickHouseManager.getMetadata(materializeName));
     outputs.put("materializeId", materializeName);
     return outputs;

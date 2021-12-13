@@ -1,17 +1,14 @@
 package com.bdilab.dataflow.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.consts.CommonConstants;
 import com.bdilab.dataflow.dto.JobOutputJson;
 import com.bdilab.dataflow.dto.Metadata;
 import com.bdilab.dataflow.dto.MetadataOutputJson;
 import com.bdilab.dataflow.dto.OutputData;
-import com.bdilab.dataflow.service.ProfilerService;
-import com.bdilab.dataflow.service.ScheduleService;
-import com.bdilab.dataflow.service.TableJobService;
-import com.bdilab.dataflow.service.TransposeService;
-import com.bdilab.dataflow.service.WebSocketServer;
+import com.bdilab.dataflow.service.*;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.InputDataSlot;
@@ -57,6 +54,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   private TransposeService transposeService;
   @Autowired
   private ProfilerService profilerService;
+  @Autowired
+  private ScalarService scalarService;
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
@@ -108,13 +107,14 @@ public class ScheduleServiceImpl implements ScheduleService {
         preFilterMap.get(slotNum).append(" 1 = 1 ");
       }
 
+      updateDataSource(node, preFilterMap);
 
       JobOutputJson outputJson = null;
       try {
         switch (nodeType) {
           case "table":
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
-              tableSavedData(node, tableName, preFilterMap));
+              tableSavedData(node, tableName));
             break;
           case "filter":
             String filter = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
@@ -124,30 +124,26 @@ public class ScheduleServiceImpl implements ScheduleService {
           case "join":
             JSONObject nodeDescription = (JSONObject) node.getNodeDescription();
             if (nodeDescription.getJSONArray("joinKeys").size() != 0) {
-              try {
-                joinService.saveToClickHouse(node, preFilterMap);
-                outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
-              } catch (Exception e) {
-                outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, nodeType, null);
-                e.printStackTrace();
-              }
+              joinService.saveToClickHouse(node);
+              outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
             } else {
               outputJson = null;
+              flag = true;
             }
             break;
           case "profiler":
-            //TODO
-            List<Map<String, Object>> profilerData = profilerService.getProfiler(node, preFilterMap);
+            List<Map<String, Object>> profilerData = profilerService.getProfiler(node);
             OutputData outputData = new OutputData();
             outputData.setData(profilerData);
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, outputData);
             break;
           case "transpose":
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
-              transposeSavedData(node, tableName, preFilterMap));
+              transposeSavedData(node, tableName));
             break;
           case "scalar":
-            // TODO
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
+                scalarSavedData(node));
             break;
           default:
             throw new RuntimeException("not exist this operator !");
@@ -165,30 +161,50 @@ public class ScheduleServiceImpl implements ScheduleService {
   }
 
   /**
+   * update dataSource.
+   */
+  private void updateDataSource(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap) {
+    JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
+    JSONArray dataSource = (JSONArray)nodeDescription.get("dataSource");
+
+    for (Integer index : preFilterMap.keySet()) {
+      String temp = "(select * from " +
+        dataSource.get(index) +
+        " where " +
+        preFilterMap.get(index) +
+        ")";
+      dataSource.set(index, temp);
+    }
+  }
+
+  /**
    * Table execute: save to ClickHouse and return the saved data.
    */
-  private OutputData tableSavedData(DagNode node, String tableName,
-                                    Map<Integer, StringBuffer> preFilterMap) {
-    List<Map<String, Object>> data = tableJobService.saveToClickHouse(node, preFilterMap);
+  private OutputData tableSavedData(DagNode node, String tableName) {
+    List<Map<String, Object>> data = tableJobService.saveToClickHouse(node);
     return new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
   }
 
   /**
    * Transpose execute: save to ClickHouse and return the saved data.
    */
-  private OutputData transposeSavedData(DagNode node, String tableName,
-                                        Map<Integer, StringBuffer> preFilterMap) {
-    List<Map<String, Object>> data = transposeService.saveToClickHouse(node, preFilterMap);
+  private OutputData transposeSavedData(DagNode node, String tableName) {
+    List<Map<String, Object>> data = transposeService.saveToClickHouse(node);
     return new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
+  }
+
+  private OutputData scalarSavedData(DagNode node) {
+    List<Map<String, Object>> data = scalarService.saveToClickHouse(node);
+    return new OutputData(data, null);
   }
 
   /**
    * Get filter string.
    */
   private String parseFilterAndPivot(DagNode dagNode) {
-
     JSONObject nodeDescription = JSONObject.parseObject(dagNode.getNodeDescription().toString());
-    return nodeDescription.getString("filter");
+    String filter = nodeDescription.getString("filter");
+    return StringUtils.isEmpty(filter) ? "1 = 1" : filter;
   }
 
 

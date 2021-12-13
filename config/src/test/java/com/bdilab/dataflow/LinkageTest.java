@@ -8,6 +8,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 
+/**
+ * UT of the filter operator.
+ *
+ * @author: wh
+ * @create: 2021-12-1
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LinkageTest {
   @Resource

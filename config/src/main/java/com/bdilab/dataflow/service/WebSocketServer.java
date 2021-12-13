@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -31,7 +32,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class WebSocketServer {
   @Autowired
   private WebSocketResolveService socketResolveService;
-  // private static final AtomicInteger OnlineCount = new AtomicInteger(0);
+  private static AtomicInteger onlineCount = new AtomicInteger(0);
   private static CopyOnWriteArraySet<Session> sessionSet = new CopyOnWriteArraySet<>();
 
   /**
@@ -43,7 +44,9 @@ public class WebSocketServer {
   public void onOpen(Session session) {
     session.setMaxIdleTimeout(3600000);
     sessionSet.add(session);
-    log.info("Session [{}] has connected.", session);
+    onlineCount.incrementAndGet();
+    log.info("Session [{}] has connected, and the number of session is [{}].",
+        session.getId(), onlineCount);
   }
 
   /**
@@ -54,7 +57,9 @@ public class WebSocketServer {
   @OnClose
   public void onClose(Session session) {
     sessionSet.remove(session);
-    log.info("Session [{}] has closed.", session);
+    onlineCount.decrementAndGet();
+    log.info("Session [{}] has closed, , and the number of session is [{}].",
+        session.getId(), onlineCount);
   }
 
   /**
@@ -96,11 +101,9 @@ public class WebSocketServer {
         session.getBasicRemote().sendText(String.format("%s", message));
       }
       if (message.length() > 300) {
-        log.info("Send message to all session. The message: {}", message.substring(0,300));
-      } else {
-        log.info("Send message to all session. The message: {}", message);
+        message = message.substring(0, 300);
       }
-
+      log.info("Send message to all session. The message: {}", message);
     } catch (IOException e) {
       e.printStackTrace();
     }

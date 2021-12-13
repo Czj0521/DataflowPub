@@ -1,14 +1,13 @@
 package com.bdilab.dataflow.utils.clickhouse;
 
 import com.bdilab.dataflow.common.consts.CommonConstants;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Data table manager for clickhouse in  .
@@ -35,7 +34,7 @@ public class ClickHouseManager {
     sql.append("CREATE TABLE ").append(newTableName).append(engine)
         .append(" AS (SELECT * FROM ").append(oldTableName).append(");");
     clickHouseJdbcUtils.execute(new String(sql));
-    log.info("-- Copy table {} to {} with [{}].", oldTableName, newTableName, engine);
+    log.debug("-- Copy table {} to {} with [{}].", oldTableName, newTableName, engine);
   }
 
   private String chooseTableEngine(String tableName) {
@@ -56,7 +55,7 @@ public class ClickHouseManager {
 
 
   public void createTable(String tableName, String selectSql) {
-//    chooseTableEngine(oldTableName);
+  //    chooseTableEngine(oldTableName);
   }
 
   public void insertToTable(String tableName) {
@@ -77,7 +76,7 @@ public class ClickHouseManager {
     sql.append("CREATE VIEW ").append(viewName).append(" AS ")
         .append("(").append(selectSql).append(");");
     clickHouseJdbcUtils.execute(new String(sql));
-    log.info("-- Drop if exit and create view {}.", viewName);
+    log.debug("-- Drop if exit and create view {}.", viewName);
 
   }
 
@@ -92,7 +91,7 @@ public class ClickHouseManager {
       StringBuilder sql = new StringBuilder();
       sql.append("DROP TABLE IF EXISTS ").append(tableName);
       clickHouseJdbcUtils.execute(new String(sql));
-      log.info("-- Delete input table {}.", tableName);
+      log.debug("-- Delete input table {}.", tableName);
     }
   }
 
@@ -105,7 +104,7 @@ public class ClickHouseManager {
     StringBuilder sql = new StringBuilder();
     sql.append("DROP TABLE IF EXISTS ").append(tableName);
     clickHouseJdbcUtils.execute(new String(sql));
-    log.info("-- Delete table or view {}.", tableName);
+    log.debug("-- Delete table or view {}.", tableName);
   }
 
   /**
@@ -120,6 +119,7 @@ public class ClickHouseManager {
 
   /**
    * Get meta data.
+   *
    * @param tableName tableName
    * @return metadata
    */

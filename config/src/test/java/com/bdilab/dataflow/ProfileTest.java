@@ -38,7 +38,7 @@ public class ProfileTest {
 
     DagNode dagNode = new DagNode(dagNodeInputDto);
     System.out.println(dagNode);
-    List<Map<String, Object>> profiler = profilerService.getProfiler(dagNode,new HashMap<>());
+    List<Map<String, Object>> profiler = profilerService.getProfiler(dagNode);
     System.out.println(profiler);
 //    List<Map<String, Object>> columnType = profilerService.getColumnType(dataSource, columnNameList);
 //    List<Map<String, Object>> columnMaxMin = profilerService.getColumnInfo(dataSource, columnType);

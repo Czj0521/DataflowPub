@@ -44,31 +44,31 @@ public class JoinServiceImpl implements JoinService {
   }
 
   @Override
-  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap) {
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode) {
     //由dagNode拿到JoinDesc
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
     JoinDescription joinDescription = nodeDescription.toJavaObject(JoinDescription.class);
 
     //设置过滤后的join的两个数据源
-    StringBuffer leftFilter = preFilterMap.get(0);
-    StringBuffer rightFilter = preFilterMap.get(1);
-
-    String dataSourceWithFilter0;
-    String dataSourceWithFilter1;
-    if(leftFilter.length()!=0){
-      dataSourceWithFilter0 = "(SELECT * FROM "+ joinDescription.getDataSource()[0]+" WHERE " + leftFilter+")";
-    }else{
-      dataSourceWithFilter0 = joinDescription.getDataSource()[0];
-    }
-    if(rightFilter.length()!=0){
-      dataSourceWithFilter1 = "(SELECT * FROM "+ joinDescription.getDataSource()[1]+" WHERE " + rightFilter+")";
-    }else{
-      dataSourceWithFilter1 = joinDescription.getDataSource()[1];
-    }
-
-
-    //生成sql
-    joinDescription.setDataSource(new String[]{dataSourceWithFilter0,dataSourceWithFilter1});
+//    StringBuffer leftFilter = preFilterMap.get(0);
+//    StringBuffer rightFilter = preFilterMap.get(1);
+//
+//    String dataSourceWithFilter0;
+//    String dataSourceWithFilter1;
+//    if(leftFilter.length()!=0){
+//      dataSourceWithFilter0 = "(SELECT * FROM "+ joinDescription.getDataSource()[0]+" WHERE " + leftFilter+")";
+//    }else{
+//      dataSourceWithFilter0 = joinDescription.getDataSource()[0];
+//    }
+//    if(rightFilter.length()!=0){
+//      dataSourceWithFilter1 = "(SELECT * FROM "+ joinDescription.getDataSource()[1]+" WHERE " + rightFilter+")";
+//    }else{
+//      dataSourceWithFilter1 = joinDescription.getDataSource()[1];
+//    }
+//
+//
+//    //生成sql
+//    joinDescription.setDataSource(new String[]{dataSourceWithFilter0,dataSourceWithFilter1});
     String sql = new JoinSqlGenerator(joinDescription, tableMetadataService).generate();
 
     //创建视图（后续提取公共部分），此处代码不同操作符都一样

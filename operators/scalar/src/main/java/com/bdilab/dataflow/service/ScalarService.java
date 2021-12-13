@@ -8,10 +8,12 @@ import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,12 +33,46 @@ public class ScalarService implements OperatorService<ScalarDescription> {
   @Autowired
   private ClickHouseManager clickHouseManager;
 
+  @Deprecated
+  // a wrapper method for computing scalar operator in linkage use case.
+  public List<Map<String,Object>> getScalar(DagNode node, Map<Integer, StringBuffer> preFilterMap) {
+    // get ScalarDescription object
+    JSONObject desc = (JSONObject) node.getNodeDescription();
+    ScalarDescription scalarDescription = desc.toJavaObject(ScalarDescription.class);
+
+    // handle possible filter
+    StringBuffer filter = preFilterMap.get(0);
+    if (filter == null || filter.length() == 0) {
+      return execute(scalarDescription);
+    }
+    else {
+      String dataSource = "(SELECT * FROM "+ scalarDescription.getDataSource()[0] +" WHERE " + filter +")";
+      scalarDescription.setDataSource(new String[] {dataSource});
+    }
+    return execute(scalarDescription);
+  }
+
   @Override
   public List<Map<String, Object>> execute(ScalarDescription scalarDescription) {
     ScalarSqlGenerator scalarSqlGenerator = new ScalarSqlGenerator(scalarDescription);
+
+    // don't query CH if scalarDescription has no target, aggregation or dataSource.
+    if (! scalarDescription.valid()) {
+      return null;
+    }
+
+
     List<Map<String, Object>> res = clickHouseJdbcUtils.queryForList(scalarSqlGenerator.generate());
     if (res.size() == 1) {
       System.out.println(res.get(0).get("scalar"));
+
+      Object value = res.get(0).get("scalar");
+      String target = scalarDescription.getTarget();
+      String agg = scalarDescription.getAggregation();
+      String key = MessageFormat.format("{0} {1}", target, agg);
+      Map<String, Object> map = new HashMap<String, Object>();
+      map.put(key, value);
+      res.set(0, map);
 
       return res;
     }
@@ -46,18 +82,11 @@ public class ScalarService implements OperatorService<ScalarDescription> {
   }
 
   @Override
-  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap) {
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode) {
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
     ScalarDescription scalarDescription = nodeDescription.toJavaObject(ScalarDescription.class);
 
-    // save results to clickhouse
-    ScalarSqlGenerator scalarSqlGenerator = new ScalarSqlGenerator(scalarDescription);
-    String sql = scalarSqlGenerator.generateDataSourceSql();
-    String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + dagNode.getNodeId();
-
-    clickHouseManager.createView(tableName, sql);
-
     // return the result
-    return clickHouseJdbcUtils.queryForList(scalarSqlGenerator.generate());
+    return execute(scalarDescription);
   }
 }

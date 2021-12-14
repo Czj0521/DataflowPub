@@ -4,8 +4,8 @@ import com.bdilab.dataflow.ScalarTestApplication;
 import com.bdilab.dataflow.dto.jobdescription.ScalarDescription;
 import com.bdilab.dataflow.dto.jobinputjson.ScalarInputJson;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.runner.RunWith;
@@ -25,7 +25,6 @@ import java.util.Map;
  */
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = ScalarTestApplication.class)
 public class ScalarServiceTest {
   @Autowired
@@ -59,14 +58,14 @@ public class ScalarServiceTest {
 
   @ParameterizedTest
   @CsvSource(value = {
-      "AQI, average",
+      "AQI, avg",
       "AQI, min",
       "AQI, max",
       "AQI, count",
-      "AQI, distinct count",
+      "AQI, uniqExact",
       "AQI, sum",
-      "AQI, standard dev",
-})
+      "AQI, stddevPop",
+  })
   public void testNotNull(String target, String aggregation) {
     ScalarDescription scalarDescription = ScalarDescriptionPrototype.copy(target, aggregation);
     List<Map<String, Object>> value = scalarService.execute(scalarDescription);

@@ -69,4 +69,5 @@ public class EquiWidthBinning {
         }
         return new TreeSet<>(rangeList);
     }
+
 }

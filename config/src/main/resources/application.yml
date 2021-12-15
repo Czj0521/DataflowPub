@@ -80,3 +80,6 @@ logging:
   level:
     root: info
     com.bdilab.dataflow: debug
+
+python:
+  url: http://47.104.202.153:5000/ceshi

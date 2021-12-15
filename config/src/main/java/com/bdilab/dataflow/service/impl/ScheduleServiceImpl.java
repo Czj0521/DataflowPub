@@ -56,6 +56,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   private ProfilerService profilerService;
   @Autowired
   private ScalarService scalarService;
+  @Autowired
+  private PythonService pythonService;
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
@@ -145,6 +147,10 @@ public class ScheduleServiceImpl implements ScheduleService {
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
                 scalarSavedData(node));
             break;
+          case "python":
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
+                pythonSavedData(node));
+            break;
           default:
             throw new RuntimeException("not exist this operator !");
         }
@@ -163,7 +169,7 @@ public class ScheduleServiceImpl implements ScheduleService {
   /**
    * update dataSource.
    */
-  private void updateDataSource(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap) {
+  private void  updateDataSource(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap) {
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
     JSONArray dataSource = (JSONArray)nodeDescription.get("dataSource");
 
@@ -195,6 +201,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   private OutputData scalarSavedData(DagNode node) {
     List<Map<String, Object>> data = scalarService.saveToClickHouse(node);
+    return new OutputData(data, null);
+  }
+
+  private OutputData pythonSavedData(DagNode node) {
+    List<Map<String, Object>> data = pythonService.saveToClickHouse(node);
     return new OutputData(data, null);
   }
 

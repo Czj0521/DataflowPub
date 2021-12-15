@@ -14,5 +14,5 @@ import org.springframework.stereotype.Service;
 public interface PivotChartService {
   R getPivotChart(PivotChartDescription description);
 
-  ParamTypeRespObj getType(String type);
+  ParamTypeRespObj getType(String type,String language);
 }

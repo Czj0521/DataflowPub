@@ -44,7 +44,7 @@ public class JoinServiceImpl implements JoinService {
   }
 
   @Override
-  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode) {
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Object extendMessage) {
     //由dagNode拿到JoinDesc
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
     JoinDescription joinDescription = nodeDescription.toJavaObject(JoinDescription.class);

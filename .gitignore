@@ -5,4 +5,7 @@ target/
 .gradle/
 /logs/
 */settings/
+.vscode/
+.project
+
 

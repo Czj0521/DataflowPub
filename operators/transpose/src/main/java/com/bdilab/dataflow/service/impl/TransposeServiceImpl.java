@@ -57,7 +57,7 @@ public class TransposeServiceImpl implements TransposeService {
   }
 
   @Override
-  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode) {
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Object extendMessage) {
     // add filter
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
 //    String filter0 = nodeDescription.getString("filter");

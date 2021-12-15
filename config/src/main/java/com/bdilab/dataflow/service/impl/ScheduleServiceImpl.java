@@ -71,7 +71,10 @@ public class ScheduleServiceImpl implements ScheduleService {
       DagNode node = realTimeDag.getNode(workspaceId, nodeId);
       String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
 
+      // 每个数据对应的过滤字符串（不包括红色过滤字符串）
       Map<Integer, StringBuffer> preFilterMap = new HashMap<>();
+      // 每个数据源对应的红色过滤字符串
+      Map<Integer, StringBuffer> externFilterMap = new HashMap<>();
       List<Metadata> metadataList = new ArrayList<>();
       // 获取当前结点每个数据源对应的前驱filter id 列表
       Map<Integer, List<String>> filterIdsMap = new HashMap<>();
@@ -79,6 +82,7 @@ public class ScheduleServiceImpl implements ScheduleService {
       InputDataSlot[] inputDataSlots = node.getInputDataSlots();
       for (int i = 0; i < inputDataSlots.length; i++) {
         preFilterMap.put(i, new StringBuffer());
+        externFilterMap.put(i, new StringBuffer());
         filterIdsMap.put(i, inputDataSlots[i].getFilterId());
         String dataSource = inputDataSlots[i].getDataSource();
         Metadata metadata = new Metadata(dataSource,
@@ -95,9 +99,20 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (!CollectionUtils.isEmpty(filterIdsMap.get(slotNum))) {
           for (String filterId : filterIdsMap.get(slotNum)) {
             String filter = dagFilterManager.getFilter(workspaceId, filterId);
-            if(!StringUtils.isEmpty(filter)){
-              preFilterMap.get(slotNum)
+            if (!StringUtils.isEmpty(filter)) {
+              // 根据边的类型更新filter
+              if (node.isDashedEdge(slotNum, filterId)) {
+                filter = " NOT " + filter;
+              }
+              if (node.isBrushEdge(slotNum, filterId)) {
+                externFilterMap.get(slotNum)
                   .append(filter).append(" AND ");
+                // 为红色边时跳过
+                continue;
+              }
+
+              preFilterMap.get(slotNum)
+                .append(filter).append(" AND ");
             }
           }
         }
@@ -109,7 +124,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
       updateDataSource(node, preFilterMap);
 
-      JobOutputJson outputJson = null;
+      JobOutputJson outputJson;
       try {
         switch (nodeType) {
           case "table":
@@ -121,10 +136,17 @@ public class ScheduleServiceImpl implements ScheduleService {
             dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter);
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
             break;
+          case "chart":
+            String externFilter = externFilterMap.get(0).toString();
+
+            String filter1 = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
+            dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter1);
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
+            break;
           case "join":
             JSONObject nodeDescription = (JSONObject) node.getNodeDescription();
             if (nodeDescription.getJSONArray("joinKeys").size() != 0) {
-              joinService.saveToClickHouse(node);
+              joinService.saveToClickHouse(node, null);
               outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
             } else {
               outputJson = null;
@@ -143,7 +165,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             break;
           case "scalar":
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
-                scalarSavedData(node));
+              scalarSavedData(node));
             break;
           default:
             throw new RuntimeException("not exist this operator !");
@@ -165,7 +187,7 @@ public class ScheduleServiceImpl implements ScheduleService {
    */
   private void updateDataSource(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap) {
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
-    JSONArray dataSource = (JSONArray)nodeDescription.get("dataSource");
+    JSONArray dataSource = (JSONArray) nodeDescription.get("dataSource");
 
     for (Integer index : preFilterMap.keySet()) {
       String temp = "(select * from " +
@@ -181,7 +203,7 @@ public class ScheduleServiceImpl implements ScheduleService {
    * Table execute: save to ClickHouse and return the saved data.
    */
   private OutputData tableSavedData(DagNode node, String tableName) {
-    List<Map<String, Object>> data = tableJobService.saveToClickHouse(node);
+    List<Map<String, Object>> data = tableJobService.saveToClickHouse(node, null);
     return new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
   }
 
@@ -189,12 +211,12 @@ public class ScheduleServiceImpl implements ScheduleService {
    * Transpose execute: save to ClickHouse and return the saved data.
    */
   private OutputData transposeSavedData(DagNode node, String tableName) {
-    List<Map<String, Object>> data = transposeService.saveToClickHouse(node);
+    List<Map<String, Object>> data = transposeService.saveToClickHouse(node, null);
     return new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
   }
 
   private OutputData scalarSavedData(DagNode node) {
-    List<Map<String, Object>> data = scalarService.saveToClickHouse(node);
+    List<Map<String, Object>> data = scalarService.saveToClickHouse(node, null);
     return new OutputData(data, null);
   }
 

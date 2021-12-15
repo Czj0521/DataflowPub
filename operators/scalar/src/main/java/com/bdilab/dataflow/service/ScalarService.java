@@ -81,7 +81,7 @@ public class ScalarService implements OperatorService<ScalarDescription> {
   }
 
   @Override
-  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode) {
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Object extendMessage) {
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
     ScalarDescription scalarDescription = nodeDescription.toJavaObject(ScalarDescription.class);
 

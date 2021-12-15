@@ -6,6 +6,8 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import lombok.Data;
 
 /**
@@ -80,6 +82,21 @@ public class DagNode {
   @JSONField(serialize = false)
   public List<String> getFilterId(int slotIndex) {
     return this.inputDataSlots[slotIndex].getFilterId();
+  }
+
+  @JSONField(serialize = false)
+  public Map<String, String> getEdgeTypeMap(int slotIndex) {
+    return this.inputDataSlots[slotIndex].getEdgeType();
+  }
+
+  @JSONField(serialize = false)
+  public String getEdgeType(int slotIndex, String preNodeId) {
+    return this.getEdgeTypeMap(slotIndex).getOrDefault(preNodeId, "0");
+  }
+
+  @JSONField(serialize = false)
+  public boolean isBrushEdge(int slotIndex, String preNodeId) {
+    return "2".equals(getEdgeType(slotIndex, preNodeId));
   }
 
   @JSONField(serialize = false)

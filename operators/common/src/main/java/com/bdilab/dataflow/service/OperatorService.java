@@ -30,5 +30,5 @@ public interface OperatorService<T extends JobDescription> {
    * @param dagNode DagNode Object, in order to get node description.
    * @return data
    */
-  List<Map<String, Object>> saveToClickHouse(DagNode dagNode);
+  List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Object extendMessage);
 }

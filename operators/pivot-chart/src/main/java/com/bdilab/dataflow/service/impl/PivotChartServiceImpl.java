@@ -214,58 +214,109 @@ public class PivotChartServiceImpl implements PivotChartService {
   }
 
   @Override
-  public ParamTypeRespObj getType(String type) {
+  public ParamTypeRespObj getType(String type,String language) {
     ParamTypeRespObj respObj = new ParamTypeRespObj();
     List<String> strList = new ArrayList<>();
     List<String> booleanOrDateList = new ArrayList<>();
     List<String> numericList = new ArrayList<>();
-    switch (type) {
-      case AggregationConstants.AGGREGATION:
-        strList.add(Communal.NONE);
-        strList.add(AggregationConstants.COUNT);
-        strList.add(AggregationConstants.DISTINCT_COUNT);
-        respObj.setString(strList);
-        respObj.setDate(strList);
+    if(language.equalsIgnoreCase("english")){
+      switch (type) {
+        case AggregationConstants.AGGREGATION:
+          strList.add(Communal.NONE);
+          strList.add(AggregationConstants.COUNT);
+          strList.add(AggregationConstants.DISTINCT_COUNT);
+          respObj.setString(strList);
+          respObj.setDate(strList);
 
-        booleanOrDateList.add(Communal.NONE);
-        booleanOrDateList.add(AggregationConstants.COUNT);
-        booleanOrDateList.add(AggregationConstants.DISTINCT_COUNT);
-        booleanOrDateList.add(AggregationConstants.AVERAGE);
-        respObj.setBooleans(booleanOrDateList);
+          booleanOrDateList.add(Communal.NONE);
+          booleanOrDateList.add(AggregationConstants.COUNT);
+          booleanOrDateList.add(AggregationConstants.DISTINCT_COUNT);
+          booleanOrDateList.add(AggregationConstants.AVERAGE);
+          respObj.setBooleans(booleanOrDateList);
 
-        numericList.add(Communal.NONE);
-        numericList.add(AggregationConstants.COUNT);
-        numericList.add(AggregationConstants.DISTINCT_COUNT);
-        numericList.add(AggregationConstants.AVERAGE);
-        numericList.add(AggregationConstants.SUM);
-        numericList.add(AggregationConstants.MIN);
-        numericList.add(AggregationConstants.MAX);
-        numericList.add(AggregationConstants.STANDARD_DEV);
-        respObj.setNumeric(numericList);
-        break;
-      case BinningConstants.BIN:
-        strList.add(Communal.NONE);
-        strList.add(BinningConstants.ALPHABETIC_BINNING);
-        strList.add(BinningConstants.NOMINAL_BINNING);
-        respObj.setString(strList);
-        respObj.setBooleans(strList);
+          numericList.add(Communal.NONE);
+          numericList.add(AggregationConstants.COUNT);
+          numericList.add(AggregationConstants.DISTINCT_COUNT);
+          numericList.add(AggregationConstants.AVERAGE);
+          numericList.add(AggregationConstants.SUM);
+          numericList.add(AggregationConstants.MIN);
+          numericList.add(AggregationConstants.MAX);
+          numericList.add(AggregationConstants.STANDARD_DEV);
+          respObj.setNumeric(numericList);
+          break;
+        case BinningConstants.BIN:
+          strList.add(Communal.NONE);
+          strList.add(BinningConstants.ALPHABETIC_BINNING);
+          strList.add(BinningConstants.NOMINAL_BINNING);
+          respObj.setString(strList);
+          respObj.setBooleans(strList);
 
-        numericList.add(Communal.NONE);
-        numericList.add(BinningConstants.EQUI_WIDTH_BINNING);
-        numericList.add(BinningConstants.NATURAL_BINNING);
-        respObj.setNumeric(numericList);
+          numericList.add(Communal.NONE);
+          numericList.add(BinningConstants.EQUI_WIDTH_BINNING);
+          numericList.add(BinningConstants.NATURAL_BINNING);
+          respObj.setNumeric(numericList);
 
-        booleanOrDateList.add(Communal.NONE);
-        booleanOrDateList.add(BinningConstants.SECOND);
-        booleanOrDateList.add(BinningConstants.MINUTE);
-        booleanOrDateList.add(BinningConstants.HOUR);
-        booleanOrDateList.add(BinningConstants.DAY);
-        booleanOrDateList.add(BinningConstants.MONTH);
-        booleanOrDateList.add(BinningConstants.YEAR);
-        respObj.setDate(booleanOrDateList);
-        break;
-      default:
-        throw new RRException(BizCodeEnum.INVALID_TYPE.getMsg(), BizCodeEnum.INVALID_TYPE.getCode());
+          booleanOrDateList.add(Communal.NONE);
+          booleanOrDateList.add(BinningConstants.SECOND);
+          booleanOrDateList.add(BinningConstants.MINUTE);
+          booleanOrDateList.add(BinningConstants.HOUR);
+          booleanOrDateList.add(BinningConstants.DAY);
+          booleanOrDateList.add(BinningConstants.MONTH);
+          booleanOrDateList.add(BinningConstants.YEAR);
+          respObj.setDate(booleanOrDateList);
+          break;
+        default:
+          throw new RuntimeException("wrong type!");
+      }
+    }else if(language.equalsIgnoreCase("chinese")){
+      switch (type) {
+        case AggregationConstants.AGGREGATION:
+          strList.add(LocalUtil.getENVersion("pivot.none"));
+          strList.add(LocalUtil.getENVersion("pivot.count"));
+          strList.add(LocalUtil.getENVersion("pivot.distinct_count"));
+          respObj.setString(strList);
+          respObj.setDate(strList);
+
+          booleanOrDateList.add(LocalUtil.getENVersion(Communal.NONE));
+          booleanOrDateList.add(LocalUtil.getENVersion("pivot.count"));
+          booleanOrDateList.add(LocalUtil.getENVersion("pivot.distinct_count"));
+          booleanOrDateList.add(LocalUtil.getENVersion("pivot.average"));
+          respObj.setBooleans(booleanOrDateList);
+
+          numericList.add(LocalUtil.getENVersion(Communal.NONE));
+          numericList.add(LocalUtil.getENVersion("pivot.count"));
+          numericList.add(LocalUtil.getENVersion("pivot.distinct_count"));
+          numericList.add(LocalUtil.getENVersion("pivot.average"));
+          numericList.add(LocalUtil.getENVersion("pivot.sum"));
+          numericList.add(LocalUtil.getENVersion("pivot.min"));
+          numericList.add(LocalUtil.getENVersion("pivot.max"));
+          numericList.add(LocalUtil.getENVersion("pivot.standard_dev"));
+          respObj.setNumeric(numericList);
+          break;
+        case BinningConstants.BIN:
+          strList.add(LocalUtil.getENVersion("pivot.none"));
+          strList.add(LocalUtil.getENVersion("pivot.AlphabeticBinning"));
+          strList.add(LocalUtil.getENVersion("pivot.NominalBinning"));
+          respObj.setString(strList);
+          respObj.setBooleans(strList);
+
+          numericList.add(LocalUtil.getENVersion("pivot.none"));
+          numericList.add(LocalUtil.getENVersion("pivot.EquiWidthBinning"));
+          numericList.add(LocalUtil.getENVersion("pivot.NaturalBinning"));
+          respObj.setNumeric(numericList);
+
+          booleanOrDateList.add(LocalUtil.getENVersion("pivot.none"));
+          booleanOrDateList.add(LocalUtil.getENVersion("pivot.second"));
+          booleanOrDateList.add(LocalUtil.getENVersion("pivot.minute"));
+          booleanOrDateList.add(LocalUtil.getENVersion("pivot.hour"));
+          booleanOrDateList.add(LocalUtil.getENVersion("pivot.day"));
+          booleanOrDateList.add(LocalUtil.getENVersion("pivot.month"));
+          booleanOrDateList.add(LocalUtil.getENVersion("pivot.year"));
+          respObj.setDate(booleanOrDateList);
+          break;
+        default:
+          throw new RuntimeException("wrong type!");
+      }
     }
     return respObj;
   }

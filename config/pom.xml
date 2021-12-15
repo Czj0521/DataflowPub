@@ -56,7 +56,7 @@
         </dependency>
         <dependency>
             <groupId>com.bdilab</groupId>
-            <artifactId>profiler</artifactId>
+            <artifactId>operator-profiler</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>

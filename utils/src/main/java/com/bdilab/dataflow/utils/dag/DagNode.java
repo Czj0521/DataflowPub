@@ -3,9 +3,12 @@ package com.bdilab.dataflow.utils.dag;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.bdilab.dataflow.utils.dag.consts.DagConstants;
 import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import lombok.Data;
 
 /**
@@ -80,6 +83,31 @@ public class DagNode {
   @JSONField(serialize = false)
   public List<String> getFilterId(int slotIndex) {
     return this.inputDataSlots[slotIndex].getFilterId();
+  }
+
+  @JSONField(serialize = false)
+  public Map<String, String> getEdgeTypeMap(int slotIndex) {
+    return this.inputDataSlots[slotIndex].getEdgeType();
+  }
+
+  @JSONField(serialize = false)
+  public String getEdgeType(int slotIndex, String preNodeId) {
+    return this.getEdgeTypeMap(slotIndex).getOrDefault(preNodeId, DagConstants.DEFAULT_LINE);
+  }
+
+  @JSONField(serialize = false)
+  public boolean isDefaultEdge(int slotIndex, String preNodeId) {
+    return DagConstants.DEFAULT_LINE.equals(getEdgeType(slotIndex, preNodeId));
+  }
+
+  @JSONField(serialize = false)
+  public boolean isDashedEdge(int slotIndex, String preNodeId) {
+    return DagConstants.DASHED_LINE.equals(getEdgeType(slotIndex, preNodeId));
+  }
+
+  @JSONField(serialize = false)
+  public boolean isBrushEdge(int slotIndex, String preNodeId) {
+    return DagConstants.BRUSH_LINE.equals(getEdgeType(slotIndex, preNodeId));
   }
 
   @JSONField(serialize = false)

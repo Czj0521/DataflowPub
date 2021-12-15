@@ -67,10 +67,9 @@ public class ScalarService implements OperatorService<ScalarDescription> {
       System.out.println(res.get(0).get("scalar"));
 
       Object value = res.get(0).get("scalar");
-      String target = scalarDescription.getTarget();
-      String agg = scalarDescription.getAggregation();
-      String key = MessageFormat.format("{0} {1}", target, agg);
-      Map<String, Object> map = new HashMap<String, Object>();
+
+      String key = scalarDescription.getTarget();
+      Map<String, Object> map = new HashMap<>();
       map.put(key, value);
       res.set(0, map);
 
@@ -82,7 +81,7 @@ public class ScalarService implements OperatorService<ScalarDescription> {
   }
 
   @Override
-  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode) {
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Object extendMessage) {
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
     ScalarDescription scalarDescription = nodeDescription.toJavaObject(ScalarDescription.class);
 

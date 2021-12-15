@@ -32,7 +32,8 @@ public class I18nUtils {
     Locale locale = LocaleContextHolder.getLocale();
     ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
     messageSource.setDefaultEncoding("UTF-8");
-    messageSource.setBasename("i18n/messages");
+//    messageSource.setBasename("i18n/messages");
+    messageSource.setBasenames("i18n/messages","i18n/messages-pivot-chart");
     String content;
     try {
       content = messageSource.getMessage(code, args, locale);

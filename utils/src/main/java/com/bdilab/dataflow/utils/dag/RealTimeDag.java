@@ -6,6 +6,7 @@ import com.bdilab.dataflow.common.annotation.LogMethodTime;
 import com.bdilab.dataflow.common.consts.CommonConstants;
 import com.bdilab.dataflow.common.enums.OperatorOutputTypeEnum;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseManager;
+import com.bdilab.dataflow.utils.dag.consts.DagConstants;
 import com.bdilab.dataflow.utils.dag.dto.DagNodeInputDto;
 import com.bdilab.dataflow.utils.redis.RedisUtils;
 import java.util.ArrayList;
@@ -135,6 +136,7 @@ public class RealTimeDag {
         //删除后节点的filter信息
         DagNode nextNode = (DagNode) dagMap.get(outputDataSlot.getNextNodeId());
         nextNode.getFilterId(outputDataSlot.getNextSlotIndex()).remove(deletedNodeId);
+        nextNode.getEdgeTypeMap(outputDataSlot.getNextSlotIndex()).remove(deletedNodeId);
       }
     } else {
       //本节点为table
@@ -195,7 +197,8 @@ public class RealTimeDag {
     String[] copyTableNames = new String[2];
     if (OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
       //filter边
-      nextNode.getInputDataSlots()[slotIndex].getFilterId().remove(preNodeId);
+      nextNode.getFilterId(slotIndex).remove(preNodeId);
+      nextNode.getEdgeTypeMap(slotIndex).remove(preNodeId);
     } else {
       //table边
       nextNode.getInputDataSlots()[slotIndex].setPreNodeId(null);
@@ -286,6 +289,45 @@ public class RealTimeDag {
   }
 
   /**
+   * Update edge.
+   *
+   * @param workspaceId workspace Id
+   * @param preNodeId preNode Id
+   * @param nextNodeId nextNode Id
+   * @param slotIndex slot index
+   * @param edgeType edge type
+   */
+  @LogMethodTime
+  public void updateEdge(String workspaceId,
+                         String preNodeId,
+                         String nextNodeId,
+                         Integer slotIndex,
+                         String edgeType) {
+    DagNode nextNode = (DagNode) redisUtils.hget(workspaceId, nextNodeId);
+    DagNode preNode = (DagNode) redisUtils.hget(workspaceId, preNodeId);
+    switch (edgeType) {
+      case DagConstants.DEFAULT_LINE:
+        break;
+      case DagConstants.DASHED_LINE:
+        if (!OperatorOutputTypeEnum.isFilterOutput(preNode.getNodeType())) {
+          throw new RuntimeException("For dashed edge, the output node must be of type Filter !");
+        }
+        break;
+      case DagConstants.BRUSH_LINE:
+        if (!OperatorOutputTypeEnum.isChart(preNode.getNodeType())
+            || !OperatorOutputTypeEnum.isChart(nextNode.getNodeType())) {
+          throw new RuntimeException("For brush edge, both of output and input node must be Chart !");
+        }
+        break;
+      default:
+        throw new RuntimeException("Error edge type !");
+    }
+    nextNode.getEdgeTypeMap(slotIndex).put(preNodeId, edgeType);
+    redisUtils.hset(workspaceId, nextNodeId, nextNode);
+
+  }
+
+  /**
    * Get node.
    *
    * @param workspaceId workspace ID
@@ -346,6 +388,40 @@ public class RealTimeDag {
       preNodes.add((DagNode) dagMap.get(filterId));
     });
     return preNodes;
+  }
+
+  /**
+   * Get edge type.
+   *
+   * @param workspaceId workspace ID
+   * @param nodeId node ID
+   * @param slotIndex slot index
+   * @param preNodeId preNode ID
+   * @return edge type
+   */
+  public String getEdgeType(String workspaceId,
+                            String nodeId,
+                            Integer slotIndex,
+                            String preNodeId) {
+    DagNode node = (DagNode) redisUtils.hget(workspaceId, nodeId);
+    return node.getEdgeType(slotIndex, preNodeId);
+  }
+
+  /**
+   * Is brush edge or not.
+   *
+   * @param workspaceId workspace ID
+   * @param nodeId node ID
+   * @param slotIndex slot index
+   * @param preNodeId preNode ID
+   * @return edge type
+   */
+  public boolean isBrushEdge(String workspaceId,
+                             String nodeId,
+                             Integer slotIndex,
+                             String preNodeId) {
+    DagNode node = (DagNode) redisUtils.hget(workspaceId, nodeId);
+    return node.isBrushEdge(slotIndex, preNodeId);
   }
 
   /**

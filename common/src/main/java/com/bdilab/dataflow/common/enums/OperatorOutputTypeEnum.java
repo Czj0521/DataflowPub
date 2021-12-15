@@ -32,6 +32,14 @@ public enum OperatorOutputTypeEnum {
     return FILTER.getOutputType().equals(OUTPUT_TYPE.get(operatorType.toLowerCase().trim()));
   }
 
+  public static boolean isChart(String operatorType){
+    return PIVOTCHART.getOperatorType().equals(operatorType.toLowerCase().trim());
+  }
+
+  public static boolean isFilter(String operatorType){
+    return PIVOTCHART.getOperatorType().equals(operatorType.toLowerCase().trim());
+  }
+
   OperatorOutputTypeEnum(String operatorType, String outputType) {
     this.operatorType = operatorType;
     this.outputType = outputType;

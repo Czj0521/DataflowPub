@@ -87,14 +87,20 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
       case "removeEdge":
         String rmPreNodeId = desc.getString("preNodeId");
         String rmNextNodeId = desc.getString("nextNodeId");
-        String rmSlotIndex = desc.getString("slotIndex");
+        Integer rmSlotIndex = desc.getInteger("slotIndex");
         nodeType = realTimeDag.getNode(workspaceId, rmPreNodeId).getNodeType();
-        realTimeDag.removeEdge(workspaceId,rmPreNodeId,rmNextNodeId,Integer.valueOf(rmSlotIndex));
+        realTimeDag.removeEdge(workspaceId,rmPreNodeId,rmNextNodeId,rmSlotIndex);
         if(OperatorOutputTypeEnum.isFilterOutput(nodeType)) {
           scheduleService.executeTask(workspaceId, rmNextNodeId);
         }
         break;
-      case "addDateSource":
+      case "updateEdge":
+        String udPreNodeId = desc.getString("preNodeId");
+        String udNextNodeId = desc.getString("nextNodeId");
+        Integer udSlotIndex = desc.getInteger("slotIndex");
+        String udEdgeType = desc.getString("edgeType");
+        realTimeDag.updateEdge(workspaceId, udPreNodeId, udNextNodeId, udSlotIndex, udEdgeType);
+        scheduleService.executeTask(workspaceId, udNextNodeId);
         break;
       case "updateDateSource":
         break;

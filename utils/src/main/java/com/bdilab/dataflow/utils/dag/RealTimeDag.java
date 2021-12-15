@@ -408,6 +408,40 @@ public class RealTimeDag {
   }
 
   /**
+   * Is default edge or not.
+   *
+   * @param workspaceId workspace ID
+   * @param nodeId node ID
+   * @param slotIndex slot index
+   * @param preNodeId preNode ID
+   * @return edge type
+   */
+  public boolean isDefaultEdge(String workspaceId,
+                              String nodeId,
+                              Integer slotIndex,
+                              String preNodeId) {
+    DagNode node = (DagNode) redisUtils.hget(workspaceId, nodeId);
+    return node.isDefaultEdge(slotIndex, preNodeId);
+  }
+
+  /**
+   * Is dashed edge or not.
+   *
+   * @param workspaceId workspace ID
+   * @param nodeId node ID
+   * @param slotIndex slot index
+   * @param preNodeId preNode ID
+   * @return edge type
+   */
+  public boolean isDashedEdge(String workspaceId,
+                             String nodeId,
+                             Integer slotIndex,
+                             String preNodeId) {
+    DagNode node = (DagNode) redisUtils.hget(workspaceId, nodeId);
+    return node.isDashedEdge(slotIndex, preNodeId);
+  }
+
+  /**
    * Is brush edge or not.
    *
    * @param workspaceId workspace ID

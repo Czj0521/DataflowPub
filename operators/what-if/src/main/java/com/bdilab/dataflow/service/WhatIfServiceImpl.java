@@ -32,9 +32,10 @@ public class WhatIfServiceImpl implements OperatorService<WhatIfDescription> {
   }
 
   @Override
-  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode) {
+  public List<Map<String, Object>> saveToClickHouse(DagNode dagNode, Object extendMessage) {
     WhatIfDescription whatIfDescription =
         ((JSONObject) dagNode.getNodeDescription()).toJavaObject(WhatIfDescription.class);
+    whatIfDescription.setExpression(extendMessage);
     execute(whatIfDescription);
     return null;
   }

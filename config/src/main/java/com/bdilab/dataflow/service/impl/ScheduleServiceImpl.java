@@ -87,9 +87,11 @@ public class ScheduleServiceImpl implements ScheduleService {
         externFilterMap.put(i, new StringBuffer());
         filterIdsMap.put(i, inputDataSlots[i].getFilterId());
         String dataSource = inputDataSlots[i].getDataSource();
-        Metadata metadata = new Metadata(dataSource,
-          tableMetadataService.metadataFromDatasource(dataSource));
-        metadataList.add(metadata);
+        if(!dataSource.isEmpty()){
+          Metadata metadata = new Metadata(dataSource,
+              tableMetadataService.metadataFromDatasource(dataSource));
+          metadataList.add(metadata);
+        }
       }
 
       String nodeType = node.getNodeType();
@@ -170,8 +172,15 @@ public class ScheduleServiceImpl implements ScheduleService {
               scalarSavedData(node));
             break;
           case "python":
-            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
-                pythonSavedData(node));
+            OutputData outputDataPython = pythonSavedData(node);
+            if(outputDataPython.getData()!=null){
+              outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, nodeType,
+                  outputDataPython);
+            }else{
+              outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
+                  outputDataPython);
+            }
+
             break;
           default:
             throw new RuntimeException("not exist this operator !");
@@ -196,12 +205,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     JSONArray dataSource = (JSONArray) nodeDescription.get("dataSource");
 
     for (Integer index : preFilterMap.keySet()) {
-      String temp = "(select * from " +
-        dataSource.get(index) +
-        " where " +
-        preFilterMap.get(index) +
-        ")";
-      dataSource.set(index, temp);
+      if(!dataSource.get(index).equals("")){
+        String temp = "(select * from " +
+            dataSource.get(index) +
+            " where " +
+            preFilterMap.get(index) +
+            ")";
+        dataSource.set(index, temp);
+      }
     }
   }
 

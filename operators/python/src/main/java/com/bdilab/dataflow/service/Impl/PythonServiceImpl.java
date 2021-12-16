@@ -26,9 +26,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.swing.*;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 @Service
 public class PythonServiceImpl implements PythonService {
@@ -40,6 +38,9 @@ public class PythonServiceImpl implements PythonService {
 
   @Override
   public List<Map<String, Object>> saveToClickHouse(DagNode dagNode) {
+
+    List<Map<String, Object>> res = new ArrayList<>();
+
     //设置http请求体
     CloseableHttpClient httpclient = HttpClients.createDefault();
     HttpPost httpPost = new HttpPost(pythonServerUrl);
@@ -59,9 +60,14 @@ public class PythonServiceImpl implements PythonService {
       if (response.getStatusLine().getStatusCode() == 200) {
         JSONObject jsonObject = JSONObject.parseObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
         if(!"JOB_FINISH".equals(jsonObject.getString("jobStatus"))){
-          throw new UncheckException("python error");
+          Map<String, Object> jobStatusMap = new HashMap<>();
+          jobStatusMap.put("python error info",jsonObject.getString("jobStatus"));
+          res.add(jobStatusMap);
+          return res;
+        }else{
+          return null;
         }
-        return null;
+
       }
       throw new UncheckException(
           ExceptionMsgEnum.CLICKHOUSE_HTTP_ERROR.getMsg() + "\n" + response.toString());

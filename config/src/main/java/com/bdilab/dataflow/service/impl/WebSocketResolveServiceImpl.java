@@ -2,6 +2,7 @@ package com.bdilab.dataflow.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.common.enums.OperatorDataSourceReadyEnum;
 import com.bdilab.dataflow.common.enums.OperatorOutputTypeEnum;
 import com.bdilab.dataflow.dto.jobdescription.ScalarDescription;
 import com.bdilab.dataflow.service.WebSocketResolveService;
@@ -58,8 +59,9 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         ScalarDescription scalarDescription = desc.toJavaObject(ScalarDescription.class);
         System.out.println(scalarDescription);
         realTimeDag.updateNode(workspaceId, operatorId, desc);
-        List<String> inputDataSources = realTimeDag.getNode(workspaceId, operatorId).getInputDataSources();
-        if(isDataSourceReady(inputDataSources)){
+        DagNode node = realTimeDag.getNode(workspaceId, operatorId);
+        List<String> inputDataSources = node.getInputDataSources();
+        if(isDataSourceReady(inputDataSources,node.getNodeType())){
           scheduleService.executeTask(workspaceId, operatorId);
         }
         break;
@@ -79,8 +81,9 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         String addNextNodeId = desc.getString("nextNodeId");
         String addSlotIndex = desc.getString("slotIndex");
         realTimeDag.addEdge(workspaceId, addPreNodeId, addNextNodeId, Integer.valueOf(addSlotIndex));
-        List<String> nextDataSources = realTimeDag.getNode(workspaceId, addNextNodeId).getInputDataSources();
-        if(isDataSourceReady(nextDataSources)){
+        DagNode addEdgeNode = realTimeDag.getNode(workspaceId, addNextNodeId);
+        List<String> nextDataSources = addEdgeNode.getInputDataSources();
+        if(isDataSourceReady(nextDataSources,addEdgeNode.getNodeType())){
           scheduleService.executeTask(workspaceId, addNextNodeId);
         }
         break;
@@ -121,10 +124,18 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
     return true;
   }
 
-  private boolean isDataSourceReady(List<String> dataSources) {
-    for (String dataSource : dataSources) {
-      if(StringUtils.isEmpty(dataSource)) {
-        return false;
+  private boolean isDataSourceReady(List<String> dataSources,String operatorType) {
+    if(OperatorDataSourceReadyEnum.isOperatorNeedAllReady(operatorType)){
+      for (String dataSource : dataSources) {
+        if(StringUtils.isEmpty(dataSource)) {
+          return false;
+        }
+      }
+    }else{
+      for (String dataSource : dataSources) {
+        if(!StringUtils.isEmpty(dataSource)) {
+          return true;
+        }
       }
     }
     return true;

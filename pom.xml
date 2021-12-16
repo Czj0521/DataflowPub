@@ -24,6 +24,7 @@
         <module>operators/python</module>
         <module>operators/profiler</module>
         <module>operators/pivot-chart</module>
+        <module>operators/what-if</module>
     </modules>
 
     <groupId>com.bdilab</groupId>

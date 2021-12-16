@@ -76,7 +76,7 @@ public class ScheduleServiceImpl implements ScheduleService {
       // 每个数据对应的过滤字符串（不包括红色过滤字符串）
       Map<Integer, StringBuffer> preFilterMap = new HashMap<>();
       // 每个数据源对应的红色过滤字符串
-      Map<Integer, StringBuffer> externFilterMap = new HashMap<>();
+      Map<Integer, List<String>> brushFilterMap = new HashMap<>();
       List<Metadata> metadataList = new ArrayList<>();
       // 获取当前结点每个数据源对应的前驱filter id 列表
       Map<Integer, List<String>> filterIdsMap = new HashMap<>();
@@ -84,7 +84,7 @@ public class ScheduleServiceImpl implements ScheduleService {
       InputDataSlot[] inputDataSlots = node.getInputDataSlots();
       for (int i = 0; i < inputDataSlots.length; i++) {
         preFilterMap.put(i, new StringBuffer());
-        externFilterMap.put(i, new StringBuffer());
+        brushFilterMap.put(i, new ArrayList<>());
         filterIdsMap.put(i, inputDataSlots[i].getFilterId());
         String dataSource = inputDataSlots[i].getDataSource();
         if(!dataSource.isEmpty()){
@@ -109,8 +109,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 filter = " NOT " + filter;
               }
               if (node.isBrushEdge(slotNum, filterId)) {
-                externFilterMap.get(slotNum)
-                  .append(filter).append(" AND ");
+                brushFilterMap.get(slotNum).add(filter);
                 // 为红色边时跳过
                 continue;
               }
@@ -128,7 +127,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
       updateDataSource(node, preFilterMap);
 
-      JobOutputJson outputJson;
+      JobOutputJson outputJson = null;
       try {
         switch (nodeType) {
           case "table":
@@ -141,11 +140,13 @@ public class ScheduleServiceImpl implements ScheduleService {
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
             break;
           case "chart":
-            String externFilter = externFilterMap.get(0).toString();
+            // 红线的过滤字符串
+            List<String> brushFilters = brushFilterMap.get(0);
+            // TODO : saveToClickHouse(node, brushFilter); 将chart加入联动
 
-            String filter1 = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
-            dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter1);
-            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
+            // String filter1 = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
+            // dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter1);
+            // outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
             break;
           case "join":
             JSONObject nodeDescription = (JSONObject) node.getNodeDescription();
@@ -200,7 +201,7 @@ public class ScheduleServiceImpl implements ScheduleService {
   /**
    * update dataSource.
    */
-  private void  updateDataSource(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap) {
+  private void updateDataSource(DagNode dagNode, Map<Integer, StringBuffer> preFilterMap) {
     JSONObject nodeDescription = (JSONObject) dagNode.getNodeDescription();
     JSONArray dataSource = (JSONArray) nodeDescription.get("dataSource");
 

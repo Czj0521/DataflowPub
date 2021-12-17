@@ -21,7 +21,7 @@ public class InputDataSlot {
 
   /**
    * 0 : default line. (They are not stored in map.)
-   * 1 : dashed line. (They are not consider in the current version.)
+   * 1 : dashed line.
    * 2 : brush line.
    */
   private Map<String, String> edgeType = new HashMap<>();

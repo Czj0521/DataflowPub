@@ -149,8 +149,8 @@ public class ScheduleServiceImpl implements ScheduleService {
             // outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
             break;
           case "join":
-            JSONObject nodeDescription = (JSONObject) node.getNodeDescription();
-            if (nodeDescription.getJSONArray("joinKeys").size() != 0) {
+            JSONObject joinDescription = (JSONObject) node.getNodeDescription();
+            if (joinDescription.getJSONArray("joinKeys").size() != 0) {
               joinService.saveToClickHouse(node, null);
               outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
             } else {
@@ -173,15 +173,20 @@ public class ScheduleServiceImpl implements ScheduleService {
               scalarSavedData(node));
             break;
           case "python":
-            OutputData outputDataPython = pythonSavedData(node);
-            if(outputDataPython.getData()!=null){
-              outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, nodeType,
-                  outputDataPython);
+            JSONObject pythonDescription = (JSONObject) node.getNodeDescription();
+            if(!StringUtils.isEmpty(pythonDescription.getString("code_str"))){
+              OutputData outputDataPython = pythonSavedData(node);
+              if(outputDataPython.getData()!=null){
+                outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, nodeType,
+                    outputDataPython);
+              }else{
+                outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
+                    outputDataPython);
+              }
             }else{
-              outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
-                  outputDataPython);
+              outputJson = null;
+              flag = true;
             }
-
             break;
           default:
             throw new RuntimeException("not exist this operator !");

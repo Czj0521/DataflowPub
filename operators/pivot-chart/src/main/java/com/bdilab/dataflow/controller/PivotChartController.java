@@ -14,6 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author : [zhangpeiliang]
  * @description : [透视图控制器]
@@ -44,5 +48,14 @@ public class PivotChartController {
   @ApiOperation(value = "获取数据分箱类型")
   public ParamTypeRespObj getBinningType(@RequestParam @ApiParam(value = "语言")String language) {
     return pivotChartService.getType(BinningConstants.BIN,language);
+  }
+
+  @PostMapping("/pivot")
+  @ApiOperation(value = "test")
+  public List<Map<String, Object>> getPivotChart1(@RequestBody PivotChartDescription description) {
+    List<String> brushes = new ArrayList<>();
+    brushes.add("1 = 1 AND 1 = 1");
+    brushes.add("1 = 1");
+    return pivotChartService.saveToClickHouse(description, brushes);
   }
 }

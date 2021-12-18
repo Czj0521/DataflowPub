@@ -8,6 +8,7 @@ import com.bdilab.dataflow.dto.JobOutputJson;
 import com.bdilab.dataflow.dto.Metadata;
 import com.bdilab.dataflow.dto.MetadataOutputJson;
 import com.bdilab.dataflow.dto.OutputData;
+import com.bdilab.dataflow.dto.jobdescription.PivotChartDescription;
 import com.bdilab.dataflow.service.*;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
@@ -58,6 +59,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   private ScalarService scalarService;
   @Autowired
   private PythonService pythonService;
+  @Autowired
+  private PivotChartService pivotChartService;
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
@@ -68,7 +71,7 @@ public class ScheduleServiceImpl implements ScheduleService {
       if (flag) break;
 
       log.info("- Execute the task of the operator with ID [{}] in workspace ID [{}]",
-        nodeId, workspaceId);
+              nodeId, workspaceId);
 
       DagNode node = realTimeDag.getNode(workspaceId, nodeId);
       String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + nodeId;
@@ -89,14 +92,14 @@ public class ScheduleServiceImpl implements ScheduleService {
         String dataSource = inputDataSlots[i].getDataSource();
         if(!dataSource.isEmpty()){
           Metadata metadata = new Metadata(dataSource,
-              tableMetadataService.metadataFromDatasource(dataSource));
+                  tableMetadataService.metadataFromDatasource(dataSource));
           metadataList.add(metadata);
         }
       }
 
       String nodeType = node.getNodeType();
       MetadataOutputJson metadataOutputJson = new MetadataOutputJson("JOB_START", nodeId,
-        workspaceId, nodeType, metadataList);
+              workspaceId, nodeType, metadataList);
       WebSocketServer.sendMessage(JSON.toJSONString(metadataOutputJson));
 
       for (Integer slotNum : filterIdsMap.keySet()) {
@@ -115,14 +118,14 @@ public class ScheduleServiceImpl implements ScheduleService {
               }
 
               preFilterMap.get(slotNum)
-                .append(filter).append(" AND ");
+                      .append(filter).append(" AND ");
             }
           }
         }
       }
 
       for (Integer slotNum : preFilterMap.keySet()) {
-        preFilterMap.get(slotNum).append(" 1 = 1 ");
+        preFilterMap.get(slotNum).append("1 = 1");
       }
 
       updateDataSource(node, preFilterMap);
@@ -132,7 +135,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         switch (nodeType) {
           case "table":
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
-              tableSavedData(node, tableName));
+                    tableSavedData(node, tableName));
             break;
           case "filter":
             String filter = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
@@ -140,13 +143,15 @@ public class ScheduleServiceImpl implements ScheduleService {
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
             break;
           case "chart":
-            // 红线的过滤字符串
-            List<String> brushFilters = brushFilterMap.get(0);
-            // TODO : saveToClickHouse(node, brushFilter); 将chart加入联动
-
-            // String filter1 = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
-            // dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filter1);
-            // outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
+            String filterInPivotChart = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
+            dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filterInPivotChart);
+            JSONObject chartDescription = JSONObject.parseObject(node.getNodeDescription().toString());
+            Boolean onlyUpdateFilter = chartDescription.getBoolean("onlyUpdateFilter");
+            if (!onlyUpdateFilter) {
+              List<String> brushFilters = brushFilterMap.get(0);
+              outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
+                      pivotChartSavedData(node, brushFilters));
+            }
             break;
           case "join":
             JSONObject nodeDescription = (JSONObject) node.getNodeDescription();
@@ -166,20 +171,20 @@ public class ScheduleServiceImpl implements ScheduleService {
             break;
           case "transpose":
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
-              transposeSavedData(node, tableName));
+                    transposeSavedData(node, tableName));
             break;
           case "scalar":
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
-              scalarSavedData(node));
+                    scalarSavedData(node));
             break;
           case "python":
             OutputData outputDataPython = pythonSavedData(node);
             if(outputDataPython.getData()!=null){
               outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, nodeType,
-                  outputDataPython);
+                      outputDataPython);
             }else{
               outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
-                  outputDataPython);
+                      outputDataPython);
             }
 
             break;
@@ -208,10 +213,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     for (Integer index : preFilterMap.keySet()) {
       if(!dataSource.get(index).equals("")){
         String temp = "(select * from " +
-            dataSource.get(index) +
-            " where " +
-            preFilterMap.get(index) +
-            ")";
+                dataSource.get(index) +
+                " where " +
+                preFilterMap.get(index) +
+                ")";
         dataSource.set(index, temp);
       }
     }
@@ -243,6 +248,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     return new OutputData(data, null);
   }
 
+  private OutputData pivotChartSavedData(DagNode node, List<String> brushFilters) {
+    JSONObject nodeDescription = (JSONObject) node.getNodeDescription();
+    PivotChartDescription description = nodeDescription.toJavaObject(PivotChartDescription.class);
+    List<Map<String, Object>> data = pivotChartService.saveToClickHouse(description, brushFilters);
+    return new OutputData(data, null);
+  }
+
   /**
    * Get filter string.
    */
@@ -251,6 +263,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     String filter = nodeDescription.getString("filter");
     return StringUtils.isEmpty(filter) ? "1 = 1" : filter;
   }
+
+
 
 
   /**

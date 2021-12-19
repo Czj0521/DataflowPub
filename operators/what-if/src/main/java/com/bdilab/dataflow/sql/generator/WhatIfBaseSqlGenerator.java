@@ -16,13 +16,17 @@ public class WhatIfBaseSqlGenerator extends SqlGeneratorBase {
     this.whatIfDescription = whatIfDescription;
   }
 
-  @Override
-  public String project() {
+  protected String projectPostfix() {
     String[] collectors = whatIfDescription.getCollectors();
     if (collectors == null || collectors.length == 0) {
       throw new RuntimeException("What-If is not ready !");
     }
-    return "SELECT " + SqlParseUtils.combineWithSeparator(collectors, ",");
+    return SqlParseUtils.combineWithSeparator(collectors, ",");
+  }
+
+  @Override
+  public String project() {
+    return "SELECT " + projectPostfix();
   }
 
   @Override

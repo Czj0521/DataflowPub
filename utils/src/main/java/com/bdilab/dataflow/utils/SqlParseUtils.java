@@ -22,12 +22,27 @@ public class SqlParseUtils {
   /**
    * combine With Separator.
 
-   * @param list list
+   * @param list String[]
    * @param separator separator
    */
   public static String combineWithSeparator(String[] list, String separator) {
     StringBuilder sb = new StringBuilder();
     for (String s : list) {
+      sb.append(s);
+      sb.append(separator);
+    }
+    return sb.substring(0, sb.length() - separator.length());
+  }
+
+  /**
+   * combine With Separator.
+
+   * @param list list
+   * @param separator separator
+   */
+  public static <T> String combineWithSeparator(List<T> list, String separator) {
+    StringBuilder sb = new StringBuilder();
+    for (T s : list) {
       sb.append(s);
       sb.append(separator);
     }

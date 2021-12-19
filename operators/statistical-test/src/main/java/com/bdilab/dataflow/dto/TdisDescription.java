@@ -5,6 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * T-test description.
+
+ * @author YuShaochao
+ * @create 2021-11-11
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

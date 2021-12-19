@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.service.impl;
 
+import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalYear;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -61,6 +62,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   private PythonService pythonService;
   @Autowired
   private PivotChartService pivotChartService;
+  @Autowired
+  private StatisticalTestService statisticalTestService;
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
@@ -169,6 +172,10 @@ public class ScheduleServiceImpl implements ScheduleService {
             outputData.setData(profilerData);
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, outputData);
             break;
+          case "statistical-test":
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
+                    statisticalTestSavedData(node));
+            break;
           case "transpose":
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
                     transposeSavedData(node, tableName));
@@ -237,7 +244,15 @@ public class ScheduleServiceImpl implements ScheduleService {
     List<Map<String, Object>> data = transposeService.saveToClickHouse(node, null);
     return new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
   }
+  private OutputData statisticalTestSavedData(DagNode node){
+    Double pValue = statisticalTestService.getPValue(node);
+    Map<String,Object> map = new HashMap<>();
+    map.put("pValue",pValue);
+    List<Map<String,Object>> mapList = new ArrayList<>();
+    mapList.add(map);
+    return new OutputData(mapList,null);
 
+  }
   private OutputData scalarSavedData(DagNode node) {
     List<Map<String, Object>> data = scalarService.saveToClickHouse(node, null);
     return new OutputData(data, null);

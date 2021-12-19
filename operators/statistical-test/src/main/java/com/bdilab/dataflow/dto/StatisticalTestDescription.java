@@ -5,6 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * statistical test operator description.
+
+ * @author YuShaochao
+ * @create 2021-12-20
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

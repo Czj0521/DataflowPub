@@ -26,6 +26,7 @@
         <module>operators/pivot-chart</module>
         <module>operators/what-if</module>
         <module>operators/transformation</module>
+        <module>operators/statistical-test</module>
     </modules>
 
     <groupId>com.bdilab</groupId>

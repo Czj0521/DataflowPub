@@ -25,6 +25,7 @@
         <module>operators/profiler</module>
         <module>operators/pivot-chart</module>
         <module>operators/what-if</module>
+        <module>operators/transformation</module>
     </modules>
 
     <groupId>com.bdilab</groupId>

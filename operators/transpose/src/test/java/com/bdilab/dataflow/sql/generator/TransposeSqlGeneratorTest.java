@@ -1,20 +1,13 @@
 package com.bdilab.dataflow.sql.generator;
 
-import com.alibaba.fastjson.JSONObject;
-import com.bdilab.dataflow.controller.TransposeController;
 import com.bdilab.dataflow.dto.jobdescription.TransposeDescription;
-import com.bdilab.dataflow.service.TransposeService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**

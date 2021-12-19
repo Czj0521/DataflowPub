@@ -13,5 +13,5 @@ import java.util.List;
 public class Expression {
   private String expression;
   private List<BaseVariable> independentVariables;
-  private String dependentVariable;
+  private List<String> dependentVariables;
 }

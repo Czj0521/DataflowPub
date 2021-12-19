@@ -7,13 +7,13 @@ import java.text.MessageFormat;
 
 @Data
 @NoArgsConstructor
-public class RangeIndependentVariable<T> extends BaseIndependentVariable {
-  private T defaultValue;
-  private T lowerBound;
-  private T upperBound;
-  private T distanceOfValue;
+public class RangeIndependentVariable extends BaseIndependentVariable {
+  private String defaultValue;
+  private String lowerBound;
+  private String upperBound;
+  private String distanceOfValue;
 
-  public RangeIndependentVariable(String variableName, T defaultValue, T lowerBound, T upperBound, T distanceOfValue) {
+  public RangeIndependentVariable(String variableName, String defaultValue, String lowerBound, String upperBound, String distanceOfValue) {
     super(variableName);
     this.defaultValue = defaultValue;
     this.lowerBound = lowerBound;
@@ -24,15 +24,11 @@ public class RangeIndependentVariable<T> extends BaseIndependentVariable {
   @Override
   public String generateArray() {
     String res = "";
-    if (defaultValue instanceof Double) {
-      StringBuilder sb = new StringBuilder("[");
-      for (Double i = (Double) lowerBound; i < (Double)upperBound; i += (Double)distanceOfValue) {
-        sb.append(i).append(",");
-      }
-      res =  sb.substring(0, sb.length() - 1) + "]";
-    } else if (defaultValue instanceof Integer) {
-      res = MessageFormat.format("range({0},{1},{2})", lowerBound, upperBound, distanceOfValue);
+    StringBuilder sb = new StringBuilder("[");
+    for (Double i = Double.valueOf(lowerBound); i < Double.valueOf(upperBound); i += Double.valueOf(distanceOfValue)) {
+      sb.append(i).append(",");
     }
+    res =  sb.substring(0, sb.length() - 1) + "]";
     return res;
   }
 }

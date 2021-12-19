@@ -1,6 +1,5 @@
 package com.bdilab.dataflow.utils.dag.dto;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,5 +16,5 @@ import lombok.NoArgsConstructor;
 public class DagNodeInputDto {
   private String nodeId;
   private String nodeType;
-  private JSONObject nodeDescription;
+  private Object nodeDescription;
 }

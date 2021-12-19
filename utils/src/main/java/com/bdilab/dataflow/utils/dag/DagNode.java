@@ -55,7 +55,7 @@ public class DagNode {
   public DagNode(DagNodeInputDto dagNodeInputDto) {
     this.nodeId = dagNodeInputDto.getNodeId();
     JSONArray dataSources =
-        dagNodeInputDto.getNodeDescription().getJSONArray("dataSource");
+        ((JSONObject) dagNodeInputDto.getNodeDescription()).getJSONArray("dataSource");
     this.inputDataSlots = new InputDataSlot[dataSources.size()];
     for (int i = 0; i < dataSources.size(); i++) {
       this.inputDataSlots[i] = new InputDataSlot(dataSources.getString(i));

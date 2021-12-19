@@ -8,11 +8,11 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class EnumerationIndependentVariable<T> extends BaseIndependentVariable {
-  private T defaultValue;
-  private List<T> possibleValues;
+public class EnumerationIndependentVariable extends BaseIndependentVariable {
+  private String defaultValue;
+  private List<String> possibleValues;
 
-  public EnumerationIndependentVariable(String variableName, T defaultValue, List<T> possibleValues) {
+  public EnumerationIndependentVariable(String variableName, String defaultValue, List<String> possibleValues) {
     super(variableName);
     this.defaultValue = defaultValue;
     this.possibleValues = possibleValues;

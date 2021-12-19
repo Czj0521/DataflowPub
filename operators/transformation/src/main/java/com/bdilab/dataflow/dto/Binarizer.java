@@ -18,7 +18,7 @@ public class Binarizer {
   private String newColumnName;
 
   @NotEmpty
-  @ApiModelProperty(value = "新列名", required = true)
+  @ApiModelProperty(value = "过滤表达式", required = true)
   private String filter;
 
   @Override

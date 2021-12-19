@@ -23,6 +23,11 @@
             <artifactId>operator-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.bdilab</groupId>
+            <artifactId>operator-transformation</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

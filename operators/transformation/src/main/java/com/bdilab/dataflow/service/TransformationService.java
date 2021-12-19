@@ -1,6 +1,6 @@
 package com.bdilab.dataflow.service;
 
-import com.bdilab.dataflow.dto.jobdescription.TransformationDesc;
+import com.bdilab.dataflow.dto.jobdescription.TransformationDescription;
 
 /**
  * TransformationService.
@@ -8,6 +8,6 @@ import com.bdilab.dataflow.dto.jobdescription.TransformationDesc;
  * @author Zunjing Chen
  * @date 2021-12-10
  **/
-public interface TransformationService extends OperatorService<TransformationDesc> {
+public interface TransformationService extends OperatorService<TransformationDescription> {
 
 }

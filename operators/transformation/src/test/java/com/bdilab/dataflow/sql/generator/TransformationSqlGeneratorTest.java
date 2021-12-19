@@ -6,7 +6,7 @@ import com.bdilab.dataflow.dto.CustomBinning;
 import com.bdilab.dataflow.dto.DataType;
 import com.bdilab.dataflow.dto.Expression;
 import com.bdilab.dataflow.dto.FindReplace;
-import com.bdilab.dataflow.dto.jobdescription.TransformationDesc;
+import com.bdilab.dataflow.dto.jobdescription.TransformationDescription;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
@@ -31,7 +31,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class TransformationSqlGeneratorTest {
 
   TransformationSqlGenerator transformationSqlGenerator;
-  TransformationDesc transformationDesc;
+  TransformationDescription transformationDescription;
   @Resource
   ClickHouseJdbcUtils clickHouseJdbcUtils;
 
@@ -43,11 +43,11 @@ public class TransformationSqlGeneratorTest {
    */
   @Before
   public void init() {
-    transformationDesc = new TransformationDesc();
-    transformationDesc.setDataSource(new String[]{"dataflow.promotion_csv"});
-    transformationDesc.setLimit(2000);
-    transformationDesc.setJobType("transformation");
-    transformationSqlGenerator = new TransformationSqlGenerator(transformationDesc);
+    transformationDescription = new TransformationDescription();
+    transformationDescription.setDataSource(new String[]{"dataflow.promotion_csv"});
+    transformationDescription.setLimit(2000);
+    transformationDescription.setJobType("transformation");
+    transformationSqlGenerator = new TransformationSqlGenerator(transformationDescription);
   }
 
   @Test
@@ -65,7 +65,7 @@ public class TransformationSqlGeneratorTest {
     expression2.setExpression("replaceAll(Married,'single','单身')");
     expression2.setNewColumnName("NewMarried1_2");
     List<Expression> list = ImmutableList.of(expression1,expression2);
-    transformationDesc.setExpressions(list);
+    transformationDescription.setExpressions(list);
   }
 
   @Test
@@ -82,7 +82,7 @@ public class TransformationSqlGeneratorTest {
     findReplace.setNewColumnName("NewMarried2");
     findReplace.setReplaceWith("单身");
     List<FindReplace> list = ImmutableList.of(findReplace);
-    transformationDesc.setFindReplaces(list);
+    transformationDescription.setFindReplaces(list);
   }
 
   @Test
@@ -97,7 +97,7 @@ public class TransformationSqlGeneratorTest {
     binarizer.setNewColumnName("NewMarried3");
     binarizer.setFilter("Married = 'single'");
     List<Binarizer> list = ImmutableList.of(binarizer);
-    transformationDesc.setBinarizers(list);
+    transformationDescription.setBinarizers(list);
   }
   @Test
   public void testDataType() {
@@ -106,7 +106,7 @@ public class TransformationSqlGeneratorTest {
     dataType.setColumnName("DealerId");
     dataType.setDataType("Int32");
     List<DataType> list = ImmutableList.of(dataType);
-    transformationDesc.setDataTypes(list);
+    transformationDescription.setDataTypes(list);
     String sql = transformationSqlGenerator.generateDataSourceSql();
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
@@ -127,7 +127,7 @@ public class TransformationSqlGeneratorTest {
     customBinning.setIsNumeric(false);
     customBinning.setBins(
         ImmutableList.of(new Bin("1", "Married = 'single'"), new Bin("2", "Married = 'married'")));
-    transformationDesc.setCustomBinnings(ImmutableList.of(customBinning));
+    transformationDescription.setCustomBinnings(ImmutableList.of(customBinning));
 
   }
 

@@ -1,6 +1,6 @@
 package com.bdilab.dataflow.sql.generator;
 
-import com.bdilab.dataflow.dto.jobdescription.TransformationDesc;
+import com.bdilab.dataflow.dto.jobdescription.TransformationDescription;
 import com.bdilab.dataflow.operator.dto.jobdescription.SqlGeneratorBase;
 import com.bdilab.dataflow.operator.link.LinkSqlGenerator;
 import java.util.List;
@@ -13,11 +13,11 @@ import java.util.List;
  **/
 public class TransformationSqlGenerator extends SqlGeneratorBase implements LinkSqlGenerator {
 
-  private final TransformationDesc transformationDesc;
+  private final TransformationDescription transformationDescription;
 
-  public TransformationSqlGenerator(TransformationDesc transformationDesc) {
-    super(transformationDesc);
-    this.transformationDesc = transformationDesc;
+  public TransformationSqlGenerator(TransformationDescription transformationDescription) {
+    super(transformationDescription);
+    this.transformationDescription = transformationDescription;
   }
 
   @Override
@@ -33,11 +33,11 @@ public class TransformationSqlGenerator extends SqlGeneratorBase implements Link
   private String transformationSql() {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder
-        .append(transformation(transformationDesc.getExpressions()))
-        .append(transformation(transformationDesc.getFindReplaces()))
-        .append(transformation(transformationDesc.getBinarizers()))
-        .append(transformation(transformationDesc.getDataTypes()))
-        .append(transformation(transformationDesc.getCustomBinnings()))
+        .append(transformation(transformationDescription.getExpressions()))
+        .append(transformation(transformationDescription.getFindReplaces()))
+        .append(transformation(transformationDescription.getBinarizers()))
+        .append(transformation(transformationDescription.getDataTypes()))
+        .append(transformation(transformationDescription.getCustomBinnings()))
         .deleteCharAt(stringBuilder.length() - 1); //delete ,
     return stringBuilder.toString();
   }
@@ -48,7 +48,9 @@ public class TransformationSqlGenerator extends SqlGeneratorBase implements Link
     }
     StringBuilder stringBuilder = new StringBuilder();
     for (Object transformation : transformations) {
-      stringBuilder.append(transformation).append(",");
+      if (!transformation.toString().equals("")) {
+        stringBuilder.append(transformation).append(",");
+      }
     }
     return stringBuilder.toString();
   }

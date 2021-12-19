@@ -1,7 +1,5 @@
-package com.bdilab.dataflow.dto.pojo.independvariable;
+package com.bdilab.dataflow.dto.pojo.independentvariable;
 
-import com.bdilab.dataflow.utils.SqlParseUtils;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,13 +7,13 @@ import java.text.MessageFormat;
 
 @Data
 @NoArgsConstructor
-public class RangeVariable<T> extends BaseVariable {
+public class RangeIndependentVariable<T> extends BaseIndependentVariable {
   private T defaultValue;
   private T lowerBound;
   private T upperBound;
   private T distanceOfValue;
 
-  public RangeVariable(String variableName, T defaultValue, T lowerBound, T upperBound, T distanceOfValue) {
+  public RangeIndependentVariable(String variableName, T defaultValue, T lowerBound, T upperBound, T distanceOfValue) {
     super(variableName);
     this.defaultValue = defaultValue;
     this.lowerBound = lowerBound;

@@ -15,12 +15,15 @@ import java.util.List;
  * @author Zunjing Chen
  * @date 2021-12-19
  */
-public class OperatorUtils {
+public class WhatIfUtils {
 
   /**
    * WhatIf operator need last node(must be transformation operator) to calculate.
    */
   public static Expression transformtionToWhatIf(TransformationDescription transformationDesc) {
+    if (transformationDesc == null) {
+      return null;
+    }
     List<BaseIndependentVariable> independentVariables = new ArrayList<>();
     List<DependentVariable> dependentVariables = new ArrayList<>();
     for (com.bdilab.dataflow.dto.Expression expression : transformationDesc.getExpressions()) {

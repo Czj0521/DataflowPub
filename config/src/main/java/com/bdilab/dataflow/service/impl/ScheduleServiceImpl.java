@@ -10,7 +10,9 @@ import com.bdilab.dataflow.dto.Metadata;
 import com.bdilab.dataflow.dto.MetadataOutputJson;
 import com.bdilab.dataflow.dto.OutputData;
 import com.bdilab.dataflow.dto.jobdescription.PivotChartDescription;
+import com.bdilab.dataflow.dto.jobdescription.TransformationDescription;
 import com.bdilab.dataflow.service.*;
+import com.bdilab.dataflow.utils.WhatIfUtils;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.InputDataSlot;
@@ -31,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
 
 /**
  * Task scheduling module.
@@ -64,6 +68,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   private PivotChartService pivotChartService;
   @Autowired
   private StatisticalTestService statisticalTestService;
+  @Resource
+  private WhatIfServiceImpl whatIfService;
 
   @Override
   public void executeTask(String workspaceId, String operatorId) {
@@ -193,7 +199,20 @@ public class ScheduleServiceImpl implements ScheduleService {
               outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
                       outputDataPython);
             }
-
+            break;
+          case "whatIf":
+            TransformationDescription wDescription = null;
+            try {
+              DagNode wPreNode = realTimeDag.getNode(workspaceId, node.getPreNodeId(0));
+              if("transformation".equals(wPreNode.getNodeType())){
+                wDescription = (TransformationDescription) wPreNode.getNodeDescription();
+              }
+            } catch (RuntimeException e) {
+              log.debug("No preNode");
+            }
+            OutputData whatIfOutputData = whitIfSavedData(node, wDescription);
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
+                whatIfOutputData);
             break;
           default:
             throw new RuntimeException("not exist this operator !");
@@ -201,6 +220,7 @@ public class ScheduleServiceImpl implements ScheduleService {
       } catch (Exception e) {
         outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, nodeType, null);
         log.error("ClickHouse error !");
+        e.printStackTrace();
         flag = true;
       }
 
@@ -270,6 +290,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     return new OutputData(data, null);
   }
 
+  private OutputData whitIfSavedData(DagNode node, TransformationDescription transformationDescription) {
+    List<Map<String, Object>> data = whatIfService.saveToClickHouse(node, WhatIfUtils.transformtionToWhatIf(transformationDescription));
+    return new OutputData(data, null);
+  }
+
   /**
    * Get filter string.
    */
@@ -278,6 +303,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     String filter = nodeDescription.getString("filter");
     return StringUtils.isEmpty(filter) ? "1 = 1" : filter;
   }
+
+
 
 
 

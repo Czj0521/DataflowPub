@@ -1,3 +1,4 @@
+/*
 package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.Bin;
@@ -19,12 +20,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+*/
 /**
  * @author Zunjing Chen
  * @date 2021-12-10
  * <p>
  * 测试方案： 1. 每种类型（5种）都测 2. 每种类型不同操作选取代表性的测试 3. 每种类型转换数目为单个、多个
- **/
+ **//*
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Slf4j
@@ -38,9 +41,11 @@ public class TransformationSqlGeneratorTest {
   @Value("${clickhouse.http.url}")
   private String httpPrefix;
 
-  /**
+  */
+/**
    * initialize .
-   */
+   *//*
+
   @Before
   public void init() {
     transformationDescription = new TransformationDescription();
@@ -142,3 +147,4 @@ public class TransformationSqlGeneratorTest {
     clickHouseJdbcUtils.queryForList(sql);
   }
 }
+*/

@@ -82,4 +82,4 @@ logging:
     com.bdilab.dataflow: debug
 
 python:
-  url: http://47.104.202.153:5000/ceshi
+  url: http://localhost:5000/ceshi

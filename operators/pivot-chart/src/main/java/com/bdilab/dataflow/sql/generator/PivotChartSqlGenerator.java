@@ -15,6 +15,7 @@ import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import java.text.MessageFormat;
 import java.util.*;
 
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -74,7 +75,11 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
   public PivotChartSqlGenerator(PivotChartDescription description) {
     super(description);
     this.description = description;
-    this.datasource = description.getDataSource()[0];
+    if (description.getDataSource().length != 0) {
+      this.datasource = description.getDataSource()[0];
+    } else {
+      this.datasource = "";
+    }
     this.clickHouseJdbcUtils = SpringUtil.getBean(ClickHouseJdbcUtils.class);
     this.attributeAndBinningSet = new LinkedHashSet<>();
     this.aggregationSet = new LinkedHashSet<>();
@@ -84,29 +89,72 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
 
   @Override
   public String generate() {
-    return generateSql();
+    return generateSql(null);
   }
 
   /**
    * 生成SQL.
    */
-  private String generateSql() {
+  public String generateSql(List<String> inputBrushFilters) {
+    if (StringUtils.isEmpty(this.datasource)) {
+      return "";
+    }
+
+    //对传入的brushFilters进行处理
+    List<String> brushFilters = null;
+    if (!CollectionUtils.isEmpty(inputBrushFilters)) {
+      brushFilters = new ArrayList<>();
+      for (String brushFilter : inputBrushFilters) {
+        List<String> seg = Arrays.asList(brushFilter.split(" AND "));
+        if (seg.size() > 0) {
+          StringBuilder sb = new StringBuilder();
+          for (int i = 0; i < seg.size(); i++) {
+            if (seg.get(i).equals("1 = 1")) {
+              continue;
+            }
+            if (i == seg.size() - 1) {
+              sb.append(seg.get(i));
+            } else {
+              sb.append(seg.get(i)).append(" AND ");
+            }
+          }
+          if (sb.length() > 0) {
+            brushFilters.add(sb.toString());
+          }
+        }
+      }
+    }
+
     //根据选择属性的菜单数目，给集合中添加值
     for (Menu menu : description.getMenus()) {
       analyzeMenu(menu);
     }
 
-    String sql = totalRows() + Communal.BLANK + SqlConstants.SELECT;
+    String sql = totalRows();
+    String caseWhenSegment = "";
+    if (!CollectionUtils.isEmpty(brushFilters)) {
+      List<String> withBrushes = new ArrayList<>();
+      sql = sql + extractWithBrushSegment(brushFilters, withBrushes);
+      caseWhenSegment = extractCaseWhenSegment(withBrushes);
+
+    }
+    sql = sql + Communal.BLANK + SqlConstants.SELECT;
+
     String groupBy = "";
     String orderBy;
     if (StringUtils.isEmpty(extractSegment(attributeAndBinningSet))
             && StringUtils.isEmpty(extractSegment(aggregationSet))) {
-      throw new RuntimeException("please choose at least one attribute");
+      return "";
     } else {
 
       if (!StringUtils.isEmpty(extractSegment(attributeAndBinningSet))) {
-        sql = sql + extractSegment(attributeAndBinningSet);
-        groupBy = SqlConstants.GROUP_BY + extractSegment(groupSet);
+        if (!StringUtils.isEmpty(caseWhenSegment)) {
+          sql = sql + extractSegment(attributeAndBinningSet) + SqlConstants.COMMA + caseWhenSegment;
+          groupBy = SqlConstants.GROUP_BY + extractSegment(groupSet) + ",brush";
+        } else {
+          sql = sql + extractSegment(attributeAndBinningSet);
+          groupBy = SqlConstants.GROUP_BY + extractSegment(groupSet);
+        }
       }
 
       if (!StringUtils.isEmpty(extractSegment(aggregationSet))) {
@@ -123,10 +171,49 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
         orderBy = SqlConstants.ORDER_BY + extractSegment(groupSet);
       }
 
-    }
+      return sql + Communal.BLANK + SqlConstants.FROM + datasource
+              + Communal.BLANK + groupBy + Communal.BLANK + orderBy;
 
-    return sql + Communal.BLANK + SqlConstants.FROM + datasource
-            + Communal.BLANK + groupBy + Communal.BLANK + orderBy;
+    }
+  }
+
+  /**
+   * 画刷Case-When片段
+   */
+  private String extractCaseWhenSegment(List<String> withBrushes) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("CASE ");
+    if (withBrushes.size() > 1) {
+      //处理多个画刷
+      sb.append("WHEN");
+      for (int i = 0; i < withBrushes.size(); i++) {
+        if (i == withBrushes.size() - 1) {
+          sb.append(Communal.BLANK).append(withBrushes.get(i))
+                  .append(Communal.BLANK);
+        } else {
+          sb.append(Communal.BLANK).append(withBrushes.get(i))
+                  .append(Communal.BLANK).append(SqlConstants.AND);
+        }
+      }
+      sb.append("THEN 'overlap' ");
+    }
+    withBrushes.forEach(brush -> sb.append("WHEN ").append(brush).append(" THEN ")
+            .append("'").append(brush).append("' "));
+    sb.append("ELSE 'rest' END AS brush");
+    return sb.toString();
+  }
+
+  /**
+   * 从用于画刷的过滤语句集合中提取成WITH语句中的片段，同时设置画刷集合
+   */
+  private String extractWithBrushSegment(List<String> brushes, List<String> withBrushes) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < brushes.size(); i++) {
+      sb.append(SqlConstants.COMMA).append(brushes.get(i)).append(Communal.BLANK)
+              .append(SqlConstants.AS).append(Communal.BLANK).append("brush").append(i + 1);
+      withBrushes.add("brush" + (i + 1));
+    }
+    return sb.toString();
   }
 
   /**
@@ -216,12 +303,10 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
           groupSet.add(menu.getAttributeRenaming());
           break;
         case BinningConstants.NATURAL_BINNING:
-          long start = System.currentTimeMillis();
           String ns = SqlConstants.SELECT + SqlConstants.DISTINCT + menu.getAttribute()
                   + Communal.BLANK + SqlConstants.FROM + datasource;
           List<?> list = clickHouseJdbcUtils.query(ns);
 
-          System.out.println("hh" + (System.currentTimeMillis() - start));
           Set<Double> doubleList = new TreeSet<>(new ComparatorAsc());
           for (Object o : list) {
             doubleList.add(Double.parseDouble(o.toString()));
@@ -334,8 +419,6 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
     DatetimeBinning binning = new DatetimeBinning(menu);
     attributeAndBinningSet.addAll(binning.binningAttributes());
     groupSet.add(menu.getAttributeRenaming());
-    //        System.out.println(binning.rename());
-    //        System.out.println(GROUP_BY_ARGS);
   }
 
 

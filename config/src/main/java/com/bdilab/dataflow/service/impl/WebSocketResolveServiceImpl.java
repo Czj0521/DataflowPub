@@ -56,8 +56,6 @@ public class WebSocketResolveServiceImpl implements WebSocketResolveService {
         }
         break;
       case "updateNode":
-        ScalarDescription scalarDescription = desc.toJavaObject(ScalarDescription.class);
-        System.out.println(scalarDescription);
         realTimeDag.updateNode(workspaceId, operatorId, desc);
         DagNode node = realTimeDag.getNode(workspaceId, operatorId);
         List<String> inputDataSources = node.getInputDataSources();

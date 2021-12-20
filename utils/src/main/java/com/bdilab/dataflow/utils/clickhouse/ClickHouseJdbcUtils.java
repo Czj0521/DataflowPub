@@ -51,9 +51,9 @@ public class ClickHouseJdbcUtils {
     return jdbcTemplate.queryForList(sql, o.getClass());
   }
 
-  public Integer getCount(String sql) {
+  public Long getCount(String sql) {
     String countSql = "select count(*) from (" + sql + ")";
-    return jdbcTemplate.queryForObject(countSql, Integer.class);
+    return jdbcTemplate.queryForObject(countSql, Long.class);
   }
 
 }

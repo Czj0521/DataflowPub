@@ -46,4 +46,8 @@ public class SqlConstants {
 
     public static final String MIN = "min";
 
+    public static final String AS = "AS";
+
+    public static final String AND = "AND";
+
 }

@@ -15,7 +15,7 @@ public enum OperatorOutputTypeEnum {
    * The output type of filter operator and pivot chart operator is filter.
    */
   FILTER("filter", "filter"),
-  PIVOTCHART("pivotchart","filter");
+  PIVOTCHART("chart","filter");
 
   private final String operatorType;
   private final String outputType;

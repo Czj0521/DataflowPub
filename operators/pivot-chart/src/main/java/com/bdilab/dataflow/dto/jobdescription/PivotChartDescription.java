@@ -22,4 +22,14 @@ public class PivotChartDescription extends JobDescription {
    * 选择了属性或其他菜单选项的菜单集合.
    */
   private Menu[] menus;
+
+  /**
+   * 过滤字段，联动场景使用.
+   */
+  private String filter;
+
+  /**
+   * 是否只更新filter字段，由前端在联动时给出，默认情况下为false.
+   */
+  private Boolean onlyUpdateFilter = false;
 }

@@ -1,4 +1,3 @@
-/*
 package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.Bin;
@@ -20,14 +19,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-*/
+
 /**
  * @author Zunjing Chen
  * @date 2021-12-10
  * <p>
  * 测试方案： 1. 每种类型（5种）都测 2. 每种类型不同操作选取代表性的测试 3. 每种类型转换数目为单个、多个
- **//*
-
+ **/
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Slf4j
@@ -41,10 +39,6 @@ public class TransformationSqlGeneratorTest {
   @Value("${clickhouse.http.url}")
   private String httpPrefix;
 
-  */
-/**
-   * initialize .
-   *//*
 
   @Before
   public void init() {
@@ -62,14 +56,15 @@ public class TransformationSqlGeneratorTest {
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
   }
-  private void expression(){
+
+  private void expression() {
     Expression expression1 = new Expression();
     expression1.setExpression("replaceAll(Married,'married','已婚')");
     expression1.setNewColumnName("NewMarried1_1");
     Expression expression2 = new Expression();
     expression2.setExpression("replaceAll(Married,'single','单身')");
     expression2.setNewColumnName("NewMarried1_2");
-    List<Expression> list = ImmutableList.of(expression1,expression2);
+    List<Expression> list = ImmutableList.of(expression1, expression2);
     transformationDescription.setExpressions(list);
   }
 
@@ -80,7 +75,8 @@ public class TransformationSqlGeneratorTest {
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
   }
-  private void findReplace(){
+
+  private void findReplace() {
     FindReplace findReplace = new FindReplace();
     findReplace.setSearchInColumnName("Married");
     findReplace.setSearch("single");
@@ -97,13 +93,15 @@ public class TransformationSqlGeneratorTest {
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
   }
-  private void binarizer(){
+
+  private void binarizer() {
     Binarizer binarizer = new Binarizer();
     binarizer.setNewColumnName("NewMarried3");
     binarizer.setFilter("Married = 'single'");
     List<Binarizer> list = ImmutableList.of(binarizer);
     transformationDescription.setBinarizers(list);
   }
+
   @Test
   public void testDataType() {
     // todo 语法错误
@@ -129,7 +127,7 @@ public class TransformationSqlGeneratorTest {
     CustomBinning customBinning = new CustomBinning();
     customBinning.setNewColumnName("NewMarried4");
     customBinning.setDefaultBin("-1");
-    customBinning.setIsNumeric(false);
+    customBinning.setIsNumeric(true);
     customBinning.setBins(
         ImmutableList.of(new Bin("1", "Married = 'single'"), new Bin("2", "Married = 'married'")));
     transformationDescription.setCustomBinnings(ImmutableList.of(customBinning));
@@ -147,4 +145,4 @@ public class TransformationSqlGeneratorTest {
     clickHouseJdbcUtils.queryForList(sql);
   }
 }
-*/
+

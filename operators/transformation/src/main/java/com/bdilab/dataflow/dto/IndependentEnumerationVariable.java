@@ -22,7 +22,7 @@ public class IndependentEnumerationVariable extends IndependentVariableBase {
     if (super.getType().equals("string")) {
       List<String> result = new ArrayList<>();
       for (String v : possibleValues) {
-        result.add("`" + v + "`");
+        result.add("'" + v + "'");
       }
       return result;
     }

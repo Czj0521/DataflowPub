@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Transform pojo from TransformationDesc to Expression for what-if.
+ *
  * @author Zunjing Chen
  * @date 2021-12-19
- **/
+ */
 public class OperatorUtils {
 
   /**
@@ -28,9 +30,15 @@ public class OperatorUtils {
       }
     }
     for (IndependentVariableBase variable : transformationDesc.getIndependentVariables()) {
+      dependentVariables
+          .add(new DependentVariable(variable.getColumnName(), variable.getExpression()));
       independentVariables.add(
-          new EnumerationIndependentVariable(variable.getColumnName(), variable.getDefaultValue(),
-              variable.possibleValues()));
+          new EnumerationIndependentVariable(
+              variable.getExpression().trim(),
+              variable.getDefaultValue(),
+              variable.possibleValues()
+          )
+      );
     }
     return new Expression(independentVariables, dependentVariables);
   }

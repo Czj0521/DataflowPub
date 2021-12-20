@@ -31,7 +31,7 @@ public class WhatIfTest {
 
     Expression expression = new Expression();
     DependentVariable dependentVariable1 = new DependentVariable("trans1", "($new1$ * 0.1) + AQI");
-    DependentVariable dependentVariable2 = new DependentVariable("trans2", "$new2$ + AQI");
+    DependentVariable dependentVariable2 = new DependentVariable("trans2", "$new2$ + AQI + trans1");
     expression.getDependentVariables().add(dependentVariable1);
     expression.getDependentVariables().add(dependentVariable2);
     BaseIndependentVariable integerEnumeration1 = new EnumerationIndependentVariable("$new1$", "0",new ArrayList<String>(){{

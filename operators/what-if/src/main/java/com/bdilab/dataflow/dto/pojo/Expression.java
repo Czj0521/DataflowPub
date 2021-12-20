@@ -2,13 +2,18 @@ package com.bdilab.dataflow.dto.pojo;
 
 import com.bdilab.dataflow.dto.pojo.dependentvariable.DependentVariable;
 import com.bdilab.dataflow.dto.pojo.independentvariable.BaseIndependentVariable;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * Expression from Transformation.
+ *
+ * @author: wh
+ * @create: 2021-11-20
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

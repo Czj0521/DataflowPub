@@ -1,13 +1,15 @@
 package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.WhatIfDescription;
-import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import com.bdilab.dataflow.operator.dto.jobdescription.SqlGeneratorBase;
 import com.bdilab.dataflow.utils.SqlParseUtils;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
+/**
+ * What-If: sql generator for base job without transformation.
+ *
+ * @author: wh
+ * @create: 2021-11-20
+ */
 public class WhatIfBaseSqlGenerator extends SqlGeneratorBase {
   protected WhatIfDescription whatIfDescription;
 

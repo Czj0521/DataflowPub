@@ -5,6 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * What-If job description.
+
+ * @author: wh
+ * @create: 2021-11-20
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -16,4 +16,13 @@ import lombok.NoArgsConstructor;
 public class DependentVariable {
   private String dependentVariableName;
   private String expression;
+
+  /**
+   * Transform independent variable to the format of sql with.
+   *
+   * @return Array of variables.
+   */
+  public String toWithAs() {
+    return "(" + expression + ") as " + dependentVariableName;
+  }
 }

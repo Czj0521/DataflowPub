@@ -33,8 +33,10 @@ public class WhatIfUtils {
       }
     }
     for (IndependentVariable variable : transformationDesc.getIndependentVariables()) {
-      dependentVariables
-          .add(new DependentVariable(variable.getColumnName(), variable.getExpression()));
+      if (!variable.getColumnName().equals(variable.getExpression())) {
+        dependentVariables
+            .add(new DependentVariable(variable.getColumnName(), variable.getExpression()));
+      }
       independentVariables.add(
           new EnumerationIndependentVariable(
               variable.getExpression().trim(),

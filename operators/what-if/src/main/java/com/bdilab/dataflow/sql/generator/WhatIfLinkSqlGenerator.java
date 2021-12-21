@@ -2,11 +2,8 @@ package com.bdilab.dataflow.sql.generator;
 
 import com.bdilab.dataflow.dto.jobdescription.WhatIfDescription;
 import com.bdilab.dataflow.dto.pojo.Expression;
-import com.bdilab.dataflow.dto.pojo.dependentvariable.DependentVariable;
 import com.bdilab.dataflow.dto.pojo.independentvariable.BaseIndependentVariable;
-import java.text.MessageFormat;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -30,7 +27,7 @@ public class WhatIfLinkSqlGenerator extends WhatIfBaseSqlGenerator {
     super(whatIfDescription);
     for (BaseIndependentVariable independentVariable : baseVariable.getIndependentVariables()) {
       String independentVariableName = independentVariable.getIndependentVariableName();
-      String newName = MessageFormat.format("`{0}`", independentVariableName);
+      String newName = "`" + independentVariableName + "`";
       baseVariable.getDependentVariables().forEach((depVar) -> {
         String temp = depVar.getExpression()
             .replaceAll(Matcher.quoteReplacement(independentVariableName),
@@ -45,13 +42,7 @@ public class WhatIfLinkSqlGenerator extends WhatIfBaseSqlGenerator {
 
   @Override
   public String generate() {
-    StringBuilder sql = new StringBuilder();
-    sql.append(with()).append(" ")
-        .append(project()).append(" ")
-        .append(datasource(0)).append(" ")
-        .append(group()).append(" ");
-    log.debug("What If: {}", sql);
-    return sql.toString();
+    return with() + " " + project() + " " + datasource(0) + " " + group();
   }
 
   /**
@@ -60,32 +51,14 @@ public class WhatIfLinkSqlGenerator extends WhatIfBaseSqlGenerator {
    * @return WITH SQL
    */
   public String with() {
-    StringBuilder withSql = new StringBuilder("WITH ");
-    for (BaseIndependentVariable independentVariable : baseVariable.getIndependentVariables()) {
-      withSql.append(
-          MessageFormat.format("arrayJoin({0}) as {1}",
-              independentVariable.generateArray(),
-              independentVariable.getIndependentVariableName())
-      ).append(",");
-    }
-    for (DependentVariable dependentVariable : baseVariable.getDependentVariables()) {
-      withSql.append(
-          MessageFormat.format("({0}) as {1}",
-              dependentVariable.getExpression(),
-              dependentVariable.getDependentVariableName())
-          ).append(",");
-    }
-    return withSql.substring(0, withSql.length() - 1);
+    return "WITH " + baseVariable.combineIndependentVarWithAs()
+        + ","
+        + baseVariable.combineDependentVarWithAs();
   }
 
   @Override
   public String project() {
-    StringBuilder projectSql = new StringBuilder("SELECT ");
-    baseVariable.getIndependentVariables().forEach((inVar) -> {
-      projectSql.append(inVar.getIndependentVariableName()).append(",");
-    });
-    projectSql.append(projectPostfix());
-    return projectSql.toString();
+    return "SELECT " + baseVariable.independentVarToString() + "," + projectPostfix();
   }
 
   @Override
@@ -95,11 +68,7 @@ public class WhatIfLinkSqlGenerator extends WhatIfBaseSqlGenerator {
 
   @Override
   public String group() {
-    StringBuilder groupSql = new StringBuilder("GROUP BY ");
-    for (BaseIndependentVariable independentVariable : baseVariable.getIndependentVariables()) {
-      groupSql.append(independentVariable.getIndependentVariableName()).append(",");
-    }
-    return groupSql.substring(0, groupSql.length() - 1);
+    return "GROUP BY " + baseVariable.independentVarToString();
   }
 
 }

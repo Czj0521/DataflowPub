@@ -50,7 +50,9 @@ public class WhatIfServiceImpl implements OperatorService<WhatIfDescription> {
     } else {
       sqlGenerator = new WhatIfLinkSqlGenerator(whatIfDescription, extendMessage);
     }
-    return sqlGenerator.generate();
+    String sql = sqlGenerator.generate();
+    log.debug("What If: {}", sql);
+    return sql;
   }
 
   @Override

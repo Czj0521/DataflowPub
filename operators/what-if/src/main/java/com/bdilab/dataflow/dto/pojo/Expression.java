@@ -20,4 +20,37 @@ import lombok.NoArgsConstructor;
 public class Expression {
   private List<BaseIndependentVariable> independentVariables = new ArrayList<>();
   private List<DependentVariable> dependentVariables = new ArrayList<>();
+
+  /**
+   * Combine independent variables.
+   */
+  public String combineIndependentVarWithAs() {
+    StringBuilder withSql = new StringBuilder();
+    independentVariables.forEach((idv) -> {
+      withSql.append(idv.toWithAs()).append(",");
+    });
+    return withSql.substring(0, withSql.length() - 1);
+  }
+
+  /**
+   * Combine dependent variables.
+   */
+  public String combineDependentVarWithAs() {
+    StringBuilder withSql = new StringBuilder();
+    dependentVariables.forEach((dv) -> {
+      withSql.append(dv.toWithAs()).append(",");
+    });
+    return withSql.substring(0, withSql.length() - 1);
+  }
+
+  /**
+   * Transform independent variables to string.
+   */
+  public String independentVarToString() {
+    StringBuilder sql = new StringBuilder();
+    independentVariables.forEach((independentVar) -> {
+      sql.append(independentVar.getIndependentVariableName()).append(",");
+    });
+    return sql.substring(0, sql.length() - 1);
+  }
 }

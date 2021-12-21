@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class BaseIndependentVariable {
-  private String independentVariableName;
+  protected String independentVariableName;
 
   /**
    * Get independent variable array.
@@ -22,4 +22,13 @@ public abstract class BaseIndependentVariable {
    * @return Array of variables.
    */
   public abstract String generateArray();
+
+  /**
+   * Transform independent variable to the format of sql with.
+   *
+   * @return Array of variables.
+   */
+  public String toWithAs() {
+    return "arrayJoin(" + this.generateArray() + ") as " + this.independentVariableName;
+  }
 }

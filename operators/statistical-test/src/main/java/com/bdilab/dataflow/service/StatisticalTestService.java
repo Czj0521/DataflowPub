@@ -2,6 +2,8 @@ package com.bdilab.dataflow.service;
 
 import com.bdilab.dataflow.utils.dag.DagNode;
 
+import java.util.Map;
+
 /**
  * statistical test operator service.
 
@@ -9,5 +11,5 @@ import com.bdilab.dataflow.utils.dag.DagNode;
  * @create 2021-12-20
  */
 public interface StatisticalTestService {
-  public double getPValue(DagNode dagNode);
+  public Map<String, Object> getPValue(DagNode dagNode);
 }

@@ -1,7 +1,10 @@
 package com.bdilab.dataflow.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,9 +19,9 @@ public class ChiSquaredUtils {
   /**
    * get p value.
    *
-   * @return pvalue
+   * @return pvalue tValue
    */
-  public  double getP(List<Double> datalist1, List<Double> datalist2) {
+  public Map<String, Object> getP(List<Double> datalist1, List<Double> datalist2) {
     //List<Double> datalist1 = Arrays.asList(1374D,500D,72D,1544D,839D,10D,1003D,6D,381D,724D);
     //List<Double> datalist2 = Arrays.asList(736D,229D,48D,841D,456D,3D,617D,5D,211D,401D);
     List<Double> sumdataList = new ArrayList<>();
@@ -47,9 +50,14 @@ public class ChiSquaredUtils {
       spuX += Math.pow(data1 - predata1, 2) / predata1;
       spuX += Math.pow(data2 - predata2, 2) / predata2;
     }
+//    System.out.println("spuX="+spuX);
     int dof = datalist1.size() - 1;
     double pValue = chisqr2pValue(dof, spuX);
-    return  pValue;
+
+    Map<String, Object> map = new HashMap<>();
+    map.put("stat",spuX);
+    map.put("pValue",pValue);
+    return map;
   }
 
   /**

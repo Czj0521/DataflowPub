@@ -67,9 +67,9 @@ public class MaterializeJobServiceImpl implements MaterializeJobService {
     outputs.put("jobType", "deleteMaterialize");
     try {
       clickHouseManager.deleteTable(materializeId);
-      outputs.put("statue", "success");
+      outputs.put("status", "success");
     } catch (Exception e) {
-      outputs.put("statue", "fail");
+      outputs.put("status", "fail");
       e.printStackTrace();
     }
     return outputs;

@@ -206,7 +206,7 @@ public class ScheduleServiceImpl implements ScheduleService {
               flag = true;
             }
             break;
-          case "whatIf":
+          case "whatif":
             TransformationDescription wDescription = null;
             try {
               DagNode wPreNode = realTimeDag.getNode(workspaceId, node.getPreNodeId(0));

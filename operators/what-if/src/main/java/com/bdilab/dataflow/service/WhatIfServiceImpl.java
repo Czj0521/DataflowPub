@@ -9,6 +9,9 @@ import com.bdilab.dataflow.sql.generator.WhatIfLinkSqlGenerator;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Resource;
@@ -62,6 +65,10 @@ public class WhatIfServiceImpl implements OperatorService<WhatIfDescription> {
     String sql = generateSql(whatIfDescription, (Expression) extendMessage);
     String tableName = CommonConstants.CPL_TEMP_TABLE_PREFIX + dagNode.getNodeId();
     clickHouseManager.createView(tableName, sql);
-    return clickHouseJdbcUtils.queryForList(sql);
+    List<Map<String, Object>> res = new ArrayList<>();
+    res.add(new HashMap<String, Object>(1){{
+      this.put("status", "success");
+    }});
+    return res;
   }
 }

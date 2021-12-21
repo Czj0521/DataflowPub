@@ -271,9 +271,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     return new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
   }
   private OutputData statisticalTestSavedData(DagNode node){
-    Double pValue = statisticalTestService.getPValue(node);
-    Map<String,Object> map = new HashMap<>();
-    map.put("pValue",pValue);
+    Map<String,Object> map= statisticalTestService.getPValue(node);
     List<Map<String,Object>> mapList = new ArrayList<>();
     mapList.add(map);
     return new OutputData(mapList,null);

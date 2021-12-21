@@ -15,6 +15,8 @@ public enum BizCodeEnum {
     INVALID_SORT_TYPE(2003, "非法排序类型，请检查"),
     INVALID_TYPE(2004, "非法类型，请检查"),
 
+    CANNOT_FIND_COLUMN(500, "找不到选择的列"),
+
     UNKNOWN_EXCEPTION(999,"未知异常，请联系管理员");
 
     private final int code;

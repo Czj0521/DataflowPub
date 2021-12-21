@@ -163,18 +163,15 @@ public class PivotChartServiceImpl implements PivotChartService {
     log.info(MessageFormat.format("[Part SQL Truncated From Full SQL]: {0}", partSql));
     List<Map<String, Object>> results = new ArrayList<>();
     if (!StringUtils.isEmpty(partSql)) {
-      Map<String, Object> infoMap = new HashMap<>();
-
+      Map<String, Object> infoMap = description.getInfoMap();
       infoMap.put(Communal.TRUNCATED_NUM, TRUNCATED_NUM);
       List<Map<String, Object>> queryListMap = clickHouseJdbcUtils.queryForList(partSql);
       //对每个菜单进行处理
-      for (Menu menu : description.getMenus()) {
+      for (Menu menu : description.getInputMenus()) {
         //如果菜单属性为none，直接跳过该菜单，处理下一个菜单
         if (StringUtils.isEmpty(menu.getAttribute()) || menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
           continue;
         }
-
-        infoMap.put(menu.getMenu(),menu.getAttributeRenaming());
 
         if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equalsIgnoreCase(Communal.NONE)) {
           StringBuilder sb;
@@ -242,14 +239,16 @@ public class PivotChartServiceImpl implements PivotChartService {
 
 
   private void handleBinning(String renaming, Map<String, Object> map, List<Set<Object>> binningSetList) {
-    Set<Object> binningSet = binningSetList.get(0);
-    List<Object> binningList= new ArrayList<>(binningSet);
-    int preIndex = binningList.indexOf(map.get(renaming));
-    int nextIndex = preIndex + 1;
-    List<Object> resultBinningList = new ArrayList<>();
-    resultBinningList.add(binningList.get(preIndex));
-    resultBinningList.add(binningList.get(nextIndex));
-    map.put(renaming,resultBinningList);
+    if (binningSetList.size() > 0) {
+      Set<Object> binningSet = binningSetList.get(0);
+      List<Object> binningList= new ArrayList<>(binningSet);
+      int preIndex = binningList.indexOf(map.get(renaming));
+      int nextIndex = preIndex + 1;
+      List<Object> resultBinningList = new ArrayList<>();
+      resultBinningList.add(binningList.get(preIndex));
+      resultBinningList.add(binningList.get(nextIndex));
+      map.put(renaming,resultBinningList);
+    }
   }
 
   /**

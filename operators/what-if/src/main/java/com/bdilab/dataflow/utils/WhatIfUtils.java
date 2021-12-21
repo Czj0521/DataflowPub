@@ -1,6 +1,6 @@
 package com.bdilab.dataflow.utils;
 
-import com.bdilab.dataflow.dto.IndependentVariableBase;
+import com.bdilab.dataflow.dto.IndependentVariable;
 import com.bdilab.dataflow.dto.jobdescription.TransformationDescription;
 import com.bdilab.dataflow.dto.pojo.Expression;
 import com.bdilab.dataflow.dto.pojo.dependentvariable.DependentVariable;
@@ -32,7 +32,7 @@ public class WhatIfUtils {
             .add(new DependentVariable(expression.getNewColumnName(), expression.getExpression()));
       }
     }
-    for (IndependentVariableBase variable : transformationDesc.getIndependentVariables()) {
+    for (IndependentVariable variable : transformationDesc.getIndependentVariables()) {
       dependentVariables
           .add(new DependentVariable(variable.getColumnName(), variable.getExpression()));
       independentVariables.add(

@@ -5,7 +5,7 @@ import com.bdilab.dataflow.dto.CustomBinning;
 import com.bdilab.dataflow.dto.DataType;
 import com.bdilab.dataflow.dto.Expression;
 import com.bdilab.dataflow.dto.FindReplace;
-import com.bdilab.dataflow.dto.IndependentVariableBase;
+import com.bdilab.dataflow.dto.IndependentVariable;
 import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import java.util.List;
 import lombok.Data;
@@ -24,6 +24,6 @@ public class TransformationDescription extends JobDescription {
   private List<Binarizer> binarizers;
   private List<DataType> dataTypes;
   private List<CustomBinning> customBinnings;
-  private List<IndependentVariableBase> independentVariables;
+  private List<IndependentVariable> independentVariables;
 
 }

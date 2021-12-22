@@ -8,7 +8,7 @@ import com.bdilab.dataflow.utils.SqlParseUtils;
  * What-If: sql generator for base job without transformation.
  *
  * @author: wh
- * @create: 2021-11-20
+ * @create: 2021-12-20
  */
 public class WhatIfBaseSqlGenerator extends SqlGeneratorBase {
   protected WhatIfDescription whatIfDescription;

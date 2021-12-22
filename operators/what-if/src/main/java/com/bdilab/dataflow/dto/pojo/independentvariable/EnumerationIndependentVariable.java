@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
  * Enumeration independent variable for What-If job .
 
  * @author: wh
- * @create: 2021-11-20
+ * @create: 2021-12-20
  */
 @Data
 @NoArgsConstructor

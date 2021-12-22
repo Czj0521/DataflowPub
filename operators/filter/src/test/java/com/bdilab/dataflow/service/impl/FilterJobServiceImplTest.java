@@ -1,21 +1,27 @@
-package com.bdilab.dataflow;
+package com.bdilab.dataflow.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.dto.jobdescription.FilterDescription;
 import com.bdilab.dataflow.sql.generator.FilterSqlGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
- * UT of the filter operator.
+ * What-If: Test Filter Job ServiceImpl.
  *
  * @author: wh
- * @create: 2021-10-30
+ * @create: 2021-12-22
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class FilterTest {
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Slf4j
+class FilterJobServiceImplTest {
+
   @Test
-  public void testFilter() {
+  public void testGenerateDataSourceSql() {
     String profilerJson = "{\n" +
         "    \"dataSource\": [\"dataflow.airuuid\"],\n" +
         "    \"filter\": \"AQI > 30 or AQI <10\",\n" +
@@ -24,6 +30,11 @@ public class FilterTest {
         "}";
     FilterDescription filterDescription = JSONObject.parseObject(profilerJson, FilterDescription.class);
     FilterSqlGenerator filterSqlGenerator = new FilterSqlGenerator(filterDescription);
-    System.out.println(filterSqlGenerator.generate());
+    String generate = filterSqlGenerator.generate();
+    if ("SELECT *  FROM dataflow.airuuid WHERE AQI > 30 or AQI <10".equals(generate)) {
+      log.info("Test - Pass： testGenerateDataSourceSql.");
+    } else {
+      throw new RuntimeException("Test - Error： testGenerateDataSourceSql - Generate sql error !");
+    }
   }
 }

@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
  * What-If job ServiceImpl.
 
  * @author: wh
- * @create: 2021-11-20
+ * @create: 2021-12-20
  */
 @Slf4j
 @Service
@@ -53,9 +53,7 @@ public class WhatIfServiceImpl implements OperatorService<WhatIfDescription> {
     } else {
       sqlGenerator = new WhatIfLinkSqlGenerator(whatIfDescription, extendMessage);
     }
-    String sql = sqlGenerator.generate();
-    log.debug("What If: {}", sql);
-    return sql;
+    return sqlGenerator.generate();
   }
 
   @Override

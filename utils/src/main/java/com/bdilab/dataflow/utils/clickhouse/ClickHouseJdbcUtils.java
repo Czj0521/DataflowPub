@@ -29,8 +29,16 @@ public class ClickHouseJdbcUtils {
     return jdbcTemplate.queryForList(sql, String.class);
   }
 
+  public List<Double> queryForDouList(String sql) {
+    return jdbcTemplate.queryForList(sql, Double.class);
+  }
+
   public Long queryForLong(String sql) {
     return jdbcTemplate.queryForObject(sql, Long.class);
+  }
+
+  public Double queryForDouble(String sql) {
+    return jdbcTemplate.queryForObject(sql, Double.class);
   }
 
   public void execute(String sql) {

@@ -27,6 +27,7 @@
         <module>operators/what-if</module>
         <module>operators/transformation</module>
         <module>operators/statistical-test</module>
+        <module>operators/correlation</module>
     </modules>
 
     <groupId>com.bdilab</groupId>

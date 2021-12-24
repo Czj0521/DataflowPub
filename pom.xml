@@ -24,6 +24,7 @@
         <module>operators/python</module>
         <module>operators/profiler</module>
         <module>operators/pivot-chart</module>
+        <module>operators/mutual-info</module>
         <module>operators/what-if</module>
         <module>operators/transformation</module>
         <module>operators/statistical-test</module>
@@ -174,11 +175,6 @@
             <dependency>
                 <groupId>com.bdilab</groupId>
                 <artifactId>operator-transpose</artifactId>
-                <version>${dataflow.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.bdilab</groupId>
-                <artifactId>operator-pivot-chart</artifactId>
                 <version>${dataflow.version}</version>
             </dependency>
             <dependency>

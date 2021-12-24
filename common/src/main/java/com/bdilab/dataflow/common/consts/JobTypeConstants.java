@@ -13,6 +13,7 @@ public interface JobTypeConstants {
   String JOIN_JOB = "join";
   String TABLE_JOB = "table";
   String MATERIALIZE_JOB = "materialize";
+  String MUTUAL_INFORMATION = "mutualInformation";
 
 
   //wjh

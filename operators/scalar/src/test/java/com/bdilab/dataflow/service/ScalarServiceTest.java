@@ -25,7 +25,7 @@ import java.util.Map;
  */
 
 @Slf4j
-@SpringBootTest(classes = ScalarTestApplication.class)
+@SpringBootTest(classes = ScalarTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class ScalarServiceTest {
   @Autowired
   private ScalarService scalarService;

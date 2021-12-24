@@ -67,6 +67,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   @Autowired
   private PivotChartService pivotChartService;
   @Autowired
+  private MutualInformationService mutualInformationService;
+  @Autowired
   private StatisticalTestService statisticalTestService;
   @Resource
   private WhatIfServiceImpl whatIfService;
@@ -181,6 +183,16 @@ public class ScheduleServiceImpl implements ScheduleService {
               flag = true;
             }
             break;
+          case "mutualInformation":
+            OutputData data = mutualInformationSavedData(node);
+            String status = "JOB_FINISH";
+
+            // JOB_FAILED when receiving incomplete request or target variable is constant.
+            if (data.getData() == null ||  data.getData().get(0).containsKey("msg")) {
+              status = "JOB_FAILED";
+            }
+            outputJson = new JobOutputJson(status, nodeId, workspaceId, nodeType, data);
+            break;
           case "profiler":
             List<Map<String, Object>> profilerData = profilerService.getProfiler(node);
             OutputData outputData = new OutputData();
@@ -279,6 +291,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     List<Map<String, Object>> data = transposeService.saveToClickHouse(node, null);
     return new OutputData(data, tableMetadataService.metadataFromDatasource(tableName));
   }
+
   private OutputData statisticalTestSavedData(DagNode node){
     Map<String,Object> map= statisticalTestService.getPValue(node);
     List<Map<String,Object>> mapList = new ArrayList<>();
@@ -286,6 +299,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     return new OutputData(mapList,null);
 
   }
+
   private OutputData scalarSavedData(DagNode node) {
     List<Map<String, Object>> data = scalarService.saveToClickHouse(node, null);
     return new OutputData(data, null);
@@ -305,6 +319,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   private OutputData whitIfSavedData(DagNode node, TransformationDescription transformationDescription) {
     List<Map<String, Object>> data = whatIfService.saveToClickHouse(node, WhatIfUtils.transformtionToWhatIf(transformationDescription));
+    return new OutputData(data, null);
+  }
+
+  private OutputData mutualInformationSavedData(DagNode node) {
+    List<Map<String, Object>> data = mutualInformationService.saveToClickHouse(node, null);
     return new OutputData(data, null);
   }
 

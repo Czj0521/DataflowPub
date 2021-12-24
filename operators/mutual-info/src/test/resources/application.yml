@@ -45,13 +45,18 @@ spring:
     host: 47.104.202.153
     port: 6379
     password: bdilab@1308
-    timeout: 1000
+    timeout: 5000
     lettuce:
       pool:
         max-active: 200
         max-wait: -1
         max-idle: 50
         min-idle: 5
+  thymeleaf:
+    cache: false
+    mode: LEGACYHTML5
+    prefix: classpath:/templates/
+    suffix: .html
 clickhouse:
   http:
     url: http://47.104.202.153:8123/?query=
@@ -68,3 +73,13 @@ flink:
       path: ./FlinkJob/jar/
       testpath: D:\JetBrains\local\DataFlow\FlinkJob\target\
       name: FlinkJob-1.0-SNAPSHOT-jar-with-dependencies.jar
+server:
+  port: 8080
+
+logging:
+  level:
+    root: info
+    com.bdilab.dataflow: debug
+
+python:
+  url: http://47.104.202.153:5000/ceshi

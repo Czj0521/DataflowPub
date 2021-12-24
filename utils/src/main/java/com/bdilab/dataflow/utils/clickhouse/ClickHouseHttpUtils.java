@@ -32,6 +32,7 @@ public class ClickHouseHttpUtils {
       if (response.getStatusLine().getStatusCode() == 200) {
         return EntityUtils.toString(response.getEntity(), "UTF-8");
       }
+      System.out.println(EntityUtils.toString(response.getEntity(), "UTF-8"));
       throw new UncheckException(
           ExceptionMsgEnum.CLICKHOUSE_HTTP_ERROR.getMsg() + "\n" + response.toString());
     } catch (IOException e) {

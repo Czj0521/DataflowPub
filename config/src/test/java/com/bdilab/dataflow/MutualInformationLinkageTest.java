@@ -70,7 +70,7 @@ public class MutualInformationLinkageTest {
         "  \"job\": \"start_job\",\n" +
         "  \"mutualInformationDescription\": {\n" +
         "    \"jobType\": \"mutualInformation\",\n" +
-        "    \"dataSource\": [\" \"],\n" +
+        "    \"dataSource\": [\"\"],\n" +
         "    \"target\": \"x\",\n" +
         "    \"features\": [\"y\"]\n" +
         "  },\n" +

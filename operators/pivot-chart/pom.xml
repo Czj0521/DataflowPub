@@ -20,5 +20,10 @@
             <artifactId>operator-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <!--私有方法测试-->
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito2</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.dto.jobdescription;
 
+import com.bdilab.dataflow.constants.AggregationConstants;
 import com.bdilab.dataflow.constants.Communal;
 import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import io.swagger.annotations.ApiModel;
@@ -47,7 +48,14 @@ public class PivotChartDescription extends JobDescription {
     Map<String, Menu> map = new HashMap<>();
     for (Menu menu : menus) {
       if (!menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
-        map.put(menu.getAttributeRenaming(), menu);
+        if (menu.getMenu().equalsIgnoreCase("column")) {
+          Menu rowMenu = map.get(menu.getAttributeRenaming());
+          if (!(rowMenu!= null && rowMenu.getMenu().equalsIgnoreCase("row"))) {
+            map.put(menu.getAttributeRenaming(), menu);
+          }
+        } else {
+          map.put(menu.getAttributeRenaming(), menu);
+        }
       }
     }
 
@@ -59,7 +67,7 @@ public class PivotChartDescription extends JobDescription {
   }
 
   /**
-   * 用于返回给前端的菜单选项信息
+   * 用于返回给前端的菜单选项信息.
    */
   public Map<String, Object> getInfoMap() {
     Map<String, Object> infoMap = new HashMap<>();
@@ -68,4 +76,38 @@ public class PivotChartDescription extends JobDescription {
     }
     return infoMap;
   }
+
+  /**
+   * 在x菜单或y菜单中，只有一个菜单选择了属性+count/属性+distinct count，且另外一个菜单没有选择属性+聚合，展示数据会显示百分比.
+   * 该方法就是提取这个菜单重命名，用于百分比计算.
+   */
+  public String getColumnForPercentage() {
+    int flag = 0;
+    String column = null;
+    for (Menu menu : menus) {
+      if (menu.getMenu().equalsIgnoreCase("row") ||
+              menu.getMenu().equalsIgnoreCase("column")) {
+        if (!menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
+          return null;
+        }
+      }
+
+      if (menu.getMenu().equalsIgnoreCase("x-axis") ||
+              menu.getMenu().equalsIgnoreCase("y-axis")) {
+        if (!menu.getAggregation().equalsIgnoreCase(Communal.NONE)) {
+          flag++;
+          if (menu.getAggregation().equalsIgnoreCase(AggregationConstants.COUNT) ||
+                  menu.getAggregation().equalsIgnoreCase(AggregationConstants.DISTINCT_COUNT)) {
+            column = menu.getAttributeRenaming();
+          }
+        }
+      }
+    }
+
+    if (flag != 1) {
+      column = null;
+    }
+    return column;
+  }
+
 }

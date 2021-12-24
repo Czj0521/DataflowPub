@@ -6,7 +6,6 @@ import com.bdilab.dataflow.constants.BinningConstants;
 import com.bdilab.dataflow.dto.jobdescription.PivotChartDescription;
 import com.bdilab.dataflow.dto.joboutputjson.ParamTypeRespObj;
 import com.bdilab.dataflow.service.PivotChartService;
-import com.bdilab.dataflow.utils.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -33,8 +32,8 @@ public class PivotChartController {
 
   @PostMapping("/pivot-chart")
   @ApiOperation(value = "透视图操作符")
-  public R getPivotChart(@RequestBody PivotChartDescription description) {
-    return pivotChartService.getPivotChart(description);
+  public List<Map<String, Object>> getPivotChart(@RequestBody PivotChartDescription description) {
+    return pivotChartService.saveToClickHouse(description, null);
   }
 
   @GetMapping("/aggregation/type")
@@ -47,11 +46,5 @@ public class PivotChartController {
   @ApiOperation(value = "获取数据分箱类型")
   public ParamTypeRespObj getBinningType(@RequestParam @ApiParam(value = "语言")String language) {
     return pivotChartService.getType(BinningConstants.BIN,language);
-  }
-
-  @PostMapping("/binning/test")
-  @ApiOperation(value = "测试")
-  public List<Map<String, Object>> test(@RequestBody PivotChartDescription description) {
-    return pivotChartService.saveToClickHouse(description, null);
   }
 }

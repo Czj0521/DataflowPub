@@ -15,6 +15,7 @@ import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import java.text.MessageFormat;
 import java.util.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -22,13 +23,14 @@ import org.springframework.util.StringUtils;
  * @author : [zhangpeiliang]
  * @description : [透视图SQL解析类]
  */
+@Slf4j
 public class PivotChartSqlGenerator extends SqlGeneratorBase {
-
-  public static final String ROWS = "ROWS";
 
   private final String datasource;
 
   private final List<Menu> menus;
+
+  private final String columnForPercentage;
 
   private final ClickHouseJdbcUtils clickHouseJdbcUtils;
 
@@ -72,6 +74,13 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
    */
   List<Set<Object>> naturalBinningSetList = new ArrayList<>();
 
+  /**
+   * 被截断数据的估计数目.
+   */
+  public static long TRUNCATED_NUM;
+
+  public static List<String> brushFilters = null;
+
   public PivotChartSqlGenerator(PivotChartDescription description) {
     super(description);
     if (description.getDataSource().length == 1) {
@@ -80,6 +89,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
       this.datasource = "";
     }
     this.menus = description.getInputMenus();
+    this.columnForPercentage = description.getColumnForPercentage();
     this.clickHouseJdbcUtils = SpringUtil.getBean(ClickHouseJdbcUtils.class);
     this.attributeAndBinningSet = new LinkedHashSet<>();
     this.aggregationSet = new LinkedHashSet<>();
@@ -101,7 +111,6 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
     }
 
     //对传入的inputBrushFilters进行处理
-    List<String> brushFilters = null;
     if (!CollectionUtils.isEmpty(inputBrushFilters)) {
       brushFilters = new ArrayList<>();
       for (String brushFilter : inputBrushFilters) {
@@ -125,27 +134,28 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
       }
     }
 
+    //with语句片段和case-when语句片段
+    String withSegment = "";
+    String caseWhenSegment = "";
+    if (!CollectionUtils.isEmpty(brushFilters)) {
+      List<String> withBrushes = new ArrayList<>();
+      withSegment = extractWithBrushSegment(brushFilters, withBrushes);
+      caseWhenSegment = extractCaseWhenSegment(withBrushes);
+    }
+
     //分析菜单
     for (Menu menu : menus) {
       analyzeMenu(menu);
     }
 
+    //group集合为空，说明所有菜单选择均是属性聚合，而没有选择单纯的属性或属性分箱
     if (groupSet.size() == 0) {
       String column = menus.get(menus.size() - 1).getAttributeRenaming();
       throw new RRException(BizCodeEnum.CANNOT_FIND_COLUMN.getMsg() + column,
               BizCodeEnum.CANNOT_FIND_COLUMN.getCode());
     }
 
-    String sql = totalRows();
-    String caseWhenSegment = "";
-    if (!CollectionUtils.isEmpty(brushFilters)) {
-      List<String> withBrushes = new ArrayList<>();
-      sql = sql + extractWithBrushSegment(brushFilters, withBrushes);
-      caseWhenSegment = extractCaseWhenSegment(withBrushes);
-
-    }
-    sql = sql + Communal.BLANK + SqlConstants.SELECT;
-
+    String sql = SqlConstants.SELECT;
     String groupBy = "";
     String orderBy;
     if (StringUtils.isEmpty(extractSegment(attributeAndBinningSet))
@@ -177,14 +187,39 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
         orderBy = SqlConstants.ORDER_BY + extractSegment(groupSet);
       }
 
-      return sql + Communal.BLANK + SqlConstants.FROM + datasource
+      //分析菜单得到的初始sql
+      String originFullSql =  sql + Communal.BLANK + SqlConstants.FROM + datasource
               + Communal.BLANK + groupBy + Communal.BLANK + orderBy;
+      String originPartSql;
+      if (!StringUtils.isEmpty(withSegment)) {
+        originPartSql = getPartSql(withSegment + Communal.BLANK + originFullSql);
+      } else {
+        originPartSql = getPartSql(originFullSql);
+      }
 
+      //拼接成最终sql
+      String finalSql;
+      String replace = originPartSql.replaceFirst(Communal.BLANK + SqlConstants.FROM,
+              ",round(" + columnForPercentage + "/S*100,2) "
+                      + "\"%\"" + Communal.BLANK + SqlConstants.FROM);
+
+      if (!StringUtils.isEmpty(columnForPercentage)) {
+        if (!StringUtils.isEmpty(withSegment)) {
+          finalSql = totalRows(originPartSql) + replace.replaceFirst("WITH",SqlConstants.COMMA);
+        } else {
+          finalSql = totalRows(originPartSql) + Communal.BLANK + replace;
+        }
+      } else {
+        finalSql = originPartSql;
+      }
+
+      log.info(MessageFormat.format("[Final SQL]: {0}", finalSql));
+      return finalSql;
     }
   }
 
   /**
-   * 画刷Case-When片段
+   * 画刷Case-When片段.
    */
   private String extractCaseWhenSegment(List<String> withBrushes) {
     StringBuilder sb = new StringBuilder();
@@ -210,12 +245,16 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
   }
 
   /**
-   * 从用于画刷的过滤语句集合中提取成WITH语句中的片段，同时设置画刷集合
+   * 从用于画刷的过滤语句集合中提取成WITH语句中的片段，同时设置画刷集合.
    */
   private String extractWithBrushSegment(List<String> brushes, List<String> withBrushes) {
     StringBuilder sb = new StringBuilder();
+    sb.append("WITH ");
     for (int i = 0; i < brushes.size(); i++) {
-      sb.append(SqlConstants.COMMA).append(brushes.get(i)).append(Communal.BLANK)
+      if (i != 0) {
+        sb.append(SqlConstants.COMMA);
+      }
+      sb.append(brushes.get(i)).append(Communal.BLANK)
               .append(SqlConstants.AS).append(Communal.BLANK).append("brush").append(i + 1);
       withBrushes.add("brush" + (i + 1));
     }
@@ -440,11 +479,43 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
   }
 
   /**
-   * A WITH subquery returning row number in total.
+   * A WITH subquery returning row number in count or distinct count.
    *
    * @return with sql
    */
-  private String totalRows() {
-    return MessageFormat.format("WITH (select count(*) from {0}) AS {1}", datasource, ROWS);
+  private String totalRows(String originSql) {
+    return MessageFormat.format("WITH (select sum({0}) from ({1})) AS S", columnForPercentage, originSql);
+  }
+
+  /**
+   * 透视图渲染限制（einblick中透视图能渲染的最大数据量为200个左右），这里视情况进行截取
+   */
+  private String getPartSql(String SQL) {
+    if (StringUtils.isEmpty(SQL)) {
+      return "";
+    }
+
+    Long count = clickHouseJdbcUtils.getCount(SQL);
+    String partSQL;
+    //若总记录数，超过透视图能渲染的点数（einblick中透视图最多渲染200个数据），进行截取处理
+    if (count > SqlConstants.POINTS) {
+      int interval = (int) Math.rint((double) count / SqlConstants.POINTS);
+      if (interval > 2) {
+        partSQL = SqlConstants.SELECT + SqlConstants.ALL + SqlConstants.FROM + SqlConstants.LEFT_BRACKET + SQL
+                + SqlConstants.RIGHT_BRACKET + Communal.BLANK + SqlConstants.WHERE + SqlConstants.MOD
+                + SqlConstants.LEFT_BRACKET + SqlConstants.ROW + SqlConstants.COMMA + interval
+                + SqlConstants.RIGHT_BRACKET + SqlConstants.EQUAL + 1;
+      } else {
+        partSQL = SqlConstants.SELECT + SqlConstants.ALL + SqlConstants.FROM + SqlConstants.LEFT_BRACKET + SQL
+                + SqlConstants.RIGHT_BRACKET + Communal.BLANK + SqlConstants.WHERE + SqlConstants.MOD
+                + SqlConstants.LEFT_BRACKET + SqlConstants.ROW + SqlConstants.COMMA + 2
+                + SqlConstants.RIGHT_BRACKET + SqlConstants.EQUAL + 1;
+      }
+      TRUNCATED_NUM = count - SqlConstants.POINTS;
+    } else {
+      partSQL = SQL;
+      TRUNCATED_NUM = 0L;
+    }
+    return partSQL;
   }
 }

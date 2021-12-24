@@ -1,6 +1,5 @@
 package com.bdilab.dataflow.service.impl;
 
-import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalYear;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -11,6 +10,7 @@ import com.bdilab.dataflow.dto.MetadataOutputJson;
 import com.bdilab.dataflow.dto.OutputData;
 import com.bdilab.dataflow.dto.jobdescription.PivotChartDescription;
 import com.bdilab.dataflow.dto.jobdescription.TransformationDescription;
+import com.bdilab.dataflow.exception.RRException;
 import com.bdilab.dataflow.service.*;
 import com.bdilab.dataflow.utils.WhatIfUtils;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
@@ -158,8 +158,17 @@ public class ScheduleServiceImpl implements ScheduleService {
             Boolean onlyUpdateFilter = chartDescription.getBoolean("onlyUpdateFilter");
             if (!onlyUpdateFilter) {
               List<String> brushFilters = brushFilterMap.get(0);
-              outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
-                      pivotChartSavedData(node, brushFilters));
+              try {
+                outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
+                        pivotChartSavedData(node, brushFilters));
+              } catch (RRException e) {
+                List<Map<String, Object>> err = new ArrayList<>();
+                Map<String, Object> map = new HashMap<>();
+                map.put(String.valueOf(e.getCode()), e.getMsg());
+                err.add(map);
+                outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, nodeType,
+                        new OutputData(err, null));
+              }
             }
             break;
           case "join":

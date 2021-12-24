@@ -26,7 +26,7 @@ public class SqlConstants {
 
     public static final String RIGHT_BRACKET = ")";
 
-    public static final String SUBSTRING = "substring";
+    public static final String SUBSTRING = "substringUTF8";
 
     public static final Integer POINTS = 200;
 

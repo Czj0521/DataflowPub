@@ -16,12 +16,14 @@ import com.bdilab.dataflow.utils.*;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -35,26 +37,15 @@ public class PivotChartServiceImpl implements PivotChartService {
   @Autowired
   private ClickHouseJdbcUtils clickHouseJdbcUtils;
 
-  /**
-   * 被截断数据的估计数目
-   */
-  public static long TRUNCATED_NUM;
-
+  @SuppressWarnings("unused")
   @Override
   public R getPivotChart(PivotChartDescription description) {
     //请求对象效验
     verify(description);
 
     //通过SQL解析类获取完整SQL
-    long start = System.currentTimeMillis();
     PivotChartSqlGenerator pivotChartSqlGenerator = new PivotChartSqlGenerator(description);
     String sql = pivotChartSqlGenerator.generate();
-    System.out.println(System.currentTimeMillis() - start);
-    log.info(MessageFormat.format("[Full SQL]: {0}", sql));
-
-    //对完整SQL处理，获取部分数据（einblick中透视图能渲染的最大数据量为200个左右）
-    String partSql = getPartSql(sql);
-    log.info(MessageFormat.format("[Part SQL Truncated From Full SQL]: {0}", partSql));
 
     //封装的结果集合
     List<Object> results = new ArrayList<>();
@@ -68,7 +59,7 @@ public class PivotChartServiceImpl implements PivotChartService {
 
       // reuse the getAttributeRenaming() method
       String menuSb = SqlConstants.SELECT + menu.getAttributeRenaming() + Communal.BLANK
-              + SqlConstants.FROM + SqlConstants.LEFT_BRACKET + partSql + SqlConstants.RIGHT_BRACKET;
+              + SqlConstants.FROM + SqlConstants.LEFT_BRACKET + sql + SqlConstants.RIGHT_BRACKET;
 
       log.info(MessageFormat.format("[Menu StringBuilder SQL]: {0}", menuSb));
       List<?> columnList = clickHouseJdbcUtils.query(menuSb);
@@ -120,7 +111,7 @@ public class PivotChartServiceImpl implements PivotChartService {
             String params = dateTimeSetList.get(0);
             dateTimeSetList.remove(0);
             String dateTimeSql = SqlConstants.SELECT + params + Communal.BLANK + SqlConstants.FROM
-                    + SqlConstants.LEFT_BRACKET + partSql + SqlConstants.RIGHT_BRACKET;
+                    + SqlConstants.LEFT_BRACKET + sql + SqlConstants.RIGHT_BRACKET;
             log.info(MessageFormat.format("[DateTime SQL]: {0}", dateTimeSql));
             List<Map<String, Object>> mapList = clickHouseJdbcUtils.queryForList(dateTimeSql);
             respObj.setValues(getDate(mapList));
@@ -139,154 +130,14 @@ public class PivotChartServiceImpl implements PivotChartService {
 
     R r = new R();
     r.put(Communal.RESULTS, results);
-    r.put(Communal.TRUNCATED_NUM, TRUNCATED_NUM);
+    r.put(Communal.TRUNCATED_NUM, PivotChartSqlGenerator.TRUNCATED_NUM);
     return r;
-  }
-
-  /**
-   * 联动场景的pivot-chart，pivot-chart输出同filter，无需保存到clickhouse，只返回节点数据
-   * @param description chart描述
-   * @param brushFilters 用于画刷的过滤条件集合
-   * @return 响应数据
-   */
-  @Override
-  public List<Map<String, Object>> saveToClickHouse(PivotChartDescription description, List<String> brushFilters) {
-    //请求对象效验
-    verify(description);
-
-    PivotChartSqlGenerator pivotChartSqlGenerator = new PivotChartSqlGenerator(description);
-    String sql = pivotChartSqlGenerator.generateSql(brushFilters);
-    log.info(MessageFormat.format("[Full SQL]: {0}", sql));
-
-    //对完整SQL处理，获取部分数据（einblick中透视图能渲染的最大数据量为200个左右）
-    String partSql = getPartSql(sql);
-    log.info(MessageFormat.format("[Part SQL Truncated From Full SQL]: {0}", partSql));
-    List<Map<String, Object>> results = new ArrayList<>();
-    if (!StringUtils.isEmpty(partSql)) {
-      Map<String, Object> infoMap = description.getInfoMap();
-      infoMap.put(Communal.TRUNCATED_NUM, TRUNCATED_NUM);
-      List<Map<String, Object>> queryListMap = clickHouseJdbcUtils.queryForList(partSql);
-      //对每个菜单进行处理
-      for (Menu menu : description.getInputMenus()) {
-        //如果菜单属性为none，直接跳过该菜单，处理下一个菜单
-        if (StringUtils.isEmpty(menu.getAttribute()) || menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
-          continue;
-        }
-
-        if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equalsIgnoreCase(Communal.NONE)) {
-          StringBuilder sb;
-          String renaming = menu.getAttributeRenaming();
-          for (Map<String, Object> map : queryListMap) {
-            switch (menu.getBinning()) {
-              case BinningConstants.ALPHABETIC_BINNING:
-                sb = new StringBuilder();
-                map.put(renaming, sb.append(menu.getAttribute()).append(Communal.BLANK)
-                        .append(Communal.STARTS_WITH).append(Communal.BLANK).append(map.get(renaming)));
-                break;
-              case BinningConstants.NOMINAL_BINNING:
-                sb = new StringBuilder();
-                map.put(renaming, sb.append(menu.getAttribute()).append(Communal.BLANK)
-                        .append(SqlConstants.EQUAL).append(Communal.BLANK).append(map.get(renaming)));
-                break;
-              case BinningConstants.EQUI_WIDTH_BINNING:
-                handleBinning(renaming, map, PivotChartSqlGenerator.EquiWidthBinningSetThreadLocal.get());
-                break;
-              case BinningConstants.NATURAL_BINNING:
-                handleBinning(renaming, map, PivotChartSqlGenerator.NaturalBinningSetThreadLocal.get());
-                break;
-              case BinningConstants.SECOND:
-              case BinningConstants.MINUTE:
-              case BinningConstants.HOUR:
-              case BinningConstants.DAY:
-              case BinningConstants.MONTH:
-              case BinningConstants.YEAR:
-                List<Object> dateBinningList = new ArrayList<>();
-                String dateRight = renaming + "_RIGHT";
-                dateBinningList.add(map.get(renaming));
-                dateBinningList.add(map.get(dateRight));
-                map.remove(dateRight);
-                map.put(renaming, dateBinningList);
-                break;
-              default:
-                throw new RRException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg(),
-                        BizCodeEnum.INVALID_BINNING_TYPE.getCode());
-            }
-          }
-          switch (menu.getBinning()) {
-            case BinningConstants.EQUI_WIDTH_BINNING:
-              PivotChartSqlGenerator.EquiWidthBinningSetThreadLocal.get().remove(0);
-              break;
-            case BinningConstants.NATURAL_BINNING:
-              PivotChartSqlGenerator.NaturalBinningSetThreadLocal.get().remove(0);
-              break;
-            case BinningConstants.SECOND:
-            case BinningConstants.MINUTE:
-            case BinningConstants.HOUR:
-            case BinningConstants.DAY:
-            case BinningConstants.MONTH:
-            case BinningConstants.YEAR:
-              DatetimeBinning.DateTimeListThreadLocal.get().remove(0);
-              break;
-          }
-        }
-      }
-
-      results.add(infoMap);
-      results.addAll(queryListMap);
-    }
-    return results;
-  }
-
-
-  private void handleBinning(String renaming, Map<String, Object> map, List<Set<Object>> binningSetList) {
-    if (binningSetList.size() > 0) {
-      Set<Object> binningSet = binningSetList.get(0);
-      List<Object> binningList= new ArrayList<>(binningSet);
-      int preIndex = binningList.indexOf(map.get(renaming));
-      int nextIndex = preIndex + 1;
-      List<Object> resultBinningList = new ArrayList<>();
-      resultBinningList.add(binningList.get(preIndex));
-      resultBinningList.add(binningList.get(nextIndex));
-      map.put(renaming,resultBinningList);
-    }
-  }
-
-  /**
-   * 透视图渲染限制（einblick中透视图能渲染的最大数据量为200个左右），这里视情况进行截取
-   */
-  private String getPartSql(String SQL) {
-    if (StringUtils.isEmpty(SQL)) {
-      return "";
-    }
-
-    Long count = clickHouseJdbcUtils.getCount(SQL);
-    String partSQL;
-    //若总记录数，超过透视图能渲染的点数（einblick中透视图最多渲染200个数据），进行截取处理
-    if (count > SqlConstants.POINTS) {
-      int interval = (int) Math.rint((double) count / SqlConstants.POINTS);
-      if (interval > 2) {
-        partSQL = SqlConstants.SELECT + SqlConstants.ALL + SqlConstants.FROM + SqlConstants.LEFT_BRACKET + SQL
-                + SqlConstants.RIGHT_BRACKET + Communal.BLANK + SqlConstants.WHERE + SqlConstants.MOD
-                + SqlConstants.LEFT_BRACKET + SqlConstants.ROW + SqlConstants.COMMA + interval
-                + SqlConstants.RIGHT_BRACKET + SqlConstants.EQUAL + 1;
-      } else {
-        partSQL = SqlConstants.SELECT + SqlConstants.ALL + SqlConstants.FROM + SqlConstants.LEFT_BRACKET + SQL
-                + SqlConstants.RIGHT_BRACKET + Communal.BLANK + SqlConstants.WHERE + SqlConstants.MOD
-                + SqlConstants.LEFT_BRACKET + SqlConstants.ROW + SqlConstants.COMMA + 2
-                + SqlConstants.RIGHT_BRACKET + SqlConstants.EQUAL + 1;
-      }
-      TRUNCATED_NUM = count - SqlConstants.POINTS;
-    } else {
-      partSQL = SQL;
-      TRUNCATED_NUM = 0L;
-    }
-    return partSQL;
   }
 
   /**
    * 对日期分箱数据进行处理
    */
-  public List<Object> getDate(List<Map<String, Object>> mapList) {
+  private List<Object> getDate(List<Map<String, Object>> mapList) {
     List<Object> dateList = new ArrayList<>();
     for (Map<String, Object> map : mapList) {
       Object from = map.values().toArray()[0];
@@ -322,6 +173,119 @@ public class PivotChartServiceImpl implements PivotChartService {
           throw new RRException(BizCodeEnum.INVALID_SORT_TYPE.getMsg(),
                   BizCodeEnum.INVALID_SORT_TYPE.getCode());
       }
+    }
+  }
+
+  /**
+   * 联动场景的pivot-chart，pivot-chart输出同filter，无需保存到clickhouse，只返回节点数据
+   * @param description chart描述
+   * @param brushFilters 用于画刷的过滤条件集合
+   * @return 响应数据
+   */
+  @Override
+  public List<Map<String, Object>> saveToClickHouse(PivotChartDescription description, List<String> brushFilters) {
+    //请求对象效验
+    verify(description);
+
+    //sql生成
+    PivotChartSqlGenerator pivotChartSqlGenerator = new PivotChartSqlGenerator(description);
+    String sql = pivotChartSqlGenerator.generateSql(brushFilters);
+
+    //最终返回的结果集合
+    List<Map<String, Object>> results = new ArrayList<>();
+
+    //集合中第一个map为信息map，返回菜单选择信息
+    Map<String, Object> infoMap = description.getInfoMap();
+    infoMap.put(Communal.TRUNCATED_NUM, PivotChartSqlGenerator.TRUNCATED_NUM);
+    if (!CollectionUtils.isEmpty(PivotChartSqlGenerator.brushFilters)) {
+      infoMap.put("color", "brush");
+    }
+    results.add(infoMap);
+
+    if (!StringUtils.isEmpty(sql)) {
+      List<Map<String, Object>> queryListMap = clickHouseJdbcUtils.queryForList(sql);
+      if (queryListMap.size() > 0) {
+        //对每个菜单进行处理
+        for (Menu menu : description.getInputMenus()) {
+          //如果菜单属性为none，直接跳过该菜单，处理下一个菜单
+          if (StringUtils.isEmpty(menu.getAttribute()) || menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
+            continue;
+          }
+
+          if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equalsIgnoreCase(Communal.NONE)) {
+            StringBuilder sb;
+            String renaming = menu.getAttributeRenaming();
+            for (Map<String, Object> map : queryListMap) {
+              switch (menu.getBinning()) {
+                case BinningConstants.ALPHABETIC_BINNING:
+                  sb = new StringBuilder();
+                  map.put(renaming, sb.append(menu.getAttribute()).append(Communal.BLANK)
+                          .append(Communal.STARTS_WITH).append(Communal.BLANK).append(map.get(renaming)));
+                  break;
+                case BinningConstants.NOMINAL_BINNING:
+                  sb = new StringBuilder();
+                  map.put(renaming, sb.append(menu.getAttribute()).append(Communal.BLANK)
+                          .append(SqlConstants.EQUAL).append(Communal.BLANK).append(map.get(renaming)));
+                  break;
+                case BinningConstants.EQUI_WIDTH_BINNING:
+                  handleBinning(renaming, map, PivotChartSqlGenerator.EquiWidthBinningSetThreadLocal.get());
+                  break;
+                case BinningConstants.NATURAL_BINNING:
+                  handleBinning(renaming, map, PivotChartSqlGenerator.NaturalBinningSetThreadLocal.get());
+                  break;
+                case BinningConstants.SECOND:
+                case BinningConstants.MINUTE:
+                case BinningConstants.HOUR:
+                case BinningConstants.DAY:
+                case BinningConstants.MONTH:
+                case BinningConstants.YEAR:
+                  List<Object> dateBinningList = new ArrayList<>();
+                  String dateRight = renaming + "_RIGHT";
+                  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                  dateBinningList.add(sdf.format(map.get(renaming)));
+                  dateBinningList.add(sdf.format(map.get(dateRight)));
+                  map.remove(dateRight);
+                  map.put(renaming, dateBinningList);
+                  break;
+                default:
+                  throw new RRException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg(),
+                          BizCodeEnum.INVALID_BINNING_TYPE.getCode());
+              }
+            }
+            switch (menu.getBinning()) {
+              case BinningConstants.EQUI_WIDTH_BINNING:
+                PivotChartSqlGenerator.EquiWidthBinningSetThreadLocal.get().remove(0);
+                break;
+              case BinningConstants.NATURAL_BINNING:
+                PivotChartSqlGenerator.NaturalBinningSetThreadLocal.get().remove(0);
+                break;
+              case BinningConstants.SECOND:
+              case BinningConstants.MINUTE:
+              case BinningConstants.HOUR:
+              case BinningConstants.DAY:
+              case BinningConstants.MONTH:
+              case BinningConstants.YEAR:
+                DatetimeBinning.DateTimeListThreadLocal.get().remove(0);
+                break;
+            }
+          }
+        }
+        results.addAll(queryListMap);
+      }
+    }
+    return results;
+  }
+
+  private void handleBinning(String renaming, Map<String, Object> map, List<Set<Object>> binningSetList) {
+    if (binningSetList.size() > 0) {
+      Set<Object> binningSet = binningSetList.get(0);
+      List<Object> binningList= new ArrayList<>(binningSet);
+      int preIndex = binningList.indexOf(map.get(renaming));
+      int nextIndex = preIndex + 1;
+      List<Object> resultBinningList = new ArrayList<>();
+      resultBinningList.add(binningList.get(preIndex));
+      resultBinningList.add(binningList.get(nextIndex));
+      map.put(renaming,resultBinningList);
     }
   }
 
@@ -378,7 +342,7 @@ public class PivotChartServiceImpl implements PivotChartService {
           respObj.setDate(booleanOrDateList);
           break;
         default:
-          throw new RuntimeException("wrong type!");
+          throw new RRException("wrong type!");
       }
     }else if(language.equalsIgnoreCase("chinese")){
       switch (type) {
@@ -427,7 +391,7 @@ public class PivotChartServiceImpl implements PivotChartService {
           respObj.setDate(booleanOrDateList);
           break;
         default:
-          throw new RuntimeException("wrong type!");
+          throw new RRException("wrong type!");
       }
     }
     return respObj;

@@ -32,7 +32,7 @@ public class MutualInformationControllerTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void accessiableFeatures() {
+  public void accessiableFeatures_Schema() {
     String[] dataSources = new String[] {
         "operator_mi.car_sales",
         "operator_mi.promotion",
@@ -68,6 +68,32 @@ public class MutualInformationControllerTest {
         "      \"AppliedAtDealership\"\n" +
         "    ],\n" +
         "    \"operator_mi.pointwise_mutual_information\": [\n" +
+        "      \"x\",\n" +
+        "      \"y\"\n" +
+        "    ]\n" +
+        "  }\n" +
+        "]"
+    );
+    Assertions.assertNotNull(respBody);
+    for (String ds: dataSources) {
+      List<String> l = expected.getJSONObject(0).getJSONArray(ds).toJavaList(String.class);
+      Assertions.assertEquals(l, respBody.get(0).get(ds));
+    }
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void accessibleFeatures_View() {
+    String[] dataSources = new String[] {
+        "dataflow.temp_mutual_information_test_001",
+    };
+
+    ResponseEntity<List<Map<String, Object>>> resp = mutualInformationController.accessibleFeatures(dataSources);
+
+    List<Map<String, Object>> respBody = resp.getBody();
+    JSONArray expected = JSON.parseArray("[\n" +
+        "  {\n" +
+        "    \"dataflow.temp_mutual_information_test_001\": [\n" +
         "      \"x\",\n" +
         "      \"y\"\n" +
         "    ]\n" +

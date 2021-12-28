@@ -2,6 +2,7 @@ package com.bdilab.dataflow.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.common.consts.CommonConstants;
+import com.bdilab.dataflow.dto.IndependentVariable;
 import com.bdilab.dataflow.dto.jobdescription.WhatIfDescription;
 import com.bdilab.dataflow.dto.pojo.Expression;
 import com.bdilab.dataflow.dto.pojo.dependentvariable.DependentVariable;
@@ -41,7 +42,7 @@ class WhatIfServiceImplTest {
   @BeforeEach
   public void init(){
     try {
-//      whatIfDescription.setCollectors(new String[]{"avg(trans1)", "avg(trans2)", "avg(AQI)", "count(trans2)"});
+      whatIfDescription.setCollectors(new String[]{"avg(trans1)", "avg(trans2)", "avg(AQI)", "count(trans2)"});
       whatIfDescription.setDataSource(new String[]{"dataflow.airuuid"});
       whatIfDescription.setJobType("base");
 
@@ -65,18 +66,20 @@ class WhatIfServiceImplTest {
   }
 
   @Test
-  public void testGenerateSql() {
+  public void testBaseGenerateSql() {
     String baseSql = whatIfService.generateSql(whatIfDescription, null);
-
     log.debug(baseSql);
-    if(("SELECT avg(trans1),avg(trans2),avg(AQI),count(trans2) " +
+    if (("SELECT avg(trans1),avg(trans2),avg(AQI),count(trans2) " +
         "FROM dataflow.airuuid")
-        .equals(baseSql)){
+        .equals(baseSql)) {
       log.info("Test - Pass： testGenerateSql_base_sql.");
     } else {
       throw new RuntimeException("Test - Error： testGenerateSql - Generate base sql error !");
     }
+  }
 
+  @Test
+  public void testLinkageGenerateSql1() {
     String linkedSql = whatIfService.generateSql(whatIfDescription, expression);
     log.debug(linkedSql);
     if(("WITH arrayJoin([2,4,6]) as `$new1$`," +
@@ -87,11 +90,39 @@ class WhatIfServiceImplTest {
         "FROM dataflow.airuuid " +
         "GROUP BY `$new1$`,`$new2$`")
         .equals(linkedSql)){
-      log.info("Test - Pass： testGenerateSql_linked_sql.");
+      log.info("Test - Pass： testGenerateSql_linkage_sql.");
     } else {
-      throw new RuntimeException("Test - Error： testGenerateSql - Generate linked sql error !");
+      throw new RuntimeException("Test - Error： testGenerateSql - Generate linkage sql error !");
     }
+  }
 
+  @Test
+  public void testLinkageGenerateSql2() {
+    WhatIfDescription whatIfDescription = new WhatIfDescription();
+    Expression expression = new Expression();
+    whatIfDescription.setCollectors(new String[]{"min(trans3)"});
+    whatIfDescription.setDataSource(new String[]{"dataflow.airuuid"});
+    DependentVariable dependentVariable1 = new DependentVariable("trans3", "format('{0} {1} {2}', city, 'is', $a$)");
+    expression.getDependentVariables().add(dependentVariable1);
+    BaseIndependentVariable independentVariable1 = new EnumerationIndependentVariable("$a$", "0",new ArrayList<String>(){{
+      this.add("'a'");
+      this.add("'b'");
+    }});
+    expression.getIndependentVariables().add(independentVariable1);
+
+    String linkedSql = whatIfService.generateSql(whatIfDescription, expression);
+    log.debug(linkedSql);
+    if(("WITH " +
+        "arrayJoin(['a','b']) as `$a$`," +
+        "(format('{0} {1} {2}', city, 'is', `$a$`)) as trans3 " +
+        "SELECT `$a$`,min(trans3)  " +
+        "FROM dataflow.airuuid " +
+        "GROUP BY `$a$`")
+        .equals(linkedSql)){
+      log.info("Test - Pass： testGenerateSql_linkage_sql.");
+    } else {
+      throw new RuntimeException("Test - Error： testGenerateSql - Generate linkage sql error !");
+    }
   }
 
   @Test

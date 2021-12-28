@@ -33,32 +33,33 @@ public class CorrelationServiceImplTest {
     correlationDescription.setDataSource(new String[]{"dataflow.promotion_csv"});
     correlationDescription.setLimit(2000);
     correlationDescription.setJobType("correlation");
-    String[] features = new String[]{"Age", "CreditScore"};
+    String[] features = new String[]{"Age", "CreditScore", "LeaseLength", "LeasePrice",
+        "RemainingLength", "PurchasePrice", "Incentive", "DealerId"};
     correlationDescription.setFeatures(features);
   }
 
   @Test
   public void testKendall() {
     correlationDescription.setMethod("kendall");
+
     long before = System.currentTimeMillis();
     List<ResponseObj> responseObjList = correlationService.correlation(correlationDescription);
     long after = System.currentTimeMillis();
-    log.info("Time spent :" + (after - before) + ", "
-        + responseObjList.get(0).getAttribute0() + ", "
-        + responseObjList.get(0).getAttribute1() + ", "
-        + responseObjList.get(0).getCorrelation());
+    log.info("Time spent :" + (after - before));
+
+    assert responseObjList.get(0).getCorrelation().equals("0.00447");
   }
 
   @Test
   public void testPearson() {
     correlationDescription.setMethod("pearson");
+
     long before = System.currentTimeMillis();
     List<ResponseObj> responseObjList = correlationService.correlation(correlationDescription);
     long after = System.currentTimeMillis();
-    log.info("Time spent :" + (after - before) + ", "
-        + responseObjList.get(0).getAttribute0() + ", "
-        + responseObjList.get(0).getAttribute1() + ", "
-        + responseObjList.get(0).getCorrelation());
+    log.info("Time spent :" + (after - before));
+
+    assert responseObjList.get(0).getCorrelation().equals("-0.00345");
   }
 
   @Test
@@ -68,9 +69,8 @@ public class CorrelationServiceImplTest {
     long before = System.currentTimeMillis();
     List<ResponseObj> responseObjList = correlationService.correlation(correlationDescription);
     long after = System.currentTimeMillis();
-    log.info("Time spent :" + (after - before) + ", "
-        + responseObjList.get(0).getAttribute0() + ", "
-        + responseObjList.get(0).getAttribute1() + ", "
-        + responseObjList.get(0).getCorrelation());
+    log.info("Time spent :" + (after - before));
+
+    assert responseObjList.get(0).getCorrelation().equals("0.00668");
   }
 }

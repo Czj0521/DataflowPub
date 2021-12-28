@@ -108,7 +108,7 @@ public class Kendall {
     int xk = mid + 1;  //左边序列和右边序列起始索引
     int yk = mid + 1;  //左边序列和右边序列起始索引
     while (xj <= mid && xk <= high) {
-      if (xarr[xj] < xarr[xk]) {
+      if (xarr[xj] < xarr[xk] || (xarr[xj].equals(xarr[xk]) && yarr[xj] <= yarr[xk])) {
         xtmp[xi++] = xarr[xj++];
         ytmp[yi++] = yarr[yj++];
       } else {

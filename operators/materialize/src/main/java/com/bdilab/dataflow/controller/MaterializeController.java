@@ -40,7 +40,8 @@ public class MaterializeController {
 
   @DeleteMapping("/deleteMaterialize")
   @ApiOperation(value = "deleteMaterialize")
-  public ResponseEntity deleteMaterialize(@Valid @RequestParam("materializeId") String materializeId) {
+  public ResponseEntity deleteMaterialize(
+          @Valid @RequestParam("materializeId") String materializeId) {
     return ResponseEntity.ok(materializeJobService.deleteMaterialize(materializeId));
   }
 }

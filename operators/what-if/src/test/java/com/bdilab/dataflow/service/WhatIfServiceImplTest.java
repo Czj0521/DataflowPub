@@ -41,7 +41,7 @@ class WhatIfServiceImplTest {
   @BeforeEach
   public void init(){
     try {
-      whatIfDescription.setCollectors(new String[]{"avg(trans1)", "avg(trans2)", "avg(AQI)", "count(trans2)"});
+//      whatIfDescription.setCollectors(new String[]{"avg(trans1)", "avg(trans2)", "avg(AQI)", "count(trans2)"});
       whatIfDescription.setDataSource(new String[]{"dataflow.airuuid"});
       whatIfDescription.setJobType("base");
 
@@ -68,6 +68,7 @@ class WhatIfServiceImplTest {
   public void testGenerateSql() {
     String baseSql = whatIfService.generateSql(whatIfDescription, null);
 
+    log.debug(baseSql);
     if(("SELECT avg(trans1),avg(trans2),avg(AQI),count(trans2) " +
         "FROM dataflow.airuuid")
         .equals(baseSql)){
@@ -77,6 +78,7 @@ class WhatIfServiceImplTest {
     }
 
     String linkedSql = whatIfService.generateSql(whatIfDescription, expression);
+    log.debug(linkedSql);
     if(("WITH arrayJoin([2,4,6]) as `$new1$`," +
         "arrayJoin([0.0,10.0,20.0,30.0,40.0,50.0,60.0,70.0,80.0,90.0]) as `$new2$`," +
         "((`$new1$` * 0.1) + AQI) as trans1," +

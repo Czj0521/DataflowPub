@@ -29,7 +29,7 @@ public class Expression {
     independentVariables.forEach((idv) -> {
       withSql.append(idv.toWithAs()).append(",");
     });
-    return withSql.substring(0, withSql.length() - 1);
+    return withSql.length() == 0 ? "" : withSql.substring(0, withSql.length() - 1);
   }
 
   /**
@@ -40,7 +40,7 @@ public class Expression {
     dependentVariables.forEach((dv) -> {
       withSql.append(dv.toWithAs()).append(",");
     });
-    return withSql.substring(0, withSql.length() - 1);
+    return withSql.length() == 0 ? "" : withSql.substring(0, withSql.length() - 1);
   }
 
   /**
@@ -51,6 +51,6 @@ public class Expression {
     independentVariables.forEach((independentVar) -> {
       sql.append(independentVar.getIndependentVariableName()).append(",");
     });
-    return sql.substring(0, sql.length() - 1);
+    return sql.length() == 0 ? "" : sql.substring(0, sql.length() - 1);
   }
 }

@@ -3,10 +3,14 @@ package com.bdilab.dataflow.utils;
 import java.util.List;
 
 /**
- * @author : [zhangpeiliang]
- * @description : [Alpha分箱，求字符串从第一个字符开始相同字符的长度+1]
+ * Alpha分箱，求字符串从第一个字符开始相同字符的长度+1.
+ * @ author: [zhangpeiliang]
  */
 public class AlphabeticBinning {
+
+  /**
+   * 求所有字符串从第一个字符开始相同字符的长度+1.
+   */
   public static int  commonIndex(List<String> list) {
     //标志位，出现不一样字符，立即终止循环
     boolean flag = true;

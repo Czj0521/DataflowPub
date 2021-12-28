@@ -7,8 +7,8 @@ import java.util.Map;
 import org.apache.http.HttpStatus;
 
 /**
- * @author : [zhangpeiliang]
- * @description : [统一返回对象]
+ * 统一返回对象.
+ * @ author: [zhangpeiliang]
  */
 public class R extends HashMap<String, Object> {
   private static final long serialVersionUID = 1L;
@@ -26,6 +26,9 @@ public class R extends HashMap<String, Object> {
     return error(HttpStatus.SC_INTERNAL_SERVER_ERROR, msg);
   }
 
+  /**
+   * 出错情况.
+   */
   public static R error(int code, String msg) {
     R r = new R();
     r.put("code", code);
@@ -33,12 +36,18 @@ public class R extends HashMap<String, Object> {
     return r;
   }
 
+  /**
+   * 正常情况，封装String数据.
+   */
   public static R ok(String msg) {
     R r = new R();
     r.put("msg", msg);
     return r;
   }
 
+  /**
+   * 正常情况，封装Map数据.
+   */
   public static R ok(Map<String, Object> map) {
     R r = new R();
     r.putAll(map);
@@ -62,7 +71,9 @@ public class R extends HashMap<String, Object> {
     return (String) this.get("msg");
   }
 
-  //利用fastjson进行反序列化
+  /**
+   * 利用fastjson进行反序列化.
+   */
   public <T> T getData(TypeReference<T> typeReference) {
     Object data = get("data"); //默认是map
     String jsonString = JSON.toJSONString(data);
@@ -70,7 +81,9 @@ public class R extends HashMap<String, Object> {
     return t;
   }
 
-  //利用fastjson进行反序列化
+  /**
+   * 利用fastjson进行反序列化.
+   */
   public <T> T getData(String key, TypeReference<T> typeReference) {
     Object data = get(key); //默认是map
     String jsonString = JSON.toJSONString(data);
@@ -78,4 +91,3 @@ public class R extends HashMap<String, Object> {
     return t;
   }
 }
-

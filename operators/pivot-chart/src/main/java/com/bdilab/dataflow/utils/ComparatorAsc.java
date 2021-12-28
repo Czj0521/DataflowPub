@@ -4,8 +4,8 @@ import java.util.Comparator;
 import java.util.Date;
 
 /**
- * @author : [zhangpeiliang]
- * @description : [升序比较]
+ * 升序比较.
+ * @ author: [zhangpeiliang]
  */
 public class ComparatorAsc implements Comparator<Object> {
 

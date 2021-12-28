@@ -10,7 +10,7 @@ import com.bdilab.dataflow.dto.MetadataOutputJson;
 import com.bdilab.dataflow.dto.OutputData;
 import com.bdilab.dataflow.dto.jobdescription.PivotChartDescription;
 import com.bdilab.dataflow.dto.jobdescription.TransformationDescription;
-import com.bdilab.dataflow.exception.RRException;
+import com.bdilab.dataflow.exception.RunException;
 import com.bdilab.dataflow.service.*;
 import com.bdilab.dataflow.utils.WhatIfUtils;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
@@ -154,16 +154,16 @@ public class ScheduleServiceImpl implements ScheduleService {
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, null);
             break;
           case "chart":
-            String filterInPivotChart = preFilterMap.get(0).toString() + " AND " + parseFilterAndPivot(node);
-            dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filterInPivotChart);
-            JSONObject chartDescription = JSONObject.parseObject(node.getNodeDescription().toString());
+            String filterInChart = preFilterMap.get(0) + " AND " + parseFilterAndPivot(node);
+            dagFilterManager.addOrUpdateFilter(workspaceId, nodeId, filterInChart);
+            JSONObject chartDescription = JSON.parseObject(node.getNodeDescription().toString());
             Boolean onlyUpdateFilter = chartDescription.getBoolean("onlyUpdateFilter");
             if (!onlyUpdateFilter) {
               List<String> brushFilters = brushFilterMap.get(0);
               try {
                 outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
                         pivotChartSavedData(node, brushFilters));
-              } catch (RRException e) {
+              } catch (RunException e) {
                 List<Map<String, Object>> err = new ArrayList<>();
                 Map<String, Object> map = new HashMap<>();
                 map.put(String.valueOf(e.getCode()), e.getMsg());

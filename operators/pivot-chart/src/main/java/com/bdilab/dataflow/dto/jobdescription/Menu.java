@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
- * @author : [zhangpeiliang]
- * @description : [菜单对象]
+ * 菜单对象.
+ * @ author: [zhangpeiliang]
  */
 @Data
 @AllArgsConstructor
@@ -52,8 +52,11 @@ public class Menu {
    * 是否包含0，Numeric类型才使用该字段.
    */
   @ApiModelProperty(value = "是否包含0", example = "true")
-  private Boolean include_zero = false;
+  private Boolean includeZero = false;
 
+  /**
+   * 获取属性重命名.
+   */
   public String getAttributeRenaming() {
     StringBuilder b = new StringBuilder();
     b.append(attribute);

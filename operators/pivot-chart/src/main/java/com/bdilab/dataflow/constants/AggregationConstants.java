@@ -1,8 +1,8 @@
 package com.bdilab.dataflow.constants;
 
 /**
- * @author : [zhangpeiliang]
- * @description : [聚合常量]
+ * 聚合常量.
+ * @ author: [zhangpeiliang]
  */
 public class AggregationConstants {
   public static final String AGGREGATION = "aggregation";

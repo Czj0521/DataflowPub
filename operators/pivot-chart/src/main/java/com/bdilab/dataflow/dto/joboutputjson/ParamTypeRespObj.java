@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author : [zhangpeiliang]
- * @description : [参数类型响应对象]
+ * 参数类型响应对象.
+ * @ author: [zhangpeiliang]
  */
 @Data
 @AllArgsConstructor

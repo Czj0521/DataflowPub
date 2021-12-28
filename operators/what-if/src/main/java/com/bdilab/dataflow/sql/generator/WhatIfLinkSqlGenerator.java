@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.sql.generator;
 
+import com.bdilab.dataflow.consts.WhatIfConstants;
 import com.bdilab.dataflow.dto.jobdescription.WhatIfDescription;
 import com.bdilab.dataflow.dto.pojo.Expression;
 import com.bdilab.dataflow.dto.pojo.independentvariable.BaseIndependentVariable;
@@ -58,7 +59,13 @@ public class WhatIfLinkSqlGenerator extends WhatIfBaseSqlGenerator {
 
   @Override
   public String project() {
-    return "SELECT " + baseVariable.independentVarToString() + "," + projectPostfix();
+    String projectPostfix = projectPostfix();
+    if (WhatIfConstants.EMPTY_TABLE_SELECT.equals(projectPostfix)) {
+      projectPostfix = "";
+    } else {
+      projectPostfix = "," + projectPostfix;
+    }
+    return "SELECT " + baseVariable.independentVarToString() + projectPostfix;
   }
 
   @Override
@@ -70,5 +77,4 @@ public class WhatIfLinkSqlGenerator extends WhatIfBaseSqlGenerator {
   public String group() {
     return "GROUP BY " + baseVariable.independentVarToString();
   }
-
 }

@@ -1,15 +1,8 @@
 package com.bdilab.dataflow.sql.generator;
 
-import com.bdilab.dataflow.dto.Bin;
-import com.bdilab.dataflow.dto.Binarizer;
-import com.bdilab.dataflow.dto.CustomBinning;
-import com.bdilab.dataflow.dto.DataType;
-import com.bdilab.dataflow.dto.Expression;
-import com.bdilab.dataflow.dto.FindReplace;
+import com.alibaba.fastjson.JSONObject;
 import com.bdilab.dataflow.dto.jobdescription.TransformationDescription;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
-import com.google.common.collect.ImmutableList;
-import java.util.List;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -42,75 +35,99 @@ public class TransformationSqlGeneratorTest {
 
   @Before
   public void init() {
-    transformationDescription = new TransformationDescription();
-    transformationDescription.setDataSource(new String[]{"dataflow.promotion_csv"});
-    transformationDescription.setLimit(2000);
-    transformationDescription.setJobType("transformation");
-    transformationSqlGenerator = new TransformationSqlGenerator(transformationDescription);
   }
 
   @Test
   public void testExpression() {
     expression();
-    String sql = transformationSqlGenerator.generateDataSourceSql();
+    String sql = new TransformationSqlGenerator(transformationDescription).generateDataSourceSql();
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
   }
 
   private void expression() {
-    Expression expression1 = new Expression();
-    expression1.setExpression("replaceAll(Married,'married','已婚')");
-    expression1.setNewColumnName("NewMarried1_1");
-    Expression expression2 = new Expression();
-    expression2.setExpression("replaceAll(Married,'single','单身')");
-    expression2.setNewColumnName("NewMarried1_2");
-    List<Expression> list = ImmutableList.of(expression1, expression2);
-    transformationDescription.setExpressions(list);
+    String json = "{\n"
+        + "  \"dataSource\":[\"dataflow.promotion_csv\"],\n"
+        + "  \"limit\":2000,\n"
+        + "  \"jobType\":\"transformation\",\n"
+        + "  \"expressions\":[\n"
+        + "    {\n"
+        + "    \"newColumnName\":\"Married_new\", \n"
+        + "    \"expression\":\"replaceAll(Married,'married','已婚')\",\n"
+        + "    \"isWhatIf\":false \n"
+        + "    }\n"
+        + "  ]\n"
+        + "}";
+    transformationDescription = JSONObject.parseObject(json, TransformationDescription.class);
   }
 
   @Test
   public void testFindReplace() {
     findReplace();
-    String sql = transformationSqlGenerator.generateDataSourceSql();
+    String sql = new TransformationSqlGenerator(transformationDescription).generateDataSourceSql();
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
   }
 
   private void findReplace() {
-    FindReplace findReplace = new FindReplace();
-    findReplace.setSearchInColumnName("Married");
-    findReplace.setSearch("single");
-    findReplace.setNewColumnName("NewMarried2");
-    findReplace.setReplaceWith("单身");
-    List<FindReplace> list = ImmutableList.of(findReplace);
-    transformationDescription.setFindReplaces(list);
+    String json = "{\n"
+        + "  \"dataSource\":[\"dataflow.promotion_csv\"],\n"
+        + "  \"limit\":2000,\n"
+        + "  \"jobType\":\"transformation\",\n"
+        + "  \"findReplaces\":[\n"
+        + "    {\n"
+        + "      \"searchInColumnName\":\"Married\" ,\n"
+        + "      \"newColumnName\":\"Married_new\",\n"
+        + "      \"searchReplaceMap\":{\n"
+        + "      \t\"married\":\"已婚\",\n"
+        + "        \"single\":\"单身\"\n"
+        + "      }\n"
+        + "    }\n"
+        + "  ]\n"
+        + "}";
+    transformationDescription = JSONObject.parseObject(json, TransformationDescription.class);
   }
 
   @Test
   public void testBinarizer() {
     binarizer();
-    String sql = transformationSqlGenerator.generateDataSourceSql();
+    String sql = new TransformationSqlGenerator(transformationDescription).generateDataSourceSql();
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
   }
 
   private void binarizer() {
-    Binarizer binarizer = new Binarizer();
-    binarizer.setNewColumnName("NewMarried3");
-    binarizer.setFilter("Married = 'single'");
-    List<Binarizer> list = ImmutableList.of(binarizer);
-    transformationDescription.setBinarizers(list);
+    String json = "{\n"
+        + "   \"dataSource\":[\"dataflow.promotion_csv\"],\n"
+        + "  \"limit\":2000,\n"
+        + "  \"jobType\":\"transformation\",\n"
+        + "  \"binarizers\":[\n"
+        + "    {\n"
+        + "      \"newColumnName\":\"IsGoodCredit\",\n"
+        + "      \"filter\":\"CreditScore>700\"\n"
+        + "    }\n"
+        + "  ]\n"
+        + "}";
+    transformationDescription = JSONObject.parseObject(json, TransformationDescription.class);
+
   }
 
   @Test
   public void testDataType() {
-    // todo 语法错误
-    DataType dataType = new DataType();
-    dataType.setColumnName("DealerId");
-    dataType.setDataType("Int32");
-    List<DataType> list = ImmutableList.of(dataType);
-    transformationDescription.setDataTypes(list);
-    String sql = transformationSqlGenerator.generateDataSourceSql();
+    String json = "{\n"
+        + "  \"dataSource\":[\"dataflow.promotion_csv\"],\n"
+        + "  \"limit\":2000,\n"
+        + "  \"jobType\":\"transformation\",\n"
+        + "  \"dataTypes\":[\n"
+        + "    {\n"
+        + "\t\t\t\"columnName\":\"LeasePrice\",\n"
+        + "      \"newColumnName\":\"LeasePrice_Int\",\n"
+        + "      \"dataType\":\"double\" \n"
+        + "    }\n"
+        + "  ]\n"
+        + "}";
+    transformationDescription = JSONObject.parseObject(json, TransformationDescription.class);
+    String sql = new TransformationSqlGenerator(transformationDescription).generateDataSourceSql();
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
   }
@@ -118,31 +135,45 @@ public class TransformationSqlGeneratorTest {
   @Test
   public void testCustomBinning() {
     customBinning();
-    String sql = transformationSqlGenerator.generateDataSourceSql();
+    String sql = new TransformationSqlGenerator(transformationDescription).generateDataSourceSql();
     log.info(sql);
     clickHouseJdbcUtils.queryForList(sql);
   }
 
   private void customBinning() {
-    CustomBinning customBinning = new CustomBinning();
-    customBinning.setNewColumnName("NewMarried4");
-    customBinning.setDefaultBin("-1");
-    customBinning.setIsNumeric(true);
-    customBinning.setBins(
-        ImmutableList.of(new Bin("1", "Married = 'single'"), new Bin("2", "Married = 'married'")));
-    transformationDescription.setCustomBinnings(ImmutableList.of(customBinning));
+    String json = "{\n"
+        + "  \"dataSource\":[\"dataflow.promotion_csv\"],\n"
+        + "  \"limit\":2000,\n"
+        + "  \"jobType\":\"transformation\",\n"
+        + "  \"customBinnings\":[\n"
+        + "    {\n"
+        + "\t\t\t\"newColumnName\":\"Credit\",\n"
+        + "      \"defaultBin\":\"' '\",\n"
+        + "      \"isNumeric\": true,\n"
+        + "      \"bins\":[\n"
+        + "        {\n"
+        + "          \"binValue\":\"'信用极好'\",\n"
+        + "          \"filter\":\"CreditScore >= 800\"\n"
+        + "        },\n"
+        + "        {\n"
+        + "          \"binValue\":\"'信用好'\",\n"
+        + "          \"filter\":\"CreditScore < 800 And CreditScore >= 600 \"\n"
+        + "        },\n"
+        + "        {\n"
+        + "          \"binValue\":\"'信用中等'\",\n"
+        + "          \"filter\":\"CreditScore < 600 And CreditScore >= 400 \"\n"
+        + "        },\n"
+        + "         {\n"
+        + "          \"binValue\":\"'信用差'\",\n"
+        + "          \"filter\":\"CreditScore < 400\"\n"
+        + "        }\n"
+        + "      ]\n"
+        + "    }\n"
+        + "  ]\n"
+        + "}";
+    transformationDescription = JSONObject.parseObject(json, TransformationDescription.class);
 
   }
 
-  @Test
-  public void testAll() {
-    customBinning();
-    findReplace();
-    expression();
-    binarizer();
-    String sql = transformationSqlGenerator.generateDataSourceSql();
-    log.info(sql);
-    clickHouseJdbcUtils.queryForList(sql);
-  }
 }
 

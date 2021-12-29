@@ -1,5 +1,6 @@
 package com.bdilab.dataflow.sql.generator;
 
+import com.bdilab.dataflow.consts.WhatIfConstants;
 import com.bdilab.dataflow.dto.jobdescription.WhatIfDescription;
 import com.bdilab.dataflow.operator.dto.jobdescription.SqlGeneratorBase;
 import com.bdilab.dataflow.utils.SqlParseUtils;
@@ -21,7 +22,7 @@ public class WhatIfBaseSqlGenerator extends SqlGeneratorBase {
   protected String projectPostfix() {
     String[] collectors = whatIfDescription.getCollectors();
     if (collectors == null || collectors.length == 0) {
-      throw new RuntimeException("What-If is not ready !");
+      return WhatIfConstants.EMPTY_TABLE_SELECT;
     }
     return SqlParseUtils.combineWithSeparator(collectors, ",");
   }

@@ -1,8 +1,8 @@
 package com.bdilab.dataflow.constants;
 
 /**
- * @author : [zhangpeiliang]
- * @description : [分箱常量]
+ * 分箱常量.
+ * @ author: [zhangpeiliang]
  */
 public class BinningConstants {
   public static final String BIN = "bin";
@@ -26,6 +26,4 @@ public class BinningConstants {
   public static final String MONTH = "month";
 
   public static final String YEAR = "year";
-
-
 }

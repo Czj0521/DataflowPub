@@ -4,19 +4,18 @@ import com.bdilab.dataflow.constants.AggregationConstants;
 import com.bdilab.dataflow.constants.Communal;
 import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import io.swagger.annotations.ApiModel;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
- * @author : [zhangpeiliang]
- * @description : [透视图描述对象]
+ * 透视图描述对象.
+ * @ author: [zhangpeiliang]
  */
 @Data
 @AllArgsConstructor
@@ -50,7 +49,7 @@ public class PivotChartDescription extends JobDescription {
       if (!menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
         if (menu.getMenu().equalsIgnoreCase("column")) {
           Menu rowMenu = map.get(menu.getAttributeRenaming());
-          if (!(rowMenu!= null && rowMenu.getMenu().equalsIgnoreCase("row"))) {
+          if (!(rowMenu != null && rowMenu.getMenu().equalsIgnoreCase("row"))) {
             map.put(menu.getAttributeRenaming(), menu);
           }
         } else {
@@ -85,19 +84,19 @@ public class PivotChartDescription extends JobDescription {
     int flag = 0;
     String column = null;
     for (Menu menu : menus) {
-      if (menu.getMenu().equalsIgnoreCase("row") ||
-              menu.getMenu().equalsIgnoreCase("column")) {
+      if (menu.getMenu().equalsIgnoreCase("row")
+              || menu.getMenu().equalsIgnoreCase("column")) {
         if (!menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
           return null;
         }
       }
 
-      if (menu.getMenu().equalsIgnoreCase("x-axis") ||
-              menu.getMenu().equalsIgnoreCase("y-axis")) {
+      if (menu.getMenu().equalsIgnoreCase("x-axis")
+              || menu.getMenu().equalsIgnoreCase("y-axis")) {
         if (!menu.getAggregation().equalsIgnoreCase(Communal.NONE)) {
           flag++;
-          if (menu.getAggregation().equalsIgnoreCase(AggregationConstants.COUNT) ||
-                  menu.getAggregation().equalsIgnoreCase(AggregationConstants.DISTINCT_COUNT)) {
+          if (menu.getAggregation().equalsIgnoreCase(AggregationConstants.COUNT)
+                  || menu.getAggregation().equalsIgnoreCase(AggregationConstants.DISTINCT_COUNT)) {
             column = menu.getAttributeRenaming();
           }
         }
@@ -109,5 +108,4 @@ public class PivotChartDescription extends JobDescription {
     }
     return column;
   }
-
 }

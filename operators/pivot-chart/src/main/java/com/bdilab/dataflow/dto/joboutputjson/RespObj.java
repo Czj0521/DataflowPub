@@ -7,8 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author : [zhangpeiliang]
- * @description : [响应对象]
+ * 响应对象.
+ * @ author: [zhangpeiliang]
  */
 @Data
 @AllArgsConstructor

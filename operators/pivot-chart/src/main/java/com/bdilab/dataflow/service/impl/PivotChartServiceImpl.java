@@ -9,17 +9,26 @@ import com.bdilab.dataflow.dto.jobdescription.PivotChartDescription;
 import com.bdilab.dataflow.dto.joboutputjson.ParamTypeRespObj;
 import com.bdilab.dataflow.dto.joboutputjson.RespObj;
 import com.bdilab.dataflow.exception.BizCodeEnum;
-import com.bdilab.dataflow.exception.RRException;
+import com.bdilab.dataflow.exception.RunException;
 import com.bdilab.dataflow.service.PivotChartService;
 import com.bdilab.dataflow.sql.generator.PivotChartSqlGenerator;
-import com.bdilab.dataflow.utils.*;
+import com.bdilab.dataflow.utils.ComparatorAsc;
+import com.bdilab.dataflow.utils.ComparatorDesc;
+import com.bdilab.dataflow.utils.DataUtil;
+import com.bdilab.dataflow.utils.DatetimeBinning;
+import com.bdilab.dataflow.utils.LocalUtil;
+import com.bdilab.dataflow.utils.R;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
-
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +36,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * @author : [zhangpeiliang]
- * @description : [Service实现类]
+ * Service实现类.
+ * @ author: [zhangpeiliang]
  */
 @Slf4j
 @Service
@@ -53,7 +62,8 @@ public class PivotChartServiceImpl implements PivotChartService {
     //对每个菜单进行处理
     for (Menu menu : description.getMenus()) {
       //如果菜单属性为none，直接跳过该菜单，处理下一个菜单
-      if (StringUtils.isEmpty(menu.getAttribute()) || menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
+      if (StringUtils.isEmpty(menu.getAttribute())
+              || menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
         continue;
       }
 
@@ -73,7 +83,8 @@ public class PivotChartServiceImpl implements PivotChartService {
       handleSort(menu, respObj, columnList);
 
       //处理分箱
-      if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equalsIgnoreCase(Communal.NONE)) {
+      if (!StringUtils.isEmpty(menu.getBinning())
+              && !menu.getBinning().equalsIgnoreCase(Communal.NONE)) {
         switch (menu.getBinning()) {
           case BinningConstants.ALPHABETIC_BINNING:
             respObj.setValues(columnList.stream().map(item -> menu.getAttribute() + Communal.BLANK
@@ -84,7 +95,8 @@ public class PivotChartServiceImpl implements PivotChartService {
                     + SqlConstants.EQUAL + Communal.BLANK + item).collect(Collectors.toList()));
             break;
           case BinningConstants.EQUI_WIDTH_BINNING:
-            List<Set<Object>> equiWidthBinningSetList = PivotChartSqlGenerator.EquiWidthBinningSetThreadLocal.get();
+            List<Set<Object>> equiWidthBinningSetList
+                    = PivotChartSqlGenerator.EquiWidthBinningSetThreadLocal.get();
             Set<Object> equiWidthBinningSet = equiWidthBinningSetList.get(0);
             equiWidthBinningSetList.remove(0);
             //等宽分箱，箱子集合排序要单独处理
@@ -93,7 +105,8 @@ public class PivotChartServiceImpl implements PivotChartService {
             respObj.setValues(DataUtil.values(columnList, equiWidthBinningSet));
             break;
           case BinningConstants.NATURAL_BINNING:
-            List<Set<Object>> naturalBinningSetList = PivotChartSqlGenerator.NaturalBinningSetThreadLocal.get();
+            List<Set<Object>> naturalBinningSetList
+                    = PivotChartSqlGenerator.NaturalBinningSetThreadLocal.get();
             Set<Object> naturalBinningSet = naturalBinningSetList.get(0);
             naturalBinningSetList.remove(0);
             //自然分箱，箱子集合排序要单独处理
@@ -117,7 +130,7 @@ public class PivotChartServiceImpl implements PivotChartService {
             respObj.setValues(getDate(mapList));
             break;
           default:
-            throw new RRException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg(),
+            throw new RunException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg(),
                     BizCodeEnum.INVALID_BINNING_TYPE.getCode());
         }
       } else {
@@ -135,7 +148,7 @@ public class PivotChartServiceImpl implements PivotChartService {
   }
 
   /**
-   * 对日期分箱数据进行处理
+   * 对日期分箱数据进行处理.
    */
   private List<Object> getDate(List<Map<String, Object>> mapList) {
     List<Object> dateList = new ArrayList<>();
@@ -151,7 +164,7 @@ public class PivotChartServiceImpl implements PivotChartService {
   }
 
   /**
-   * 处理排序
+   * 处理排序.
    */
   private void handleSort(Menu menu, RespObj respObj, Collection<?> columnList) {
     if (!StringUtils.isEmpty(menu.getSort())) {
@@ -170,49 +183,47 @@ public class PivotChartServiceImpl implements PivotChartService {
           respObj.setDistinctValues(distinctSetDesc);
           break;
         default:
-          throw new RRException(BizCodeEnum.INVALID_SORT_TYPE.getMsg(),
+          throw new RunException(BizCodeEnum.INVALID_SORT_TYPE.getMsg(),
                   BizCodeEnum.INVALID_SORT_TYPE.getCode());
       }
     }
   }
 
   /**
-   * 联动场景的pivot-chart，pivot-chart输出同filter，无需保存到clickhouse，只返回节点数据
-   * @param description chart描述
-   * @param brushFilters 用于画刷的过滤条件集合
-   * @return 响应数据
+   * 联动场景的pivot-chart，pivot-chart输出同filter，无需保存到clickhouse，只返回节点数据.
+   * @ param description chart描述.
+   * @ param brushFilters 用于画刷的过滤条件集合.
+   * @ return 响应数据.
    */
   @Override
-  public List<Map<String, Object>> saveToClickHouse(PivotChartDescription description, List<String> brushFilters) {
+  public List<Map<String, Object>> saveToClickHouse(PivotChartDescription description,
+                                                    List<String> brushFilters) {
     //请求对象效验
     verify(description);
-
-    //sql生成
-    PivotChartSqlGenerator pivotChartSqlGenerator = new PivotChartSqlGenerator(description);
-    String sql = pivotChartSqlGenerator.generateSql(brushFilters);
 
     //最终返回的结果集合
     List<Map<String, Object>> results = new ArrayList<>();
 
     //集合中第一个map为信息map，返回菜单选择信息
     Map<String, Object> infoMap = description.getInfoMap();
-    infoMap.put(Communal.TRUNCATED_NUM, PivotChartSqlGenerator.TRUNCATED_NUM);
-    if (!CollectionUtils.isEmpty(PivotChartSqlGenerator.brushFilters)) {
-      infoMap.put("color", "brush");
-    }
     results.add(infoMap);
 
+    //sql生成
+    PivotChartSqlGenerator pivotChartSqlGenerator = new PivotChartSqlGenerator(description);
+    String sql = pivotChartSqlGenerator.generateSql(brushFilters);
     if (!StringUtils.isEmpty(sql)) {
       List<Map<String, Object>> queryListMap = clickHouseJdbcUtils.queryForList(sql);
       if (queryListMap.size() > 0) {
         //对每个菜单进行处理
         for (Menu menu : description.getInputMenus()) {
           //如果菜单属性为none，直接跳过该菜单，处理下一个菜单
-          if (StringUtils.isEmpty(menu.getAttribute()) || menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
+          if (StringUtils.isEmpty(menu.getAttribute())
+                  || menu.getAttribute().equalsIgnoreCase(Communal.NONE)) {
             continue;
           }
 
-          if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equalsIgnoreCase(Communal.NONE)) {
+          if (!StringUtils.isEmpty(menu.getBinning())
+                  && !menu.getBinning().equalsIgnoreCase(Communal.NONE)) {
             StringBuilder sb;
             String renaming = menu.getAttributeRenaming();
             for (Map<String, Object> map : queryListMap) {
@@ -220,18 +231,22 @@ public class PivotChartServiceImpl implements PivotChartService {
                 case BinningConstants.ALPHABETIC_BINNING:
                   sb = new StringBuilder();
                   map.put(renaming, sb.append(menu.getAttribute()).append(Communal.BLANK)
-                          .append(Communal.STARTS_WITH).append(Communal.BLANK).append(map.get(renaming)));
+                          .append(Communal.STARTS_WITH).append(Communal.BLANK)
+                          .append(map.get(renaming)));
                   break;
                 case BinningConstants.NOMINAL_BINNING:
                   sb = new StringBuilder();
                   map.put(renaming, sb.append(menu.getAttribute()).append(Communal.BLANK)
-                          .append(SqlConstants.EQUAL).append(Communal.BLANK).append(map.get(renaming)));
+                          .append(SqlConstants.EQUAL).append(Communal.BLANK)
+                          .append(map.get(renaming)));
                   break;
                 case BinningConstants.EQUI_WIDTH_BINNING:
-                  handleBinning(renaming, map, PivotChartSqlGenerator.EquiWidthBinningSetThreadLocal.get());
+                  handleBinning(renaming, map,
+                          PivotChartSqlGenerator.EquiWidthBinningSetThreadLocal.get());
                   break;
                 case BinningConstants.NATURAL_BINNING:
-                  handleBinning(renaming, map, PivotChartSqlGenerator.NaturalBinningSetThreadLocal.get());
+                  handleBinning(renaming, map,
+                          PivotChartSqlGenerator.NaturalBinningSetThreadLocal.get());
                   break;
                 case BinningConstants.SECOND:
                 case BinningConstants.MINUTE:
@@ -248,7 +263,7 @@ public class PivotChartServiceImpl implements PivotChartService {
                   map.put(renaming, dateBinningList);
                   break;
                 default:
-                  throw new RRException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg(),
+                  throw new RunException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg(),
                           BizCodeEnum.INVALID_BINNING_TYPE.getCode());
               }
             }
@@ -267,35 +282,47 @@ public class PivotChartServiceImpl implements PivotChartService {
               case BinningConstants.YEAR:
                 DatetimeBinning.DateTimeListThreadLocal.get().remove(0);
                 break;
+              default:
+                break;
             }
           }
         }
         results.addAll(queryListMap);
       }
     }
+    //信息map放入计算后的截断数据
+    infoMap.put(Communal.TRUNCATED_NUM, PivotChartSqlGenerator.TRUNCATED_NUM);
+    //如果brushFilters集合不为空，color菜单前端不显示，用于展示brush
+    if (!CollectionUtils.isEmpty(PivotChartSqlGenerator.brushFilters)) {
+      infoMap.put("color", "brush");
+    }
+    //完成封装后，清空已有数据，准备下一次计算
+    PivotChartSqlGenerator.TRUNCATED_NUM = 0L;
+    PivotChartSqlGenerator.brushFilters = null;
     return results;
   }
 
-  private void handleBinning(String renaming, Map<String, Object> map, List<Set<Object>> binningSetList) {
+  private void handleBinning(String renaming, Map<String, Object> map,
+                             List<Set<Object>> binningSetList) {
     if (binningSetList.size() > 0) {
       Set<Object> binningSet = binningSetList.get(0);
-      List<Object> binningList= new ArrayList<>(binningSet);
+      List<Object> binningList = new ArrayList<>(binningSet);
       int preIndex = binningList.indexOf(map.get(renaming));
       int nextIndex = preIndex + 1;
       List<Object> resultBinningList = new ArrayList<>();
       resultBinningList.add(binningList.get(preIndex));
       resultBinningList.add(binningList.get(nextIndex));
-      map.put(renaming,resultBinningList);
+      map.put(renaming, resultBinningList);
     }
   }
 
   @Override
-  public ParamTypeRespObj getType(String type,String language) {
+  public ParamTypeRespObj getType(String type, String language) {
     ParamTypeRespObj respObj = new ParamTypeRespObj();
     List<String> strList = new ArrayList<>();
     List<String> booleanOrDateList = new ArrayList<>();
     List<String> numericList = new ArrayList<>();
-    if(language.equalsIgnoreCase("english")){
+    if (language.equalsIgnoreCase("english")) {
       switch (type) {
         case AggregationConstants.AGGREGATION:
           strList.add(Communal.NONE);
@@ -342,95 +369,100 @@ public class PivotChartServiceImpl implements PivotChartService {
           respObj.setDate(booleanOrDateList);
           break;
         default:
-          throw new RRException("wrong type!");
+          throw new RunException("wrong type!");
       }
-    }else if(language.equalsIgnoreCase("chinese")){
+    } else if (language.equalsIgnoreCase("chinese")) {
       switch (type) {
         case AggregationConstants.AGGREGATION:
-          strList.add(LocalUtil.getENVersion("pivot.none"));
-          strList.add(LocalUtil.getENVersion("pivot.count"));
-          strList.add(LocalUtil.getENVersion("pivot.distinct_count"));
+          strList.add(LocalUtil.getEnVersion("pivot.none"));
+          strList.add(LocalUtil.getEnVersion("pivot.count"));
+          strList.add(LocalUtil.getEnVersion("pivot.distinct_count"));
           respObj.setString(strList);
           respObj.setDate(strList);
 
-          booleanOrDateList.add(LocalUtil.getENVersion(Communal.NONE));
-          booleanOrDateList.add(LocalUtil.getENVersion("pivot.count"));
-          booleanOrDateList.add(LocalUtil.getENVersion("pivot.distinct_count"));
-          booleanOrDateList.add(LocalUtil.getENVersion("pivot.average"));
+          booleanOrDateList.add(LocalUtil.getEnVersion(Communal.NONE));
+          booleanOrDateList.add(LocalUtil.getEnVersion("pivot.count"));
+          booleanOrDateList.add(LocalUtil.getEnVersion("pivot.distinct_count"));
+          booleanOrDateList.add(LocalUtil.getEnVersion("pivot.average"));
           respObj.setBooleans(booleanOrDateList);
 
-          numericList.add(LocalUtil.getENVersion(Communal.NONE));
-          numericList.add(LocalUtil.getENVersion("pivot.count"));
-          numericList.add(LocalUtil.getENVersion("pivot.distinct_count"));
-          numericList.add(LocalUtil.getENVersion("pivot.average"));
-          numericList.add(LocalUtil.getENVersion("pivot.sum"));
-          numericList.add(LocalUtil.getENVersion("pivot.min"));
-          numericList.add(LocalUtil.getENVersion("pivot.max"));
-          numericList.add(LocalUtil.getENVersion("pivot.standard_dev"));
+          numericList.add(LocalUtil.getEnVersion(Communal.NONE));
+          numericList.add(LocalUtil.getEnVersion("pivot.count"));
+          numericList.add(LocalUtil.getEnVersion("pivot.distinct_count"));
+          numericList.add(LocalUtil.getEnVersion("pivot.average"));
+          numericList.add(LocalUtil.getEnVersion("pivot.sum"));
+          numericList.add(LocalUtil.getEnVersion("pivot.min"));
+          numericList.add(LocalUtil.getEnVersion("pivot.max"));
+          numericList.add(LocalUtil.getEnVersion("pivot.standard_dev"));
           respObj.setNumeric(numericList);
           break;
         case BinningConstants.BIN:
-          strList.add(LocalUtil.getENVersion("pivot.none"));
-          strList.add(LocalUtil.getENVersion("pivot.AlphabeticBinning"));
-          strList.add(LocalUtil.getENVersion("pivot.NominalBinning"));
+          strList.add(LocalUtil.getEnVersion("pivot.none"));
+          strList.add(LocalUtil.getEnVersion("pivot.AlphabeticBinning"));
+          strList.add(LocalUtil.getEnVersion("pivot.NominalBinning"));
           respObj.setString(strList);
           respObj.setBooleans(strList);
 
-          numericList.add(LocalUtil.getENVersion("pivot.none"));
-          numericList.add(LocalUtil.getENVersion("pivot.EquiWidthBinning"));
-          numericList.add(LocalUtil.getENVersion("pivot.NaturalBinning"));
+          numericList.add(LocalUtil.getEnVersion("pivot.none"));
+          numericList.add(LocalUtil.getEnVersion("pivot.EquiWidthBinning"));
+          numericList.add(LocalUtil.getEnVersion("pivot.NaturalBinning"));
           respObj.setNumeric(numericList);
 
-          booleanOrDateList.add(LocalUtil.getENVersion("pivot.none"));
-          booleanOrDateList.add(LocalUtil.getENVersion("pivot.second"));
-          booleanOrDateList.add(LocalUtil.getENVersion("pivot.minute"));
-          booleanOrDateList.add(LocalUtil.getENVersion("pivot.hour"));
-          booleanOrDateList.add(LocalUtil.getENVersion("pivot.day"));
-          booleanOrDateList.add(LocalUtil.getENVersion("pivot.month"));
-          booleanOrDateList.add(LocalUtil.getENVersion("pivot.year"));
+          booleanOrDateList.add(LocalUtil.getEnVersion("pivot.none"));
+          booleanOrDateList.add(LocalUtil.getEnVersion("pivot.second"));
+          booleanOrDateList.add(LocalUtil.getEnVersion("pivot.minute"));
+          booleanOrDateList.add(LocalUtil.getEnVersion("pivot.hour"));
+          booleanOrDateList.add(LocalUtil.getEnVersion("pivot.day"));
+          booleanOrDateList.add(LocalUtil.getEnVersion("pivot.month"));
+          booleanOrDateList.add(LocalUtil.getEnVersion("pivot.year"));
           respObj.setDate(booleanOrDateList);
           break;
         default:
-          throw new RRException("wrong type!");
+          throw new RunException("wrong type!");
       }
     }
     return respObj;
   }
 
   /**
-   * 请求对象效验
+   * 请求对象效验.
    */
   private void verify(PivotChartDescription description) {
     Set<String> menus = new HashSet<>();
     if (description.getMenus().length != 6) {
-      throw new RRException(BizCodeEnum.MENU_NUM_EXCEPTION.getMsg(), BizCodeEnum.MENU_NUM_EXCEPTION.getCode());
+      throw new RunException(BizCodeEnum.MENU_NUM_EXCEPTION.getMsg(),
+              BizCodeEnum.MENU_NUM_EXCEPTION.getCode());
     }
     for (Menu menu : description.getMenus()) {
-      menus.add(menu.getMenu());
+      String menuName = menu.getMenu();
+      menus.add(menuName);
       if (!StringUtils.isEmpty(menu.getAttribute()) && !menu.getAttribute().equals(Communal.NONE)) {
-        if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equals(Communal.NONE) &&
-                !StringUtils.isEmpty(menu.getAggregation()) && !menu.getAggregation().equals(Communal.NONE)) {
-          throw new RRException(menu.getMenu() + BizCodeEnum.MENU_BOTH_BIN_AGR_EXCEPTION.getMsg(),
+        if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equals(Communal.NONE)
+                && !StringUtils.isEmpty(menu.getAggregation())
+                && !menu.getAggregation().equals(Communal.NONE)) {
+          throw new RunException(menuName + BizCodeEnum.MENU_BOTH_BIN_AGR_EXCEPTION.getMsg(),
                   BizCodeEnum.MENU_BOTH_BIN_AGR_EXCEPTION.getCode());
         }
         checkType(menu);
       } else {
-        if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equals(Communal.NONE) ||
-                !StringUtils.isEmpty(menu.getAggregation()) && !menu.getAggregation().equals(Communal.NONE) ||
-                !StringUtils.isEmpty(menu.getSort()) && !menu.getSort().equals(Communal.NONE)) {
-          throw new RRException(menu.getMenu() + BizCodeEnum.MENU_NONE_ATTRIBUTE_EXCEPTION.getMsg(),
+        if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equals(Communal.NONE)
+                || !StringUtils.isEmpty(menu.getAggregation())
+                && !menu.getAggregation().equals(Communal.NONE)
+                || !StringUtils.isEmpty(menu.getSort())
+                && !menu.getSort().equals(Communal.NONE)) {
+          throw new RunException(menuName + BizCodeEnum.MENU_NONE_ATTRIBUTE_EXCEPTION.getMsg(),
                   BizCodeEnum.MENU_NONE_ATTRIBUTE_EXCEPTION.getCode());
         }
       }
     }
     if (menus.size() != 6) {
-      throw new RRException(BizCodeEnum.MENU_REPEAT_EXCEPTION.getMsg(),
+      throw new RunException(BizCodeEnum.MENU_REPEAT_EXCEPTION.getMsg(),
               BizCodeEnum.MENU_REPEAT_EXCEPTION.getCode());
     }
   }
 
   private void checkType(Menu menu) {
-    if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equals(Communal.NONE)){
+    if (!StringUtils.isEmpty(menu.getBinning()) && !menu.getBinning().equals(Communal.NONE)) {
       switch (menu.getBinning()) {
         case BinningConstants.ALPHABETIC_BINNING:
         case BinningConstants.NOMINAL_BINNING:
@@ -444,13 +476,14 @@ public class PivotChartServiceImpl implements PivotChartService {
         case BinningConstants.YEAR:
           break;
         default:
-          throw new RRException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg() + menu.getMenu(),
+          throw new RunException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg() + menu.getMenu(),
                   BizCodeEnum.INVALID_BINNING_TYPE.getCode());
       }
     }
 
-    if (!StringUtils.isEmpty(menu.getAggregation()) && !menu.getAggregation().equals(Communal.NONE)){
-      switch (menu.getAggregation()){
+    if (!StringUtils.isEmpty(menu.getAggregation())
+            && !menu.getAggregation().equals(Communal.NONE)) {
+      switch (menu.getAggregation()) {
         case AggregationConstants.COUNT:
         case AggregationConstants.DISTINCT_COUNT:
         case AggregationConstants.AVERAGE:
@@ -460,18 +493,18 @@ public class PivotChartServiceImpl implements PivotChartService {
         case AggregationConstants.STANDARD_DEV:
           break;
         default:
-          throw new RRException(BizCodeEnum.INVALID_AGGREGATION_TYPE.getMsg() + menu.getMenu(),
+          throw new RunException(BizCodeEnum.INVALID_AGGREGATION_TYPE.getMsg() + menu.getMenu(),
                   BizCodeEnum.INVALID_AGGREGATION_TYPE.getCode());
       }
     }
 
-    if (!StringUtils.isEmpty(menu.getSort()) && !menu.getSort().equals(Communal.NONE)){
-      switch (menu.getSort()){
+    if (!StringUtils.isEmpty(menu.getSort()) && !menu.getSort().equals(Communal.NONE)) {
+      switch (menu.getSort()) {
         case SqlConstants.ASC:
         case SqlConstants.DESC:
           break;
         default:
-          throw new RRException(BizCodeEnum.INVALID_SORT_TYPE.getMsg() + menu.getMenu(),
+          throw new RunException(BizCodeEnum.INVALID_SORT_TYPE.getMsg() + menu.getMenu(),
                   BizCodeEnum.INVALID_SORT_TYPE.getCode());
       }
     }

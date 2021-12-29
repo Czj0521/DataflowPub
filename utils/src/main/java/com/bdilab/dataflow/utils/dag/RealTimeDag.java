@@ -316,7 +316,8 @@ public class RealTimeDag {
       case DagConstants.BRUSH_LINE:
         if (!OperatorOutputTypeEnum.isChart(preNode.getNodeType())
             || !OperatorOutputTypeEnum.isChart(nextNode.getNodeType())) {
-          throw new RuntimeException("For brush edge, both of output and input node must be Chart !");
+          throw new RuntimeException(
+                  "For brush edge, both of output and input node must be Chart !");
         }
         break;
       default:

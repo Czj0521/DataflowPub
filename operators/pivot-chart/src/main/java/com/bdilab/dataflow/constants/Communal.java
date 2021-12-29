@@ -1,8 +1,8 @@
 package com.bdilab.dataflow.constants;
 
 /**
- * @author : [zhangpeiliang]
- * @description : [公共常量]
+ * 公共常量.
+ * @ author: [zhangpeiliang]
  */
 public class Communal {
   public static final String NONE = "none";

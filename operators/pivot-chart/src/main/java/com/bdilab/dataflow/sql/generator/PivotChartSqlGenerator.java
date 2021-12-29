@@ -7,21 +7,29 @@ import com.bdilab.dataflow.constants.SqlConstants;
 import com.bdilab.dataflow.dto.jobdescription.Menu;
 import com.bdilab.dataflow.dto.jobdescription.PivotChartDescription;
 import com.bdilab.dataflow.exception.BizCodeEnum;
-import com.bdilab.dataflow.exception.RRException;
+import com.bdilab.dataflow.exception.RunException;
 import com.bdilab.dataflow.operator.dto.jobdescription.SqlGeneratorBase;
-import com.bdilab.dataflow.utils.*;
+import com.bdilab.dataflow.utils.AlphabeticBinning;
+import com.bdilab.dataflow.utils.ComparatorAsc;
+import com.bdilab.dataflow.utils.DatetimeBinning;
+import com.bdilab.dataflow.utils.EquiWidthBinning;
+import com.bdilab.dataflow.utils.Kmeans;
+import com.bdilab.dataflow.utils.SpringUtil;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
-
 import java.text.MessageFormat;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * @author : [zhangpeiliang]
- * @description : [透视图SQL解析类]
+ * 透视图Sql解析类.
+ * @ author: [zhangpeiliang]
  */
 @Slf4j
 public class PivotChartSqlGenerator extends SqlGeneratorBase {
@@ -81,6 +89,9 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
 
   public static List<String> brushFilters = null;
 
+  /**
+   * PivotChart Sql生成类构造函数，用于初始化数据.
+   */
   public PivotChartSqlGenerator(PivotChartDescription description) {
     super(description);
     if (description.getDataSource().length == 1) {
@@ -103,7 +114,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
   }
 
   /**
-   * 生成SQL.
+   * 生成Sql.
    */
   public String generateSql(List<String> inputBrushFilters) {
     if (StringUtils.isEmpty(this.datasource) || menus.size() == 0) {
@@ -151,7 +162,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
     //group集合为空，说明所有菜单选择均是属性聚合，而没有选择单纯的属性或属性分箱
     if (groupSet.size() == 0) {
       String column = menus.get(menus.size() - 1).getAttributeRenaming();
-      throw new RRException(BizCodeEnum.CANNOT_FIND_COLUMN.getMsg() + column,
+      throw new RunException(BizCodeEnum.CANNOT_FIND_COLUMN.getMsg() + column,
               BizCodeEnum.CANNOT_FIND_COLUMN.getCode());
     }
 
@@ -187,7 +198,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
         orderBy = SqlConstants.ORDER_BY + extractSegment(groupSet);
       }
 
-      //分析菜单得到的初始sql
+      //分析菜单得到的初始Sql
       String originFullSql =  sql + Communal.BLANK + SqlConstants.FROM + datasource
               + Communal.BLANK + groupBy + Communal.BLANK + orderBy;
       String originPartSql;
@@ -197,7 +208,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
         originPartSql = getPartSql(originFullSql);
       }
 
-      //拼接成最终sql
+      //拼接成最终Sql
       String finalSql;
       String replace = originPartSql.replaceFirst(Communal.BLANK + SqlConstants.FROM,
               ",round(" + columnForPercentage + "/S*100,2) "
@@ -205,7 +216,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
 
       if (!StringUtils.isEmpty(columnForPercentage)) {
         if (!StringUtils.isEmpty(withSegment)) {
-          finalSql = totalRows(originPartSql) + replace.replaceFirst("WITH",SqlConstants.COMMA);
+          finalSql = totalRows(originPartSql) + replace.replaceFirst("WITH", SqlConstants.COMMA);
         } else {
           finalSql = totalRows(originPartSql) + Communal.BLANK + replace;
         }
@@ -213,7 +224,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
         finalSql = originPartSql;
       }
 
-      log.info(MessageFormat.format("[Final SQL]: {0}", finalSql));
+      log.info(MessageFormat.format("[Final Sql]: {0}", finalSql));
       return finalSql;
     }
   }
@@ -320,7 +331,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
           handleDatetimeBinning(menu);
           break;
         default:
-          throw new RRException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg() + menu.getMenu(),
+          throw new RunException(BizCodeEnum.INVALID_BINNING_TYPE.getMsg() + menu.getMenu(),
                   BizCodeEnum.INVALID_BINNING_TYPE.getCode());
       }
 
@@ -366,7 +377,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
                   .append(Communal.BLANK).append(menu.getAttributeRenaming());
           break;
         default:
-          throw new RRException(BizCodeEnum.INVALID_AGGREGATION_TYPE.getMsg() + menu.getMenu(),
+          throw new RunException(BizCodeEnum.INVALID_AGGREGATION_TYPE.getMsg() + menu.getMenu(),
                   BizCodeEnum.INVALID_AGGREGATION_TYPE.getCode());
       }
       aggregationSet.add(b.toString());
@@ -405,10 +416,10 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
     String s2 = SqlConstants.SELECT + SqlConstants.MIN + SqlConstants.LEFT_BRACKET
             + menu.getAttribute() + SqlConstants.RIGHT_BRACKET + Communal.BLANK
             + SqlConstants.FROM + datasource;
-    Long max = clickHouseJdbcUtils.queryForLong(s1);
-    Long min = clickHouseJdbcUtils.queryForLong(s2);
+    Double max = clickHouseJdbcUtils.queryForDouble(s1);
+    Double min = clickHouseJdbcUtils.queryForDouble(s2);
     //等宽分箱
-    EquiWidthBinning equiWidthBinning = new EquiWidthBinning(max, min, menu.getInclude_zero());
+    EquiWidthBinning equiWidthBinning = new EquiWidthBinning(max, min, menu.getIncludeZero());
     //获取分箱后的箱子集合
     Set<Object> binningSet = equiWidthBinning.binningSet();
     equiWidthBinningSetList.add(binningSet);
@@ -433,7 +444,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
     }
     Double[] p = doubleList.toArray(new Double[0]);
     //获取自然分箱后的箱子集合
-    Set<Object> naturalSet = KMeans.NaturalBinning(p, menu.getInclude_zero());
+    Set<Object> naturalSet = Kmeans.naturalBinning(p, menu.getIncludeZero());
     naturalBinningSetList.add(naturalSet);
     NaturalBinningSetThreadLocal.set(naturalBinningSetList);
 
@@ -472,7 +483,7 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
           orderSet.add(sb.toString());
           break;
         default:
-          throw new RRException(BizCodeEnum.INVALID_SORT_TYPE.getMsg() + menu.getMenu(),
+          throw new RunException(BizCodeEnum.INVALID_SORT_TYPE.getMsg() + menu.getMenu(),
                   BizCodeEnum.INVALID_SORT_TYPE.getCode());
       }
     }
@@ -484,38 +495,41 @@ public class PivotChartSqlGenerator extends SqlGeneratorBase {
    * @return with sql
    */
   private String totalRows(String originSql) {
-    return MessageFormat.format("WITH (select sum({0}) from ({1})) AS S", columnForPercentage, originSql);
+    return MessageFormat.format("WITH (select sum({0}) from ({1})) AS S",
+            columnForPercentage, originSql);
   }
 
   /**
-   * 透视图渲染限制（einblick中透视图能渲染的最大数据量为200个左右），这里视情况进行截取
+   * 透视图渲染限制（einblick中透视图能渲染的最大数据量为200个左右），这里视情况进行截取.
    */
-  private String getPartSql(String SQL) {
-    if (StringUtils.isEmpty(SQL)) {
+  private String getPartSql(String sql) {
+    if (StringUtils.isEmpty(sql)) {
       return "";
     }
 
-    Long count = clickHouseJdbcUtils.getCount(SQL);
-    String partSQL;
+    Long count = clickHouseJdbcUtils.getCount(sql);
+    String partSql;
     //若总记录数，超过透视图能渲染的点数（einblick中透视图最多渲染200个数据），进行截取处理
     if (count > SqlConstants.POINTS) {
       int interval = (int) Math.rint((double) count / SqlConstants.POINTS);
       if (interval > 2) {
-        partSQL = SqlConstants.SELECT + SqlConstants.ALL + SqlConstants.FROM + SqlConstants.LEFT_BRACKET + SQL
-                + SqlConstants.RIGHT_BRACKET + Communal.BLANK + SqlConstants.WHERE + SqlConstants.MOD
+        partSql = SqlConstants.SELECT + SqlConstants.ALL + SqlConstants.FROM
+                + SqlConstants.LEFT_BRACKET + sql + SqlConstants.RIGHT_BRACKET
+                + Communal.BLANK + SqlConstants.WHERE + SqlConstants.MOD
                 + SqlConstants.LEFT_BRACKET + SqlConstants.ROW + SqlConstants.COMMA + interval
                 + SqlConstants.RIGHT_BRACKET + SqlConstants.EQUAL + 1;
       } else {
-        partSQL = SqlConstants.SELECT + SqlConstants.ALL + SqlConstants.FROM + SqlConstants.LEFT_BRACKET + SQL
-                + SqlConstants.RIGHT_BRACKET + Communal.BLANK + SqlConstants.WHERE + SqlConstants.MOD
-                + SqlConstants.LEFT_BRACKET + SqlConstants.ROW + SqlConstants.COMMA + 2
-                + SqlConstants.RIGHT_BRACKET + SqlConstants.EQUAL + 1;
+        partSql = SqlConstants.SELECT + SqlConstants.ALL + SqlConstants.FROM
+                + SqlConstants.LEFT_BRACKET + sql + SqlConstants.RIGHT_BRACKET + Communal.BLANK
+                + SqlConstants.WHERE + SqlConstants.MOD + SqlConstants.LEFT_BRACKET
+                + SqlConstants.ROW + SqlConstants.COMMA + 2 + SqlConstants.RIGHT_BRACKET
+                + SqlConstants.EQUAL + 1;
       }
       TRUNCATED_NUM = count - SqlConstants.POINTS;
     } else {
-      partSQL = SQL;
+      partSql = sql;
       TRUNCATED_NUM = 0L;
     }
-    return partSQL;
+    return partSql;
   }
 }

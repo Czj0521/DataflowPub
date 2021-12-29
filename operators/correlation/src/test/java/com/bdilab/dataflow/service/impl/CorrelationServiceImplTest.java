@@ -71,6 +71,6 @@ public class CorrelationServiceImplTest {
     long after = System.currentTimeMillis();
     log.info("Time spent :" + (after - before));
 
-    assert responseObjList.get(0).getCorrelation().equals("0.00668");
+    assert responseObjList.get(0).getCorrelation().equals("0.00667");
   }
 }

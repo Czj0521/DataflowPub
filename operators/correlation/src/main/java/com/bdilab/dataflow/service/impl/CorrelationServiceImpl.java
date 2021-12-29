@@ -5,6 +5,7 @@ import com.bdilab.dataflow.dto.joboutputjson.ResponseObj;
 import com.bdilab.dataflow.service.CorrelationService;
 import com.bdilab.dataflow.utils.Format;
 import com.bdilab.dataflow.utils.Kendall;
+import com.bdilab.dataflow.utils.Spearman;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,8 @@ public class CorrelationServiceImpl implements CorrelationService {
 
   Kendall kendall = new Kendall();
 
+  Spearman spearman = new Spearman();
+
   Format format = new Format();
 
   private List<Double> attributeValues(String attribute, String datasource) {
@@ -33,11 +36,6 @@ public class CorrelationServiceImpl implements CorrelationService {
 
   private Double pearson(String target, String feature, String datasource) {
     String sql = "SELECT corr(" + target + ", " + feature + ") From " + datasource;
-    return clickHouseJdbcUtils.queryForDouble(sql);
-  }
-
-  private Double spearman(String target, String feature, String datasource) {
-    String sql = "SELECT rankCorr(" + target + ", " + feature + ") From " + datasource;
     return clickHouseJdbcUtils.queryForDouble(sql);
   }
 
@@ -62,7 +60,7 @@ public class CorrelationServiceImpl implements CorrelationService {
               formatCorrelation = format.formatDigit(correlation);
               break;
             case "spearman":
-              correlation = spearman(features[i], features[j], datasource);
+              correlation = spearman.scorr(targetValuesList, featureValuesList);
               formatCorrelation = format.formatDigit(correlation);
               break;
             case "kendall":
@@ -85,7 +83,7 @@ public class CorrelationServiceImpl implements CorrelationService {
             formatCorrelation = format.formatDigit(correlation);
             break;
           case "spearman":
-            correlation = spearman(target, feature, datasource);
+            correlation = spearman.scorr(targetValuesList, featureValuesList);
             formatCorrelation = format.formatDigit(correlation);
             break;
           case "kendall":

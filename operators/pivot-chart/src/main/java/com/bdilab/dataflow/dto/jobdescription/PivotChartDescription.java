@@ -30,6 +30,11 @@ public class PivotChartDescription extends JobDescription {
   private Menu[] menus;
 
   /**
+   * 图形类型.
+   */
+  private String chartType;
+
+  /**
    * 过滤字段，联动场景使用.
    */
   private String filter;

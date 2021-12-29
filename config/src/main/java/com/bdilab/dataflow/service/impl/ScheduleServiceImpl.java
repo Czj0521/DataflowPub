@@ -169,7 +169,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 map.put(String.valueOf(e.getCode()), e.getMsg());
                 err.add(map);
                 outputJson = new JobOutputJson("JOB_FAILED", nodeId, workspaceId, nodeType,
-                        new OutputData(err, null));
+                        new OutputData(err, null, chartDescription.getString("chartType")));
               }
             }
             break;
@@ -314,7 +314,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     JSONObject nodeDescription = (JSONObject) node.getNodeDescription();
     PivotChartDescription description = nodeDescription.toJavaObject(PivotChartDescription.class);
     List<Map<String, Object>> data = pivotChartService.saveToClickHouse(description, brushFilters);
-    return new OutputData(data, null);
+    return new OutputData(data, null, description.getChartType());
   }
 
   private OutputData whitIfSavedData(DagNode node, TransformationDescription transformationDescription) {

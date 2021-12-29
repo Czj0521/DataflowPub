@@ -206,10 +206,6 @@ public class PivotChartServiceImpl implements PivotChartService {
 
     //集合中第一个map为信息map，返回菜单选择信息
     Map<String, Object> infoMap = description.getInfoMap();
-    infoMap.put(Communal.TRUNCATED_NUM, PivotChartSqlGenerator.TRUNCATED_NUM);
-    if (!CollectionUtils.isEmpty(PivotChartSqlGenerator.brushFilters)) {
-      infoMap.put("color", "brush");
-    }
     results.add(infoMap);
 
     //sql生成
@@ -294,6 +290,15 @@ public class PivotChartServiceImpl implements PivotChartService {
         results.addAll(queryListMap);
       }
     }
+    //信息map放入计算后的截断数据
+    infoMap.put(Communal.TRUNCATED_NUM, PivotChartSqlGenerator.TRUNCATED_NUM);
+    //如果brushFilters集合不为空，color菜单前端不显示，用于展示brush
+    if (!CollectionUtils.isEmpty(PivotChartSqlGenerator.brushFilters)) {
+      infoMap.put("color", "brush");
+    }
+    //完成封装后，清空已有数据，准备下一次计算
+    PivotChartSqlGenerator.TRUNCATED_NUM = 0L;
+    PivotChartSqlGenerator.brushFilters = null;
     return results;
   }
 

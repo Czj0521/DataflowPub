@@ -136,7 +136,7 @@
         <dynamic-datasource-spring-boot-starter.version>3.4.1</dynamic-datasource-spring-boot-starter.version>
         <dataflow.version>1.0-SNAPSHOT</dataflow.version>
         <commons-text.version>1.9</commons-text.version>
-        <guava.version>20.0</guava.version>
+        <guava.version>31.0.1-jre</guava.version>
         <powermock-api-mockito2.version>2.0.4</powermock-api-mockito2.version>
     </properties>
 

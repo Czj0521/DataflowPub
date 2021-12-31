@@ -26,10 +26,6 @@
             <groupId>com.bdilab</groupId>
             <artifactId>utils</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.bdilab</groupId>
-            <artifactId>operator-table</artifactId>
-        </dependency>
     </dependencies>
 
 </project>

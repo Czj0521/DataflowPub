@@ -1,18 +1,24 @@
 package com.bdilab.dataflow.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.bdilab.dataflow.common.consts.OperatorConstants;
 import com.bdilab.dataflow.common.enums.DataTypeEnum;
 import com.bdilab.dataflow.dto.StatisticalTestDescription;
 import com.bdilab.dataflow.dto.TdisDescription;
 import com.bdilab.dataflow.service.StatisticalTestService;
 import com.bdilab.dataflow.utils.ChiSquaredUtils;
 import com.bdilab.dataflow.utils.TdisUtils;
+import com.bdilab.dataflow.utils.clickhouse.ClickHouseHttpUtils;
 import com.bdilab.dataflow.utils.clickhouse.ClickHouseJdbcUtils;
 import com.bdilab.dataflow.utils.dag.DagNode;
 
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.*;
+
+import org.apache.catalina.util.URLEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -26,11 +32,11 @@ public class StatisticalTestServiceImpl implements StatisticalTestService {
   @Autowired
   ClickHouseJdbcUtils clickHouseJdbcUtils;
   @Autowired
-  TableMetadataServiceImpl tableMetadataService;
-  @Autowired
   ChiSquaredUtils chiSquaredUtils;
   @Autowired
   TdisUtils tdisUtils;
+  @Value("${clickhouse.http.url}")
+  private String httpPrefix;
 
   @Override
   public Map<String, Object> getPValue(DagNode dagNode) {
@@ -76,10 +82,26 @@ public class StatisticalTestServiceImpl implements StatisticalTestService {
    * @return columnType ["numeric","string"]
    */
   public String getColumnType(String dataSource, String columnName) {
-    Map<String, String> metadata = tableMetadataService.metadata("select * from " + dataSource);
+    Map<String, String> metadata = getMetadata("select * from " + dataSource);
     String columnType = metadata.get(columnName);
     String dataType = DataTypeEnum.CLICKHOUSE_DATATYPE_MAP.get(columnType);
     return dataType;
+  }
+
+  public Map<String, String> getMetadata(String sql) {
+    String query = "desc%20(" + OperatorConstants.COLUMN_MAGIC_NUMBER + ")";
+    URLEncoder encoder = new URLEncoder();
+    sql = encoder.encode(sql, Charset.defaultCharset());
+    String url = httpPrefix + query.replace(OperatorConstants.COLUMN_MAGIC_NUMBER, sql);
+    Map<String, String> result = new HashMap<>();
+//    log.info(url);
+    String content = ClickHouseHttpUtils.sendGet(url);
+    String[] split = content.split("\n");
+    for (String s : split) {
+      String[] split1 = s.split("\t");
+      result.put(split1[0], split1[1]);
+    }
+    return result;
   }
 
   /**

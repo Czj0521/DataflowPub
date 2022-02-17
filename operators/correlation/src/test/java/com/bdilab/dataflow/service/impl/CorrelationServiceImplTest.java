@@ -1,6 +1,6 @@
 package com.bdilab.dataflow.service.impl;
 
-import com.bdilab.dataflow.dto.jobDescription.CorrelationDescription;
+import com.bdilab.dataflow.dto.CorrelationDescription;
 import com.bdilab.dataflow.dto.joboutputjson.ResponseObj;
 import com.bdilab.dataflow.service.CorrelationService;
 import java.util.List;

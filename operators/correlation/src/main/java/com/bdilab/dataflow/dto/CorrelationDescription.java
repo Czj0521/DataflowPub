@@ -1,4 +1,4 @@
-package com.bdilab.dataflow.dto.jobDescription;
+package com.bdilab.dataflow.dto;
 
 import com.bdilab.dataflow.operator.dto.jobdescription.JobDescription;
 import io.swagger.annotations.ApiModel;

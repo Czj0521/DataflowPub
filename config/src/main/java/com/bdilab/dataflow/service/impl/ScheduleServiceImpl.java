@@ -70,6 +70,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   private MutualInformationService mutualInformationService;
   @Autowired
   private StatisticalTestService statisticalTestService;
+  @Autowired
+  private CorrelationService correlationService;
   @Resource
   private WhatIfServiceImpl whatIfService;
 
@@ -241,6 +243,10 @@ public class ScheduleServiceImpl implements ScheduleService {
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
                 whatIfOutputData);
             break;
+          case "correlation":
+            OutputData correlationData = correlationSavedData(node);
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, correlationData);
+            break;
           default:
             throw new RuntimeException("not exist this operator !");
         }
@@ -327,6 +333,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     return new OutputData(data, null);
   }
 
+  private OutputData correlationSavedData(DagNode node) {
+    List<Map<String, Object>> data = correlationService.saveToClickHouse(node, null);
+    return new OutputData(data, null);
+  }
   /**
    * Get filter string.
    */

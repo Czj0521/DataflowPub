@@ -46,6 +46,13 @@ public class StatisticalTestServiceImpl implements StatisticalTestService {
     StatisticalTestDescription statisticalTestDescription = nodeDescription
             .toJavaObject(StatisticalTestDescription.class);
 
+    Map<String,Object> result = new HashMap<>();
+    if(statisticalTestDescription.getDataSource().length == 0){
+      result.put("testType","TTEST");
+      result.put("pValue",0);
+      return result;
+    }
+
 //    System.out.println(statisticalTestDescription);
     String dataSource1 = statisticalTestDescription.getDataSource()[0];
     String dataSource2 = statisticalTestDescription.getDataSource()[1];
@@ -55,7 +62,6 @@ public class StatisticalTestServiceImpl implements StatisticalTestService {
 
 //    System.out.println("datasource1:"+dataSource1 + ",datasource2:"+dataSource2 +
 //            ",datatype1:"+dataType1 + ",datatype2:"+dataType2 );
-    Map<String,Object> result = new HashMap<>();
     switch (statisticalTestDescription.getType()) {
       case "numerical":
         if (dataType1.equals("numeric") && dataType2.equals("numeric")) {

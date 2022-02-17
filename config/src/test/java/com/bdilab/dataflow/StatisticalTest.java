@@ -32,38 +32,38 @@ public class StatisticalTest {
         dagManager.deleteDag("bdilab");
         String addNode1 ="{" +
             "\"job\": \"start_job\", " +
-            "\"statisticalTestDescription\": " +
+            "\"statisticaltestDescription\": " +
                    "{\"test\":\"Age\", " +
                    "\"control\":\"LeaseLength\", " +
                    "\"type\":\"numerical\", " +
                    "\"dataSource\":[\"dataflow.promotion_csv\",\"dataflow.promotion_csv\"]}," +
-            "\"operatorType\": \"statisticalTest\", " +
+            "\"operatorType\": \"statisticaltest\", " +
             "\"dagType\": \"addNode\", " +
             "\"operatorId\": \"statisticalTest_1\", " +
             "\"workspaceId\": \"bdilab\"}";
 
         String addNode2 ="{" +
                 "\"job\": \"start_job\", " +
-                "\"statisticalTestDescription\": " +
+                "\"statisticaltestDescription\": " +
                      "{\"test\":\"Age\", " +
                      "\"control\":\"LeaseLength\", " +
                      "\"type\":\"categorical\", " +
-                     "\"dataSource\":[\"dataflow.promotion_csv\",\"dataflow.promotion_csv\"]}," +
-                "\"operatorType\": \"statisticalTest\", " +
-                "\"dagType\": \"addNode\", " +
-                "\"operatorId\": \"statisticalTest_1\", " +
-                "\"workspaceId\": \"bdilab\"}";
+                     "\"dataSource\":[\"dataflow.temp_1645003349492\",\"dataflow.temp_1645003349492\"]}," +
+                "\"operatorType\": \"statisticaltest\", " +
+                "\"dagType\": \"updateNode\", " +
+                "\"operatorId\": \"1645004302004\", " +
+                "\"workspaceId\": \"glxWorkspace\"}";
 
 
         String addNode3 ="{" +
                 "\"job\": \"start_job\", " +
-                "\"statisticalTestDescription\": " +
-                     "{\"test\":\"Age\", " +
+                "\"statisticaltestDescription\": " +
+                     "{\"test\":\"EducationLevel\", " +
                      "\"control\":\"LeaseLength\", " +
                      "\"type\":\"categorical\", " +
                      "\"dataSource\":[\"( select * from dataflow.promotion_csv where Married != 'single') a0\"," +
                                       "\"( select * from dataflow.promotion_csv where Married = 'single') a1\"]}," +
-                "\"operatorType\": \"statisticalTest\", " +
+                "\"operatorType\": \"statisticaltest\", " +
                 "\"dagType\": \"addNode\", " +
                 "\"operatorId\": \"statisticalTest_1\", " +
                 "\"workspaceId\": \"bdilab\"}";

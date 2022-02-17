@@ -201,7 +201,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             outputData.setData(profilerData);
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, outputData);
             break;
-          case "statisticalTest":
+          case "statisticaltest":
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType,
                     statisticalTestSavedData(node));
             break;

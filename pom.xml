@@ -15,7 +15,7 @@
         <module>operators/transpose</module>
         <module>operators/table</module>
         <module>operators/join</module>
-        <module>operators/Materialize</module>
+        <module>operators/materialize</module>
         <module>operators/common</module>
         <module>common</module>
         <module>config</module>

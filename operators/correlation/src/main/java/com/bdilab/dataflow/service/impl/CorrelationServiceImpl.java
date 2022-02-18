@@ -15,6 +15,7 @@ import java.util.Map;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * CorrelationServiceImpl.
@@ -52,7 +53,7 @@ public class CorrelationServiceImpl implements CorrelationService {
     Double correlation = 0.0; // 相关系数
     String formatCorrelation = null; // 保留三位有效数字的相关系数
     List<Map<String, Object>> result = new ArrayList<>();
-    if (target == null) {
+    if (StringUtils.isEmpty(target)) {
       for (int i = 0; i < features.length - 1; i++) {
         for (int j = i + 1; j < features.length; j++) {
           List<Double> targetValuesList = attributeValues(features[i], datasource);

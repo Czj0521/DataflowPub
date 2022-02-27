@@ -11,13 +11,24 @@ import com.bdilab.dataflow.dto.OutputData;
 import com.bdilab.dataflow.dto.jobdescription.PivotChartDescription;
 import com.bdilab.dataflow.dto.jobdescription.TransformationDescription;
 import com.bdilab.dataflow.exception.RunException;
-import com.bdilab.dataflow.service.*;
+import com.bdilab.dataflow.service.CorrelationService;
+import com.bdilab.dataflow.service.MutualInformationService;
+import com.bdilab.dataflow.service.PivotChartService;
+import com.bdilab.dataflow.service.ProfilerService;
+import com.bdilab.dataflow.service.PythonService;
+import com.bdilab.dataflow.service.ScalarService;
+import com.bdilab.dataflow.service.ScheduleService;
+import com.bdilab.dataflow.service.StatisticalTestService;
+import com.bdilab.dataflow.service.TableJobService;
+import com.bdilab.dataflow.service.TransformationService;
+import com.bdilab.dataflow.service.TransposeService;
+import com.bdilab.dataflow.service.WebSocketServer;
+import com.bdilab.dataflow.service.WhatIfServiceImpl;
 import com.bdilab.dataflow.utils.WhatIfUtils;
 import com.bdilab.dataflow.utils.dag.DagFilterManager;
 import com.bdilab.dataflow.utils.dag.DagNode;
 import com.bdilab.dataflow.utils.dag.InputDataSlot;
 import com.bdilab.dataflow.utils.dag.RealTimeDag;
-
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -27,14 +38,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
-import javax.annotation.Resource;
 
 /**
  * Task scheduling module.
@@ -72,6 +81,8 @@ public class ScheduleServiceImpl implements ScheduleService {
   private StatisticalTestService statisticalTestService;
   @Autowired
   private CorrelationService correlationService;
+  @Autowired
+  private TransformationService transformationService;
   @Resource
   private WhatIfServiceImpl whatIfService;
 
@@ -247,6 +258,10 @@ public class ScheduleServiceImpl implements ScheduleService {
             OutputData correlationData = correlationSavedData(node);
             outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, correlationData);
             break;
+          case "transformation":
+            OutputData transformationsData = transformationSaveData(node);
+            outputJson = new JobOutputJson("JOB_FINISH", nodeId, workspaceId, nodeType, transformationsData);
+            break;
           default:
             throw new RuntimeException("not exist this operator !");
         }
@@ -335,6 +350,10 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   private OutputData correlationSavedData(DagNode node) {
     List<Map<String, Object>> data = correlationService.saveToClickHouse(node, null);
+    return new OutputData(data, null);
+  }
+  private OutputData transformationSaveData(DagNode node){
+    List<Map<String, Object>> data = transformationService.saveToClickHouse(node, null);
     return new OutputData(data, null);
   }
   /**
